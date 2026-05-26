@@ -1,0 +1,4 @@
+datasets>=2.19.0
+docker>=7.1.0
+requests>=2.32.0
+swebench>=3.0.0

@@ -1,0 +1,7 @@
+{
+  "dataset_name": "princeton-nlp/SWE-bench_Lite",
+  "splits": [
+    "dev",
+    "test"
+  ]
+}
