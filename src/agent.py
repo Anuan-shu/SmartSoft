@@ -42,6 +42,7 @@ Return ONLY:
 ...unified diff patch...
 </final_patch>
 No extra text.
+The patch must be produced from `git diff --no-ext-diff` whenever possible.
 """
 
 MAX_STEPS = 25
@@ -95,13 +96,20 @@ def _current_diff(env: DockerEnv) -> str:
     result = env.run("git diff --no-ext-diff", timeout=60)
     if result.exit_code != 0:
         return ""
-    return extract_patch(result.stdout)
+    return _normalize_patch(result.stdout)
 
 
-def _patch_applies(env: DockerEnv, patch: str) -> bool:
+def _normalize_patch(patch: str) -> str:
     cleaned = extract_patch(patch)
     if not cleaned:
-        return False
+        return ""
+    return cleaned if cleaned.endswith("\n") else f"{cleaned}\n"
+
+
+def _check_patch(env: DockerEnv, patch: str) -> tuple[bool, str]:
+    cleaned = _normalize_patch(patch)
+    if not cleaned:
+        return False, "empty patch"
     encoded = base64.b64encode(cleaned.encode("utf-8")).decode("ascii")
     command = (
         "python -c "
@@ -109,7 +117,15 @@ def _patch_applies(env: DockerEnv, patch: str) -> bool:
         "&& git apply --check /tmp/swe_agent_patch.diff"
     )
     result = env.run(command, timeout=60)
-    return result.exit_code == 0
+    if result.exit_code == 0:
+        return True, "git apply --check succeeded"
+
+    dry_run = env.run("patch --dry-run --batch --fuzz=5 -p1 -i /tmp/swe_agent_patch.diff", timeout=60)
+    if dry_run.exit_code == 0:
+        return True, "patch dry-run succeeded"
+
+    detail = dry_run.stderr or dry_run.stdout or result.stderr or result.stdout
+    return False, _truncate(detail, max_chars=1000)
 
 
 def _parse_model_action(content: str) -> tuple[str, str]:
@@ -190,14 +206,16 @@ def solve_task(context: TaskContext, env: DockerEnv, model: ModelClient) -> str:
             diff = _current_diff(env)
             if diff:
                 return diff
-            patch = extract_patch(payload)
-            if _patch_applies(env, patch):
+            patch = _normalize_patch(payload)
+            patch_ok, patch_reason = _check_patch(env, patch)
+            if patch_ok:
                 return patch
             history.append(
                 f"[step {step} invalid]\n"
                 "Model returned a final patch, but no files were edited in the container "
-                "and the supplied patch does not apply cleanly. Continue by inspecting "
-                "and editing files, then use git diff."
+                "and the supplied patch does not apply cleanly.\n"
+                f"patch check failure:\n{patch_reason}\n"
+                "Continue by running commands that edit files in /testbed, then return git diff."
             )
             continue
 
@@ -239,10 +257,11 @@ def solve_task(context: TaskContext, env: DockerEnv, model: ModelClient) -> str:
     )
     final_type, final_payload = _parse_model_action(final_response.content)
     if final_type == "final_patch":
-        patch = extract_patch(final_payload)
-        if _patch_applies(env, patch):
+        patch = _normalize_patch(final_payload)
+        patch_ok, _ = _check_patch(env, patch)
+        if patch_ok:
             return patch
-        return ""
+        return patch
 
     # Last fallback: if model already modified files but failed format, emit git diff.
     return _current_diff(env)
