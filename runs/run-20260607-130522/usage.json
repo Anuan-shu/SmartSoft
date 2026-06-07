@@ -1,0 +1,8 @@
+{
+  "model": "deepseek-v3.2",
+  "usage": {
+    "prompt_tokens": 632736,
+    "completion_tokens": 9436,
+    "total_tokens": 642172
+  }
+}

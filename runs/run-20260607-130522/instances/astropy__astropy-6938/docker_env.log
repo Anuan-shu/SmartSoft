@@ -1,0 +1,184 @@
+2026-06-07 13:10:36,974 INFO Preparing Docker environment for astropy__astropy-6938
+2026-06-07 13:10:37,001 INFO Image already exists locally, skipping pull: swebench/sweb.eval.x86_64.astropy_1776_astropy-6938
+2026-06-07 13:10:37,173 INFO Running command: pwd
+2026-06-07 13:10:37,640 INFO STDOUT: /testbed
+
+2026-06-07 13:10:37,641 INFO Exit code: 0
+2026-06-07 13:10:40,129 INFO Running command: find /testbed -type f -name "*.py" | xargs grep -l "fitsrec" | head -20
+2026-06-07 13:10:40,344 INFO STDOUT: /testbed/astropy/io/fits/__init__.py
+/testbed/astropy/io/fits/column.py
+/testbed/astropy/io/fits/hdu/compressed.py
+/testbed/astropy/io/fits/hdu/groups.py
+/testbed/astropy/io/fits/hdu/table.py
+/testbed/astropy/io/fits/tests/test_table.py
+
+2026-06-07 13:10:40,344 INFO Exit code: 0
+2026-06-07 13:10:43,730 INFO Running command: grep -n "output_field.replace" /testbed/astropy/io/fits/fitsrec.py
+2026-06-07 13:10:43,875 INFO STDOUT: 1264:            output_field.replace(encode_ascii('E'), encode_ascii('D'))
+
+2026-06-07 13:10:43,875 INFO Exit code: 0
+2026-06-07 13:10:45,107 INFO Running command: grep -B 20 -A 5 "output_field.replace" /testbed/astropy/io/fits/fitsrec.py
+2026-06-07 13:10:45,257 INFO STDOUT:                             format.format in ('F', 'E', 'D'))
+
+        # not using numarray.strings's num2char because the
+        # result is not allowed to expand (as C/Python does).
+        for jdx, value in enumerate(input_field):
+            value = fmt.format(value)
+            if len(value) >... [truncated]
+2026-06-07 13:10:45,257 INFO Exit code: 0
+2026-06-07 13:10:46,611 INFO Running command: grep -n "def.*_format_x" /testbed/astropy/io/fits/fitsrec.py
+2026-06-07 13:10:46,775 INFO Exit code: 1
+2026-06-07 13:10:50,912 INFO Running command: grep -B 30 "output_field.replace" /testbed/astropy/io/fits/fitsrec.py | head -40
+2026-06-07 13:10:51,058 INFO STDOUT:         else:
+            _pc = '{:>'
+
+        fmt = ''.join([_pc, format[1:], ASCII2STR[format[0]], '}',
+                       (' ' * trail)])
+
+        # Even if the format precision is 0, we should output a decimal point
+        # as long as there is space to do so--not including a decimal point ... [truncated]
+2026-06-07 13:10:51,059 INFO Exit code: 0
+2026-06-07 13:10:52,387 INFO Running command: grep -n "_format_column" /testbed/astropy/io/fits/fitsrec.py
+2026-06-07 13:10:52,530 INFO Exit code: 1
+2026-06-07 13:10:53,832 INFO Running command: grep -n "def.*format" /testbed/astropy/io/fits/fitsrec.py | head -10
+2026-06-07 13:10:53,978 INFO STDOUT: 637:    def formats(self):
+641:            return self._coldefs.formats
+768:    def _convert_x(self, field, recformat):
+777:    def _convert_p(self, column, field, recformat):
+860:    def _convert_other(self, column, field, recformat):
+1207:        format = self._coldefs[col_idx].format
+
+2026-06-07 13:10:53,978 INFO Exit code: 0
+2026-06-07 13:10:55,167 INFO Running command: grep -n "_format_" /testbed/astropy/io/fits/fitsrec.py
+2026-06-07 13:10:55,310 INFO Exit code: 1
+2026-06-07 13:10:56,672 INFO Running command: grep -B 50 "output_field.replace" /testbed/astropy/io/fits/fitsrec.py | head -60
+2026-06-07 13:10:56,824 INFO STDOUT:         if col_idx > 0:
+            lead = starts[col_idx] - starts[col_idx - 1] - spans[col_idx - 1]
+        else:
+            lead = 0
+
+        if lead < 0:
+            warnings.warn('Column {!r} starting point overlaps the previous '
+                          'column.'.format(col_idx + 1))
+
+     ... [truncated]
+2026-06-07 13:10:56,824 INFO Exit code: 0
+2026-06-07 13:10:58,430 INFO Running command: grep -n "def " /testbed/astropy/io/fits/fitsrec.py | grep -A 2 -B 2 1264
+2026-06-07 13:10:58,578 INFO Exit code: 1
+2026-06-07 13:10:59,923 INFO Running command: grep -n "output_field.replace" /testbed/astropy/io/fits/fitsrec.py
+2026-06-07 13:11:00,068 INFO STDOUT: 1264:            output_field.replace(encode_ascii('E'), encode_ascii('D'))
+
+2026-06-07 13:11:00,068 INFO Exit code: 0
+2026-06-07 13:11:59,428 INFO Running command: sed -n '1240,1280p' /testbed/astropy/io/fits/fitsrec.py
+2026-06-07 13:11:59,572 INFO STDOUT:         # Even if the format precision is 0, we should output a decimal point
+        # as long as there is space to do so--not including a decimal point in
+        # a float value is discouraged by the FITS Standard
+        trailing_decimal = (format.precision == 0 and
+                            f... [truncated]
+2026-06-07 13:11:59,572 INFO Exit code: 0
+2026-06-07 13:12:02,045 INFO Running command: python -c "import numpy as np; from numpy import chararray; a = chararray.chararray((3,), itemsize=5); a[:] = '1.2E3'; print('before:', a); b = a.replace('E', 'D'); print('after replace (original):', a); print('returned:', b)"
+2026-06-07 13:12:02,506 INFO STDERR: Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+AttributeError: type object 'chararray' has no attribute 'chararray'
+
+2026-06-07 13:12:02,506 INFO Exit code: 1
+2026-06-07 13:12:04,459 INFO Running command: python -c "import numpy as np; from numpy import chararray; a = np.chararray((3,), itemsize=5); a[:] = '1.2E3'; print('before:', a); b = a.replace('E', 'D'); print('after replace (original):', a); print('returned:', b)"
+2026-06-07 13:12:04,738 INFO STDOUT: before: [b'1.2E3' b'1.2E3' b'1.2E3']
+
+2026-06-07 13:12:04,738 INFO STDERR: Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/opt/miniconda3/envs/testbed/lib/python3.6/site-packages/numpy/core/defchararray.py", line 2425, in replace
+    return asarray(replace(self, old, new, count))
+  File "/opt/miniconda3/envs/testbed/lib/python3.6/site-pac... [truncated]
+2026-06-07 13:12:04,738 INFO Exit code: 1
+2026-06-07 13:12:07,096 INFO Running command: python -c "import numpy as np; a = np.chararray((3,), itemsize=5); a[:] = b'1.2E3'; print('before:', a); b = a.replace(b'E', b'D'); print('after replace (original):', a); print('returned:', b)"
+2026-06-07 13:12:07,357 INFO STDOUT: before: [b'1.2E3' b'1.2E3' b'1.2E3']
+after replace (original): [b'1.2E3' b'1.2E3' b'1.2E3']
+returned: [b'1.2D3' b'1.2D3' b'1.2D3']
+
+2026-06-07 13:12:07,357 INFO Exit code: 0
+2026-06-07 13:12:08,462 INFO Running command: grep -n "encode_ascii" /testbed/astropy/io/fits/fitsrec.py | head -5
+2026-06-07 13:12:08,607 INFO STDOUT: 18:from .util import decode_ascii, encode_ascii, _rstrip_inplace
+837:        dummy = np.char.replace(dummy, encode_ascii('D'), encode_ascii('E'))
+838:        null_fill = encode_ascii(str(ASCIITNULL).rjust(format.width))
+1264:            output_field.replace(encode_ascii('E'), encode_ascii('D'))
+
+2026-06-07 13:12:08,608 INFO Exit code: 0
+2026-06-07 13:12:09,833 INFO Running command: cd /testbed && python -m pytest astropy/io/fits/tests/test_checksum.py::TestChecksumFunctions::test_ascii_table_data -xvs
+2026-06-07 13:12:11,711 INFO STDOUT: Internet access disabled
+============================= test session starts ==============================
+platform linux -- Python 3.6.13, pytest-3.3.1, py-1.11.0, pluggy-0.6.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .
+
+Running tests with Astropy version 3.0.dev20979.
+Running tests in a... [truncated]
+2026-06-07 13:12:11,711 INFO Exit code: 0
+2026-06-07 13:12:13,197 INFO Running command: cd /testbed && python -m pytest astropy/io/fits/tests/test_table.py::TestTableFunctions::test_ascii_table -xvs
+2026-06-07 13:12:14,188 INFO STDOUT: Internet access disabled
+============================= test session starts ==============================
+platform linux -- Python 3.6.13, pytest-3.3.1, py-1.11.0, pluggy-0.6.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .
+
+Running tests with Astropy version 3.0.dev20979.
+Running tests in a... [truncated]
+2026-06-07 13:12:14,188 INFO Exit code: 0
+2026-06-07 13:12:16,724 INFO Running command: cd /testbed && python -c "import numpy as np; from astropy.io.fits.fitsrec import encode_ascii; a = np.chararray((3,), itemsize=5); a[:] = encode_ascii('1.2E3'); print('before:', a); b = a.replace(encode_ascii('E'), encode_ascii('D')); print('after replace (original):', a); print('returned:', b); print('Are they the same object?', a is b)"
+2026-06-07 13:12:17,481 INFO STDOUT: before: [b'1.2E3' b'1.2E3' b'1.2E3']
+after replace (original): [b'1.2E3' b'1.2E3' b'1.2E3']
+returned: [b'1.2D3' b'1.2D3' b'1.2D3']
+Are they the same object? False
+
+2026-06-07 13:12:17,481 INFO Exit code: 0
+2026-06-07 13:12:18,649 INFO Running command: sed -n '1240,1280p' /testbed/astropy/io/fits/fitsrec.py | cat -n
+2026-06-07 13:12:18,799 INFO STDOUT:      1	        # Even if the format precision is 0, we should output a decimal point
+     2	        # as long as there is space to do so--not including a decimal point in
+     3	        # a float value is discouraged by the FITS Standard
+     4	        trailing_decimal = (format.precision == 0 and
+ ... [truncated]
+2026-06-07 13:12:18,799 INFO Exit code: 0
+2026-06-07 13:12:20,568 INFO Running command: cd /testbed && python -c "import astropy.io.fits as fits; import numpy as np; from astropy.io.fits.fitsrec import encode_ascii; t = fits.BinTableHDU.from_columns([fits.Column(name='a', format='D', array=np.array([1.2e3]))]); print(t.data); print(t.data['a']); print(t.columns[0].format); print('D' in t.columns[0].format)"
+2026-06-07 13:12:21,477 INFO STDOUT: [(1200.,)]
+[1200.]
+D
+True
+
+2026-06-07 13:12:21,477 INFO Exit code: 0
+2026-06-07 13:12:23,789 INFO Running command: cd /testbed && python -c "import astropy.io.fits as fits; import numpy as np; from astropy.io.fits.fitsrec import encode_ascii; t = fits.BinTableHDU.from_columns([fits.Column(name='a', format='D', array=np.array([1.2e3]))]); print(t.data); print(t.data['a']); print(t.columns[0].format); print('D' in t.columns[0].format)"
+2026-06-07 13:12:24,496 INFO STDOUT: [(1200.,)]
+[1200.]
+D
+True
+
+2026-06-07 13:12:24,496 INFO Exit code: 0
+2026-06-07 13:12:26,138 INFO Running command: cd /testbed && python -c "import astropy.io.fits as fits; import numpy as np; from astropy.io.fits.fitsrec import encode_ascii; t = fits.TableHDU.from_columns([fits.Column(name='a', format='D', array=np.array([1.2e3]))]); print(t.data); print(t.data['a']); print(t.columns[0].format); print('D' in t.columns[0].format)"
+2026-06-07 13:12:26,796 INFO STDOUT: [(1200.0,)]
+[1200.]
+D25.17
+True
+
+2026-06-07 13:12:26,796 INFO Exit code: 0
+2026-06-07 13:12:28,683 INFO Running command: cd /testbed && python -c "import astropy.io.fits as fits; import numpy as np; from astropy.io.fits.fitsrec import encode_ascii; t = fits.TableHDU.from_columns([fits.Column(name='a', format='D25.17', array=np.array([1.2e3]))]); print('Data:', t.data); print('Column format:', t.columns[0].format); print('Is ASCII table?', t.columns[0].format.isascii); print('Format string:', str(t.columns[0].format)); print('D in format?', 'D' in str(t.columns[0].format))"
+2026-06-07 13:12:29,370 INFO STDOUT: Data: [(1200.0,)]
+Column format: D25.17
+
+2026-06-07 13:12:29,370 INFO STDERR: Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+AttributeError: '_AsciiColumnFormat' object has no attribute 'isascii'
+
+2026-06-07 13:12:29,370 INFO Exit code: 1
+2026-06-07 13:12:31,316 INFO Running command: cd /testbed && python -c "import astropy.io.fits as fits; import numpy as np; from astropy.io.fits.fitsrec import encode_ascii; t = fits.TableHDU.from_columns([fits.Column(name='a', format='D25.17', array=np.array([1.2e3]))]); print('Data:', t.data); print('Column format:', t.columns[0].format); print('Format string:', str(t.columns[0].format)); print('D in format?', 'D' in str(t.columns[0].format)); print('Type of format:', type(t.columns[0].format)); print('Format._format:', t.columns[0].format._format)"
+2026-06-07 13:12:31,996 INFO STDOUT: Data: [(1200.0,)]
+Column format: D25.17
+Format string: D25.17
+D in format? True
+Type of format: <class 'astropy.io.fits.column._AsciiColumnFormat'>
+
+2026-06-07 13:12:31,996 INFO STDERR: Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+AttributeError: '_AsciiColumnFormat' object has no attribute '_format'
+
+2026-06-07 13:12:31,996 INFO Exit code: 1
+2026-06-07 13:12:31,996 INFO Running command: git diff --no-ext-diff
+2026-06-07 13:12:32,814 INFO Exit code: 0
+2026-06-07 13:12:37,921 INFO Stopping container infallible_jones
+2026-06-07 13:12:43,039 INFO Removing container infallible_jones

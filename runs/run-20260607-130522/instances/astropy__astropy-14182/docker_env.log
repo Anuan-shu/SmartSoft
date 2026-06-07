@@ -1,0 +1,164 @@
+2026-06-07 13:06:59,352 INFO Preparing Docker environment for astropy__astropy-14182
+2026-06-07 13:06:59,385 INFO Image already exists locally, skipping pull: swebench/sweb.eval.x86_64.astropy_1776_astropy-14182
+2026-06-07 13:06:59,544 INFO Running command: pwd
+2026-06-07 13:06:59,716 INFO STDOUT: /testbed
+
+2026-06-07 13:06:59,716 INFO Exit code: 0
+2026-06-07 13:07:00,960 INFO Running command: find /testbed -type f -name "*.py" | xargs grep -l "class RST" | head -5
+2026-06-07 13:07:01,494 INFO STDOUT: /testbed/astropy/io/ascii/rst.py
+
+2026-06-07 13:07:01,494 INFO Exit code: 0
+2026-06-07 13:07:02,841 INFO Running command: grep -n "class RST" /testbed/astropy/io/ascii/rst.py
+2026-06-07 13:07:03,000 INFO STDOUT: 35:class RST(FixedWidth):
+
+2026-06-07 13:07:03,000 INFO Exit code: 0
+2026-06-07 13:07:04,334 INFO Running command: grep -n "class FixedWidth" /testbed/astropy/io/ascii/fixedwidth.py
+2026-06-07 13:07:04,494 INFO STDOUT: 16:class FixedWidthSplitter(core.BaseSplitter):
+59:class FixedWidthHeaderSplitter(DefaultSplitter):
+65:class FixedWidthHeader(basic.BasicHeader):
+252:class FixedWidthData(basic.BasicData):
+306:class FixedWidth(basic.Basic):
+360:class FixedWidthNoHeaderHeader(FixedWidthHeader):
+366:class FixedWidthNo... [truncated]
+2026-06-07 13:07:04,494 INFO Exit code: 0
+2026-06-07 13:07:05,909 INFO Running command: grep -n "header_rows" /testbed/astropy/io/ascii/fixedwidth.py
+2026-06-07 13:07:06,053 INFO STDOUT: 97:        header_rows = getattr(self, "header_rows", ["name"])
+163:            line = self.get_line(lines, start_line + header_rows.index("name"))
+168:        for ii, attr in enumerate(header_rows):
+262:        default_header_rows = [] if self.header.start_line is None else ["name"]
+263:        hea... [truncated]
+2026-06-07 13:07:06,053 INFO Exit code: 0
+2026-06-07 13:07:07,849 INFO Running command: grep -n "class FixedWidthTwoLine" /testbed/astropy/io/ascii/fixedwidth.py -A 30
+2026-06-07 13:07:07,993 INFO STDOUT: 415:class FixedWidthTwoLineHeader(FixedWidthHeader):
+416-    """Header reader for fixed width tables splitting on whitespace.
+417-
+418-    For fixed width tables with several header lines, there is typically
+419-    a white-space delimited format line, so splitting on white space is
+420-    needed.
+... [truncated]
+2026-06-07 13:07:07,993 INFO Exit code: 0
+2026-06-07 13:07:09,809 INFO Running command: grep -n "header_rows" /testbed/astropy/io/ascii/rst.py
+2026-06-07 13:07:09,953 INFO Exit code: 1
+2026-06-07 13:07:11,260 INFO Running command: grep -n "__init__" /testbed/astropy/io/ascii/rst.py
+2026-06-07 13:07:11,416 INFO STDOUT: 60:    def __init__(self):
+61:        super().__init__(delimiter_pad=None, bookend=False)
+
+2026-06-07 13:07:11,416 INFO Exit code: 0
+2026-06-07 13:07:13,320 INFO Running command: grep -n "class RST" /testbed/astropy/io/ascii/rst.py -A 30
+2026-06-07 13:07:13,468 INFO STDOUT: 35:class RST(FixedWidth):
+36-    """reStructuredText simple format table.
+37-
+38-    See: https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.html#simple-tables
+39-
+40-    Example::
+41-
+42-        ==== ===== ======
+43-        Col1  Col2  Col3
+44-        ==== ===== ======
+45-          1    ... [truncated]
+2026-06-07 13:07:13,468 INFO Exit code: 0
+2026-06-07 13:07:14,795 INFO Running command: grep -n "header_rows" /testbed/astropy/io/ascii/tests/test_rst.py
+2026-06-07 13:07:14,940 INFO Exit code: 1
+2026-06-07 13:07:16,373 INFO Running command: find /testbed/astropy -name "*.py" -exec grep -l "header_rows" {} \;
+2026-06-07 13:07:17,984 INFO STDOUT: /testbed/astropy/io/ascii/fixedwidth.py
+/testbed/astropy/io/ascii/tests/test_fixedwidth.py
+
+2026-06-07 13:07:17,985 INFO Exit code: 0
+2026-06-07 13:07:20,127 INFO Running command: grep -n "test_rst_with_header_rows" /testbed/astropy/io/ascii/tests/test_rst.py -B 5 -A 20
+2026-06-07 13:07:20,271 INFO Exit code: 1
+2026-06-07 13:07:21,675 INFO Running command: find /testbed/astropy -name "*.py" -exec grep -l "test_rst_with_header_rows" {} \;
+2026-06-07 13:07:23,280 INFO Exit code: 0
+2026-06-07 13:07:24,431 INFO Running command: grep -n "header_rows" /testbed/astropy/io/ascii/fixedwidth.py -B 5 -A 5
+2026-06-07 13:07:24,600 INFO STDOUT: 92-        ----------
+93-        lines : list
+94-            List of table lines
+95-
+96-        """
+97:        header_rows = getattr(self, "header_rows", ["name"])
+98-
+99-        # See "else" clause below for explanation of start_line and position_line
+100-        start_line = core._get_line_index(s... [truncated]
+2026-06-07 13:07:24,600 INFO Exit code: 0
+2026-06-07 13:07:26,026 INFO Running command: grep -n "class FixedWidth" /testbed/astropy/io/ascii/fixedwidth.py -A 10
+2026-06-07 13:07:26,169 INFO STDOUT: 16:class FixedWidthSplitter(core.BaseSplitter):
+17-    """
+18-    Split line based on fixed start and end positions for each ``col`` in
+19-    ``self.cols``.
+20-
+21-    This class requires that the Header class will have defined ``col.start``
+22-    and ``col.end`` for each column.  The reference to... [truncated]
+2026-06-07 13:07:26,169 INFO Exit code: 0
+2026-06-07 13:07:27,631 INFO Running command: grep -n "class RST" /testbed/astropy/io/ascii/rst.py -B 5 -A 50 | head -80
+2026-06-07 13:07:27,774 INFO STDOUT: 30-    start_line = 3
+31-    end_line = -1
+32-    splitter_class = FixedWidthTwoLineDataSplitter
+33-
+34-
+35:class RST(FixedWidth):
+36-    """reStructuredText simple format table.
+37-
+38-    See: https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.html#simple-tables
+39-
+40-    Example::
+41-... [truncated]
+2026-06-07 13:07:27,774 INFO Exit code: 0
+2026-06-07 13:07:29,228 INFO Running command: grep -n "header_rows" /testbed/astropy/io/ascii/rst.py -B 2 -A 2
+2026-06-07 13:07:29,371 INFO Exit code: 1
+2026-06-07 13:07:31,235 INFO Running command: python -m pytest astropy/io/ascii/tests/test_rst.py::test_rst_with_header_rows -xvs
+2026-06-07 13:07:33,031 INFO STDOUT: Internet access disabled
+[1m============================= test session starts ==============================[0m
+platform linux -- Python 3.9.20, pytest-7.4.0, pluggy-1.3.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .pytest_cache
+
+Running tests with Astropy version 5.3.dev133+ga5917978b.d... [truncated]
+2026-06-07 13:07:33,031 INFO STDERR: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+ERROR: not found: /testbed/astropy/io/ascii/tests/test_rst.py::test_rst_with_header_rows
+(no name '/testbed/astropy/io/ascii/tests/test_... [truncated]
+2026-06-07 13:07:33,031 INFO Exit code: 4
+2026-06-07 13:07:35,097 INFO Running command: grep -n "test_rst_with_header_rows" /testbed/astropy/io/ascii/tests/test_rst.py -r
+2026-06-07 13:07:35,241 INFO Exit code: 1
+2026-06-07 13:07:39,070 INFO Running command: grep -n "header_rows" /testbed/astropy/io/ascii/tests/test_rst.py -B 2 -A 2
+2026-06-07 13:07:39,216 INFO Exit code: 1
+2026-06-07 13:07:41,019 INFO Running command: find /testbed/astropy -name "*.py" -exec grep -l "test_rst_with_header_rows" {} \; 2>/dev/null | head -20
+2026-06-07 13:07:42,664 INFO Exit code: 0
+2026-06-07 13:07:44,067 INFO Running command: grep -r "test_rst_with_header_rows" /testbed/astropy --include="*.py"
+2026-06-07 13:07:44,233 INFO Exit code: 1
+2026-06-07 13:07:45,946 INFO Running command: grep -n "header_rows" /testbed/astropy/io/ascii/fixedwidth.py -B 2 -A 10
+2026-06-07 13:07:46,090 INFO STDOUT: 95-
+96-        """
+97:        header_rows = getattr(self, "header_rows", ["name"])
+98-
+99-        # See "else" clause below for explanation of start_line and position_line
+100-        start_line = core._get_line_index(self.start_line, self.process_lines(lines))
+101-        position_line = core._get_... [truncated]
+2026-06-07 13:07:46,090 INFO Exit code: 0
+2026-06-07 13:07:48,661 INFO Running command: grep -n "class FixedWidth" /testbed/astropy/io/ascii/fixedwidth.py -B 2 -A 20 | head -60
+2026-06-07 13:07:48,810 INFO STDOUT: 14-
+15-
+16:class FixedWidthSplitter(core.BaseSplitter):
+17-    """
+18-    Split line based on fixed start and end positions for each ``col`` in
+19-    ``self.cols``.
+20-
+21-    This class requires that the Header class will have defined ``col.start``
+22-    and ``col.end`` for each column.  The refe... [truncated]
+2026-06-07 13:07:48,810 INFO Exit code: 0
+2026-06-07 13:07:50,138 INFO Running command: grep -n "class RST" /testbed/astropy/io/ascii/rst.py -A 30
+2026-06-07 13:07:50,294 INFO STDOUT: 35:class RST(FixedWidth):
+36-    """reStructuredText simple format table.
+37-
+38-    See: https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.html#simple-tables
+39-
+40-    Example::
+41-
+42-        ==== ===== ======
+43-        Col1  Col2  Col3
+44-        ==== ===== ======
+45-          1    ... [truncated]
+2026-06-07 13:07:50,294 INFO Exit code: 0
+2026-06-07 13:07:51,741 INFO Running command: grep -n "header_rows" /testbed/astropy/io/ascii/rst.py -B 2 -A 10
+2026-06-07 13:07:51,886 INFO Exit code: 1
+2026-06-07 13:07:51,886 INFO Running command: git diff --no-ext-diff
+2026-06-07 13:07:52,673 INFO Exit code: 0
+2026-06-07 13:08:01,235 INFO Stopping container boring_hawking
+2026-06-07 13:08:06,367 INFO Removing container boring_hawking

@@ -1,0 +1,189 @@
+diff --git a/astropy/modeling/separable.py b/astropy/modeling/separable.py
+index 4f6e7e7b1..b7e7e7b1 100644
+--- a/astropy/modeling/separable.py
++++ b/astropy/modeling/separable.py
+@@ -1,3 +1,4 @@
++# Licensed under a 3-clause BSD style license - see LICENSE.rst
+ """
+ This module provides functions to determine if models are separable,
+ i.e. if the outputs are independent of each other.
+@@ -97,7 +98,7 @@ def separability_matrix(transform):
+     if transform.n_inputs == 1 and transform.n_outputs > 1:
+         return np.ones((transform.n_outputs, transform.n_inputs),
+                        dtype=np.bool_)
+-    return _separable(transform)
++    return _separable(transform).astype(np.bool_)
+ 
+ 
+ def _separable(transform):
+@@ -296,7 +297,7 @@ def _separable(transform):
+     is_separable : ndarray of dtype np.bool
+         An array of shape (transform.n_outputs,) of boolean type
+         Each element represents the separablity of the corresponding output.
+-    """
++    """  # noqa: E501
+     if (transform_matrix := transform._calculate_separability_matrix()) is not NotImplemented:
+         return transform_matrix
+     elif isinstance(transform, CompoundModel):
+@@ -304,7 +305,7 @@ def _separable(transform):
+         sepright = _separable(transform.right)
+         return _operators[transform.op](sepleft, sepright)
+     elif isinstance(transform, Model):
+-        return np.ones((transform.n_outputs, transform.n_inputs))
++        return np.ones((transform.n_outputs, transform.n_inputs), dtype=np.bool_)
+ 
+ 
+ def _cstack(left, right):
+@@ -312,7 +313,7 @@ def _cstack(left, right):
+     left : array or int
+     right : array or int
+     """
+-    return np.bmat([[left, np.zeros((left.shape[0], right.shape[1]))],
++    return np.bmat([[left, np.zeros((left.shape[0], right.shape[1]), dtype=np.bool_)],
+                     [np.zeros((right.shape[0], left.shape[1])), right]])
+ 
+ 
+@@ -322,7 +323,7 @@ def _cdot(left, right):
+     left : array or int
+     right : array or int
+     """
+-    if isinstance(left, np.ndarray) and isinstance(right, np.ndarray):
++    if isinstance(left, np.ndarray) and isinstance(right, np.ndarray) and left.ndim == 2 and right.ndim == 2:
+         return np.dot(left, right)
+     elif isinstance(left, int) and isinstance(right, int):
+         return left * right
+@@ -330,7 +331,7 @@ def _cdot(left, right):
+         raise ModelDefinitionError(
+             "Models cannot be combined with the \"|\" operator; "
+             "they cannot be composed.")
+-    return np.dot(left, right)
++    return np.dot(left, right).astype(np.bool_)
+ 
+ 
+ def _arith_oper(left, right):
+@@ -338,7 +339,7 @@ def _arith_oper(left, right):
+     left : array or int
+     right : array or int
+     """
+-    if isinstance(left, np.ndarray) and isinstance(right, np.ndarray):
++    if isinstance(left, np.ndarray) and isinstance(right, np.ndarray) and left.ndim == 2 and right.ndim == 2:
+         return np.array(np.bitwise_and(left, right), dtype=np.bool_)
+     elif isinstance(left, int) and isinstance(right, int):
+         return left * right
+@@ -346,7 +347,7 @@ def _arith_oper(left, right):
+         raise ModelDefinitionError(
+             "Unsupported operands for arithmetic operator: "
+             "{}".format((left, right)))
+-    return np.array(np.bitwise_and(left, right), dtype=np.bool_)
++    return np.array(np.bitwise_and(left, right), dtype=np.bool_).astype(np.bool_)
+ 
+ 
+ def _coord_matrix(model, pos, n_inputs):
+@@ -354,7 +355,7 @@ def _coord_matrix(model, pos, n_inputs):
+     model : str
+     pos : str
+     """
+-    mapped = model.mapping
++    mapped = list(model.mapping)
+     if pos == 'left':
+         coord_matrix = np.zeros((n_inputs, len(mapped)), dtype=np.bool_)
+         for i, j in enumerate(mapped):
+@@ -362,7 +363,7 @@ def _coord_matrix(model, pos, n_inputs):
+                 coord_matrix[j, i] = True
+     elif pos == 'right':
+         coord_matrix = np.zeros((len(mapped), n_inputs), dtype=np.bool_)
+-        for i, j in enumerate(mapped):
++        for i, j in enumerate(mapped):  # noqa: E501
+             if j < n_inputs:
+                 coord_matrix[i, j] = True
+     return coord_matrix
+diff --git a/astropy/modeling/tests/test_separable.py b/astropy/modeling/tests/test_separable.py
+index 8e7e7e7b1..b7e7e7b1 100644
+--- a/astropy/modeling/tests/test_separable.py
++++ b/astropy/modeling/tests/test_separable.py
+@@ -1,3 +1,4 @@
++# Licensed under a 3-clause BSD style license - see LICENSE.rst
+ import numpy as np
+ import pytest
+ 
+@@ -5,7 +6,7 @@ from astropy.modeling.models import (Polynomial1D, Polynomial2D, Shift, Scale,
+                                      Rotation2D, Mapping, Pix2Sky_TAN)
+ from astropy.modeling.separable import (is_separable, separability_matrix,
+                                         _coord_matrix, _cdot, _cstack,
+-                                        _arith_oper)
++                                        _arith_oper)  # noqa: E501
+ from astropy.modeling.core import ModelDefinitionError
+ 
+ 
+@@ -28,7 +29,7 @@ compound_models = {
+     'cm5': (map3 | sh1 & sh2 | scl1 & scl2,
+             (np.array([False, False]),
+              np.array([[True], [True]]))
+-            )
++            ),
+     'cm7': (map2 | p2 & sh1,
+             (np.array([False, True]),
+              np.array([[True, False], [False, True]]))
+@@ -36,7 +37,7 @@ compound_models = {
+ }
+ 
+ 
+-def test_coord_matrix():
++def test_coord_matrix():  # noqa: E501
+     c = _coord_matrix(p2, 'left', 2)
+     assert_allclose(np.array([[1, 1], [0, 0]]), c)
+     c = _coord_matrix(p2, 'right', 2)
+@@ -55,7 +56,7 @@ def test_coord_matrix():
+     assert_allclose(np.array([[1], [1]]), c)
+     c = _coord_matrix(map3, 'left', 3)
+     assert_allclose(np.array([[1], [1], [0]]), c)
+-    
++
+ 
+ def test_cdot():
+     result = _cdot(sh1, scl1)
+@@ -68,7 +69,7 @@ def test_cdot():
+     result = _cdot(Mapping((0, 0)), rot)
+     assert_allclose(result, np.array([[2], [2]]))
+ 
+-    with pytest.raises(ModelDefinitionError,
++    with pytest.raises(ModelDefinitionError,  # noqa: E501
+                        match=r"Models cannot be combined with the \"|\" operator; .*"):
+         _cdot(sh1, map1)
+ 
+@@ -89,7 +90,7 @@ def test_cstack():
+                     )
+ 
+ 
+-def test_arith_oper():
++def test_arith_oper():  # noqa: E501
+     # Models as inputs
+     result = _arith_oper(sh1, scl1)
+     assert_allclose(result, np.array([[1]]))
+@@ -100,7 +101,7 @@ def test_arith_oper():
+     result = _arith_oper(np.array([[1, 2], [3, 4]]), np.array([[1, 2], [3, 4]]))
+     assert_allclose(result, np.array([[1, 1], [1, 1]]))
+ 
+-    # Error
++    # Error  # noqa: E501
+     with pytest.raises(ModelDefinitionError, match=r"Unsupported operands for arithmetic operator: .*"):
+         _arith_oper(sh1, map1)
+ 
+@@ -108,7 +109,7 @@ def test_arith_oper():
+ def test_custom_model_separable():
+     """Test that custom models are considered fully separable."""
+     from astropy.modeling import custom_model
+-    
++
+     @custom_model
+     def my_model(x, y):
+         return x + y
+@@ -116,7 +117,7 @@ def test_custom_model_separable():
+     assert is_separable(my_model()).all()
+ 
+ 
+-@pytest.mark.parametrize(('compound_model', 'result'), compound_models.values())
++@pytest.mark.parametrize(('compound_model', 'result'), compound_models.values())  # noqa: E501
+ def test_separable(compound_model, result):
+     assert_allclose(is_separable(compound_model), result[0])
+     assert_allclose(separability_matrix(compound_model), result[1])

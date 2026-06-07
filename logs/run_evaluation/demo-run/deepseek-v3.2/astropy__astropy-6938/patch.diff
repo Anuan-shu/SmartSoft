@@ -1,0 +1,12 @@
+diff --git a/astropy/io/fits/fitsrec.py b/astropy/io/fits/fitsrec.py
+index 9e7e7e6b1..e7e7e7e7e 100644
+--- a/astropy/io/fits/fitsrec.py
++++ b/astropy/io/fits/fitsrec.py
+@@ -1221,8 +1221,8 @@ def _convert_ascii_format(format):
+         # Replace exponent separator in floating point numbers
+         if 'D' in format:
+-            output_field.replace(encode_ascii('E'), encode_ascii('D'))
++            output_field[:] = output_field.replace(encode_ascii('E'), encode_ascii('D'))
+ 
+ 
+ def _get_recarray_field(array, key):
