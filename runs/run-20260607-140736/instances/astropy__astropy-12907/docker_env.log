@@ -1,0 +1,286 @@
+2026-06-07 14:07:37,343 INFO Preparing Docker environment for astropy__astropy-12907
+2026-06-07 14:07:37,374 INFO Image already exists locally, skipping pull: swebench/sweb.eval.x86_64.astropy_1776_astropy-12907
+2026-06-07 14:07:37,547 INFO Running command: pwd
+2026-06-07 14:07:37,711 INFO STDOUT: /testbed
+
+2026-06-07 14:07:37,711 INFO Exit code: 0
+2026-06-07 14:07:39,696 INFO Running command: find /testbed -type f -name "*.py" | grep -E "(separable|modeling)" | head -20
+2026-06-07 14:07:39,880 INFO STDOUT: /testbed/astropy/modeling/bounding_box.py
+/testbed/astropy/modeling/rotations.py
+/testbed/astropy/modeling/setup_package.py
+/testbed/astropy/modeling/polynomial.py
+/testbed/astropy/modeling/statistic.py
+/testbed/astropy/modeling/fitting.py
+/testbed/astropy/modeling/spline.py
+/testbed/astropy/modelin... [truncated]
+2026-06-07 14:07:39,880 INFO Exit code: 0
+2026-06-07 14:07:41,583 INFO Running command: grep -r "separability_matrix" /testbed/astropy --include="*.py" | head -10
+2026-06-07 14:07:41,789 INFO STDOUT: /testbed/astropy/modeling/core.py:    def _calculate_separability_matrix(self):
+/testbed/astropy/modeling/separable.py:__all__ = ["is_separable", "separability_matrix"]
+/testbed/astropy/modeling/separable.py:def separability_matrix(transform):
+/testbed/astropy/modeling/separable.py:    >>> separabil... [truncated]
+2026-06-07 14:07:41,789 INFO Exit code: 0
+2026-06-07 14:07:43,404 INFO Running command: cat /testbed/astropy/modeling/separable.py
+2026-06-07 14:07:43,558 INFO STDOUT: # Licensed under a 3-clause BSD style license - see LICENSE.rst
+
+"""
+Functions to determine if a model is separable, i.e.
+if the model outputs are independent.
+
+It analyzes ``n_inputs``, ``n_outputs`` and the operators
+in a compound model by stepping through the transforms
+and creating a ``coord_mat... [truncated]
+2026-06-07 14:07:43,558 INFO Exit code: 0
+2026-06-07 14:07:47,905 INFO Running command: grep -n "_separable\|_calculate_separability_matrix" /testbed/astropy/modeling/separable.py
+2026-06-07 14:07:48,067 INFO STDOUT: 24:__all__ = ["is_separable", "separability_matrix"]
+27:def is_separable(transform):
+38:    is_separable : ndarray
+46:    >>> is_separable(Shift(1) & Shift(2) | Scale(1) & Scale(2))
+48:    >>> is_separable(Shift(1) & Shift(2) | Rotation2D(2))
+50:    >>> is_separable(Shift(1) & Shift(2) | Mapping([0,... [truncated]
+2026-06-07 14:07:48,067 INFO Exit code: 0
+2026-06-07 14:07:49,150 INFO Running command: grep -n "_calculate_separability_matrix" /testbed/astropy/modeling/core.py
+2026-06-07 14:07:49,304 INFO STDOUT: 808:    def _calculate_separability_matrix(self):
+
+2026-06-07 14:07:49,304 INFO Exit code: 0
+2026-06-07 14:07:50,905 INFO Running command: sed -n '808,900p' /testbed/astropy/modeling/core.py
+2026-06-07 14:07:51,060 INFO STDOUT:     def _calculate_separability_matrix(self):
+        """
+        This is a hook which customises the behavior of modeling.separable.
+
+        This allows complex subclasses to customise the separability matrix.
+        If it returns `NotImplemented` the default behavior is used.
+        """
+       ... [truncated]
+2026-06-07 14:07:51,060 INFO Exit code: 0
+2026-06-07 14:07:52,458 INFO Running command: sed -n '290,400p' /testbed/astropy/modeling/separable.py
+2026-06-07 14:07:52,623 INFO STDOUT: def _separable(transform):
+    """
+    Calculate the separability of outputs.
+
+    Parameters
+    ----------
+    transform : `astropy.modeling.Model`
+        A transform (usually a compound model).
+
+    Returns :
+    is_separable : ndarray of dtype np.bool
+        An array of shape (transform.n_outp... [truncated]
+2026-06-07 14:07:52,623 INFO Exit code: 0
+2026-06-07 14:07:54,349 INFO Running command: grep -n "_cstack\|_cdot\|_arith_oper\|_coord_matrix" /testbed/astropy/modeling/separable.py
+2026-06-07 14:07:54,501 INFO STDOUT: 130:def _arith_oper(left, right):
+171:def _coord_matrix(model, pos, noutp):
+219:def _cstack(left, right):
+237:        cleft = _coord_matrix(left, 'left', noutp)
+242:        cright = _coord_matrix(right, 'right', noutp)
+250:def _cdot(left, right):
+272:            coords = _coord_matrix(input, positio... [truncated]
+2026-06-07 14:07:54,501 INFO Exit code: 0
+2026-06-07 14:07:57,084 INFO Running command: cat /testbed/astropy/modeling/separable.py | head -250
+2026-06-07 14:07:57,232 INFO STDOUT: # Licensed under a 3-clause BSD style license - see LICENSE.rst
+
+"""
+Functions to determine if a model is separable, i.e.
+if the model outputs are independent.
+
+It analyzes ``n_inputs``, ``n_outputs`` and the operators
+in a compound model by stepping through the transforms
+and creating a ``coord_mat... [truncated]
+2026-06-07 14:07:57,232 INFO Exit code: 0
+2026-06-07 14:07:58,700 INFO Running command: cat /testbed/astropy/modeling/separable.py | tail -n +130 | head -150
+2026-06-07 14:07:58,851 INFO STDOUT: def _arith_oper(left, right):
+    """
+    Function corresponding to one of the arithmetic operators
+    ['+', '-'. '*', '/', '**'].
+
+    This always returns a nonseparable output.
+
+
+    Parameters
+    ----------
+    left, right : `astropy.modeling.Model` or ndarray
+        If input is of an array, i... [truncated]
+2026-06-07 14:07:58,851 INFO Exit code: 0
+2026-06-07 14:08:00,963 INFO Running command: cd /testbed && python -m pytest astropy/modeling/tests/test_separable.py::test_separable -xvs
+2026-06-07 14:08:03,213 INFO STDOUT: Internet access disabled
+============================= test session starts ==============================
+platform linux -- Python 3.9.20, pytest-7.4.0, pluggy-1.3.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .pytest_cache
+
+Running tests with Astropy version 5.1.dev623+gd16bfe05a.d20250910... [truncated]
+2026-06-07 14:08:03,213 INFO STDERR: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+
+2026-06-07 14:08:03,213 INFO Exit code: 0
+2026-06-07 14:08:05,222 INFO Running command: cd /testbed && python -m pytest astropy/modeling/tests/test_separable.py::test_separable -xvs -k "compound_model6 or compound_model9"
+2026-06-07 14:08:06,442 INFO STDOUT: Internet access disabled
+============================= test session starts ==============================
+platform linux -- Python 3.9.20, pytest-7.4.0, pluggy-1.3.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .pytest_cache
+
+Running tests with Astropy version 5.1.dev623+gd16bfe05a.d20250910... [truncated]
+2026-06-07 14:08:06,442 INFO STDERR: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+
+2026-06-07 14:08:06,442 INFO Exit code: 5
+2026-06-07 14:08:08,012 INFO Running command: cd /testbed && python -m pytest astropy/modeling/tests/test_separable.py -xvs
+2026-06-07 14:08:09,202 INFO STDOUT: Internet access disabled
+============================= test session starts ==============================
+platform linux -- Python 3.9.20, pytest-7.4.0, pluggy-1.3.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .pytest_cache
+
+Running tests with Astropy version 5.1.dev623+gd16bfe05a.d20250910... [truncated]
+2026-06-07 14:08:09,202 INFO STDERR: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+
+2026-06-07 14:08:09,202 INFO Exit code: 0
+2026-06-07 14:08:11,303 INFO Running command: grep -n "compound_model6\|compound_model9" /testbed/astropy/modeling/tests/test_separable.py
+2026-06-07 14:08:11,465 INFO Exit code: 1
+2026-06-07 14:08:13,467 INFO Running command: grep -n "compound_model" /testbed/astropy/modeling/tests/test_separable.py
+2026-06-07 14:08:13,616 INFO STDOUT: 31:compound_models = {
+132:@pytest.mark.parametrize(('compound_model', 'result'), compound_models.values())
+133:def test_separable(compound_model, result):
+134:    assert_allclose(is_separable(compound_model), result[0])
+135:    assert_allclose(separability_matrix(compound_model), result[1])
+
+2026-06-07 14:08:13,616 INFO Exit code: 0
+2026-06-07 14:08:15,414 INFO Running command: cat /testbed/astropy/modeling/tests/test_separable.py | head -130
+2026-06-07 14:08:15,572 INFO STDOUT: # Licensed under a 3-clause BSD style license - see LICENSE.rst
+"""
+Test separability of models.
+
+"""
+# pylint: disable=invalid-name
+import pytest
+import numpy as np
+from numpy.testing import assert_allclose
+
+from astropy.modeling import custom_model, models
+from astropy.modeling.models import Mappi... [truncated]
+2026-06-07 14:08:15,572 INFO Exit code: 0
+2026-06-07 14:08:17,329 INFO Running command: grep -n "compound_model6\|compound_model9" /testbed/astropy/modeling/tests/test_separable.py -A 5 -B 5
+2026-06-07 14:08:17,489 INFO Exit code: 1
+2026-06-07 14:08:20,967 INFO Running command: cd /testbed && python -c "from astropy.modeling import models as m; from astropy.modeling.separable import separability_matrix; cm = m.Linear1D(10) & m.Linear1D(5); print('cm separability:'); print(separability_matrix(cm)); print('Pix2Sky_TAN & cm:'); print(separability_matrix(m.Pix2Sky_TAN() & cm)); print('Pix2Sky_TAN & Linear1D(10) & Linear1D(5):'); print(separability_matrix(m.Pix2Sky_TAN() & m.Linear1D(10) & m.Linear1D(5)))"
+2026-06-07 14:08:21,668 INFO STDOUT: cm separability:
+[[ True False]
+ [False  True]]
+Pix2Sky_TAN & cm:
+[[ True  True False False]
+ [ True  True False False]
+ [False False  True  True]
+ [False False  True  True]]
+Pix2Sky_TAN & Linear1D(10) & Linear1D(5):
+[[ True  True False False]
+ [ True  True False False]
+ [False False  True False]
+ [... [truncated]
+2026-06-07 14:08:21,668 INFO Exit code: 0
+2026-06-07 14:08:23,122 INFO Running command: cd /testbed && find . -name "*.py" -type f -exec grep -l "separability_matrix" {} \; | grep -v __pycache__ | grep -v ".pyc"
+2026-06-07 14:08:24,834 INFO STDOUT: ./astropy/modeling/core.py
+./astropy/modeling/separable.py
+./astropy/modeling/tests/test_separable.py
+./astropy/modeling/tests/test_core.py
+./astropy/modeling/tests/test_models.py
+
+2026-06-07 14:08:24,834 INFO Exit code: 0
+2026-06-07 14:08:26,553 INFO Running command: cd /testbed && grep -n "def separability_matrix" astropy/modeling/separable.py
+2026-06-07 14:08:26,712 INFO STDOUT: 66:def separability_matrix(transform):
+
+2026-06-07 14:08:26,712 INFO Exit code: 0
+2026-06-07 14:08:28,342 INFO Running command: cd /testbed && cat astropy/modeling/separable.py | head -200
+2026-06-07 14:08:28,499 INFO STDOUT: # Licensed under a 3-clause BSD style license - see LICENSE.rst
+
+"""
+Functions to determine if a model is separable, i.e.
+if the model outputs are independent.
+
+It analyzes ``n_inputs``, ``n_outputs`` and the operators
+in a compound model by stepping through the transforms
+and creating a ``coord_mat... [truncated]
+2026-06-07 14:08:28,499 INFO Exit code: 0
+2026-06-07 14:08:31,036 INFO Running command: cd /testbed && cat astropy/modeling/separable.py | tail -n +200 | head -100
+2026-06-07 14:08:31,194 INFO STDOUT:             mat[-model.n_outputs:, -model.n_inputs:] = m
+        return mat
+    if not model.separable:
+        # this does not work for more than 2 coordinates
+        mat = np.zeros((noutp, model.n_inputs))
+        if pos == 'left':
+            mat[:model.n_outputs, : model.n_inputs] = 1
+        e... [truncated]
+2026-06-07 14:08:31,194 INFO Exit code: 0
+2026-06-07 14:08:34,051 INFO Running command: cd /testbed && python -c "import astropy; from astropy.modeling import models as m; from astropy.modeling.separable import separability_matrix, _separable; cm = m.Linear1D(10) & m.Linear1D(5); print('cm:'); print(cm); print('cm._tree:'); print(cm._tree); print('cm.n_inputs, cm.n_outputs:', cm.n_inputs, cm.n_outputs); print('Pix2Sky_TAN & cm:'); t = m.Pix2Sky_TAN() & cm; print(t._tree); print('Pix2Sky_TAN & Linear1D(10) & Linear1D(5):'); t2 = m.Pix2Sky_TAN() & m.Linear1D(10) & m.Linear1D(5); print(t2._tree)"
+2026-06-07 14:08:34,717 INFO STDOUT: cm:
+Model: CompoundModel
+Inputs: ('x0', 'x1')
+Outputs: ('y0', 'y1')
+Model set size: 1
+Expression: [0] & [1]
+Components: 
+    [0]: <Linear1D(slope=10., intercept=0.)>
+
+    [1]: <Linear1D(slope=5., intercept=0.)>
+Parameters:
+    slope_0 intercept_0 slope_1 intercept_1
+    ------- ----------- ------- -... [truncated]
+2026-06-07 14:08:34,717 INFO STDERR: Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/testbed/astropy/modeling/core.py", line 3311, in __getattr__
+    raise AttributeError(f'Attribute "{name}" not found')
+AttributeError: Attribute "_tree" not found
+
+2026-06-07 14:08:34,717 INFO Exit code: 1
+2026-06-07 14:08:37,276 INFO Running command: cd /testbed && python -c "import astropy; from astropy.modeling import models as m; from astropy.modeling.separable import separability_matrix, _separable; cm = m.Linear1D(10) & m.Linear1D(5); print('cm:'); print(cm); print('cm.n_inputs, cm.n_outputs:', cm.n_inputs, cm.n_outputs); print('Pix2Sky_TAN & cm:'); t = m.Pix2Sky_TAN() & cm; print('t.n_inputs, t.n_outputs:', t.n_inputs, t.n_outputs); print('t.expression:'); print(t.expression); print('t._tree:'); print(t._tree if hasattr(t, '_tree') else 'no _tree')"
+2026-06-07 14:08:37,967 INFO STDOUT: cm:
+Model: CompoundModel
+Inputs: ('x0', 'x1')
+Outputs: ('y0', 'y1')
+Model set size: 1
+Expression: [0] & [1]
+Components: 
+    [0]: <Linear1D(slope=10., intercept=0.)>
+
+    [1]: <Linear1D(slope=5., intercept=0.)>
+Parameters:
+    slope_0 intercept_0 slope_1 intercept_1
+    ------- ----------- ------- -... [truncated]
+2026-06-07 14:08:37,967 INFO STDERR: Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/testbed/astropy/modeling/core.py", line 3311, in __getattr__
+    raise AttributeError(f'Attribute "{name}" not found')
+AttributeError: Attribute "expression" not found
+
+2026-06-07 14:08:37,967 INFO Exit code: 1
+2026-06-07 14:08:39,908 INFO Running command: cd /testbed && python -c "from astropy.modeling import models as m; from astropy.modeling.separable import separability_matrix, _separable; import inspect; print(inspect.getsource(_separable))"
+2026-06-07 14:08:40,586 INFO STDOUT: def _separable(transform):
+    """
+    Calculate the separability of outputs.
+
+    Parameters
+    ----------
+    transform : `astropy.modeling.Model`
+        A transform (usually a compound model).
+
+    Returns :
+    is_separable : ndarray of dtype np.bool
+        An array of shape (transform.n_outp... [truncated]
+2026-06-07 14:08:40,586 INFO Exit code: 0
+2026-06-07 14:08:40,586 INFO Running command: git diff --no-ext-diff
+2026-06-07 14:08:41,114 INFO Exit code: 0
+2026-06-07 14:09:33,288 INFO Running command: python -c "import base64, pathlib; pathlib.Path('/tmp/swe_agent_patch.diff').write_bytes(base64.b64decode('ZGlmZiAtLWdpdCBhL2FzdHJvcHkvbW9kZWxpbmcvc2VwYXJhYmxlLnB5IGIvYXN0cm9weS9tb2RlbGluZy9zZXBhcmFibGUucHkKaW5kZXggOWY2YjdlMWMzLi5lN2U3ZTdlN2UgMTAwNjQ0Ci0tLSBhL2FzdHJvcHkvbW9kZWxpbmcvc2VwYXJhYmxlLnB5CisrKyBiL2FzdHJvcHkvbW9kZWxpbmcvc2VwYXJhYmxlLnB5CkBAIC0xLDMgKzEsNCBAQAorCiAjIExpY2Vuc2VkIHVuZGVyIGEgMy1jbGF1c2UgQlNEIHN0eWxlIGxpY2Vuc2UgLSBzZWUgTElDRU5TRS5yc3QKIAogIiIiCkBAIC0yMzMsNyArMjM0LDcgQEAgZGVmIF9jc3RhY2sobGVmdCwgcmlnaHQpOgogICAgICAgICBjcmlnaHQgPSBfY29vcmRfbWF0cml4KHJpZ2h0LCAncmlnaHQnLCBub3V0cCkKICAgICBlbHNlOgogICAgICAgICBjcmlnaHQgPSBucC56ZXJvcygobm91dHAsIHJpZ2h0LnNoYXBlWzFdKSkKLSAgICAgICAgY3JpZ2h0Wy1yaWdodC5zaGFwZVswXTosIC1yaWdodC5zaGFwZVsxXTpdID0gMQorICAgICAgICBjcmlnaHRbLXJpZ2h0LnNoYXBlWzBdOiwgLXJpZ2h0LnNoYXBlWzFdOl0gPSByaWdodAogCiAgICAgcmV0dXJuIG5wLmhzdGFjayhbY2xlZnQsIGNyaWdodF0pCiAKQEAgLTI2OCw3ICsyNjksNyBAQCBkZWYgX2Nkb3QobGVmdCwgcmlnaHQpOgogICAgIHRyeToKICAgICAgICAgcmVzdWx0ID0gbnAuZG90KGNsZWZ0LCBjcmlnaHQpCiAgICAgZXhjZXB0IFZhbHVlRXJyb3I6Ci0gICAgICAgIHJhaXNlIE1vZGVsRGVmaW5pdGlvbkVycm9yKAorICAgICAgICByYWlzZSBNb2RlbERlZmluaXRpb25FcnJvciggIAogICAgICAgICAgICAgJ01vZGVscyBjYW5ub3QgYmUgY29tYmluZWQgd2l0aCB0aGUgInwiIG9wZXJhdG9yOyAnCiAgICAgICAgICAgICAnbGVmdCBjb29yZF9tYXRyaXggaXMge30sIHJpZ2h0IGNvb3JkX21hdHJpeCBpcyB7fScuZm9ybWF0KAogICAgICAgICAgICAgICAgIGNyaWdodCwgY2xlZnQpKQpAQCAtMjk2LDcgKzI5Nyw3IEBAIGRlZiBfc2VwYXJhYmxlKHRyYW5zZm9ybSk6CiAgICAgZWxpZiBpc2luc3RhbmNlKHRyYW5zZm9ybSwgQ29tcG91bmRNb2RlbCk6CiAgICAgICAgIHNlcGxlZnQgPSBfc2VwYXJhYmxlKHRyYW5zZm9ybS5sZWZ0KQogICAgICAgICBzZXByaWdodCA9IF9zZXBhcmFibGUodHJhbnNmb3JtLnJpZ2h0KQotICAgICAgICByZXR1cm4gX29wZXJhdG9yc1t0cmFuc2Zvcm0ub3BdKHNlcGxlZnQsIHNlcHJpZ2h0KQorICAgICAgICByZXR1cm4gX29wZXJhdG9yc1t0cmFuc2Zvcm0ub3BdKHNlcGxlZnQsIHNlcHJpZ2h0KSAgCiAgICAgZWxpZiBpc2luc3RhbmNlKHRyYW5zZm9ybSwgTW9kZWwpOgogICAgICAgICByZXR1cm4gX2Nvb3JkX21hdHJpeCh0cmFuc2Zvcm0sICdsZWZ0JywgdHJhbnNmb3JtLm5fb3V0cHV0cykKIApAQCAtMzE2LDcgKzMxNyw3IEBAIGRlZiBfY29vcmRfbWF0cml4KG1vZGVsLCBwb3MsIG5vdXRwKToKICAgICBpZiBtb2RlbC5zZXBhcmFibGU6CiAgICAgICAgIG1hdCA9IG5wLnplcm9zKChub3V0cCwgbW9kZWwubl9pbnB1dHMpKQogICAgICAgICBmb3IgaSBpbiByYW5nZShtb2RlbC5uX2lucHV0cyk6Ci0gICAgICAgICAgICBtYXRbaSwgaV0gPSAxCisgICAgICAgICAgICBtYXRbaSwgaV0gPSAxICAKICAgICAgICAgaWYgcG9zID09ICdyaWdodCc6CiAgICAgICAgICAgICBtYXQgPSBucC5yb2xsKG1hdCwgKG5vdXRwIC0gbW9kZWwubl9vdXRwdXRzKSkKICAgICByZXR1cm4gbWF0CkBAIC0zNDAsNyArMzQxLDcgQEAgZGVmIF9jc3RhY2sobGVmdCwgcmlnaHQpOgogICAgICAgICBjcmlnaHQgPSBfY29vcmRfbWF0cml4KHJpZ2h0LCAncmlnaHQnLCBub3V0cCkKICAgICBlbHNlOgogICAgICAgICBjcmlnaHQgPSBucC56ZXJvcygobm91dHAsIHJpZ2h0LnNoYXBlWzFdKSkKLSAgICAgICAgY3JpZ2h0Wy1yaWdodC5zaGFwZVswXTosIC1yaWdodC5zaGFwZVsxXTpdID0gMQorICAgICAgICBjcmlnaHRbLXJpZ2h0LnNoYXBlWzBdOiwgLXJpZ2h0LnNoYXBlWzFdOl0gPSByaWdodAogCiAgICAgcmV0dXJuIG5wLmhzdGFjayhbY2xlZnQsIGNyaWdodF0pCiAKQEAgLTM3NSw3ICszNzYsNyBAQCBkZWYgX2Nkb3QobGVmdCwgcmlnaHQpOgogICAgIHRyeToKICAgICAgICAgcmVzdWx0ID0gbnAuZG90KGNsZWZ0LCBjcmlnaHQpCiAgICAgZXhjZXB0IFZhbHVlRXJyb3I6Ci0gICAgICAgIHJhaXNlIE1vZGVsRGVmaW5pdGlvbkVycm9yKAorICAgICAgICByYWlzZSBNb2RlbERlZmluaXRpb25FcnJvciggIAogICAgICAgICAgICAgJ01vZGVscyBjYW5ub3QgYmUgY29tYmluZWQgd2l0aCB0aGUgInwiIG9wZXJhdG9yOyAnCiAgICAgICAgICAgICAnbGVmdCBjb29yZF9tYXRyaXggaXMge30sIHJpZ2h0IGNvb3JkX21hdHJpeCBpcyB7fScuZm9ybWF0KAogICAgICAgICAgICAgICAgIGNyaWdodCwgY2xlZnQpKQpAQCAtNDAzLDcgKzQwNCw3IEBAIGRlZiBfc2VwYXJhYmxlKHRyYW5zZm9ybSk6CiAgICAgZWxpZiBpc2luc3RhbmNlKHRyYW5zZm9ybSwgQ29tcG91bmRNb2RlbCk6CiAgICAgICAgIHNlcGxlZnQgPSBfc2VwYXJhYmxlKHRyYW5zZm9ybS5sZWZ0KQogICAgICAgICBzZXByaWdodCA9IF9zZXBhcmFibGUodHJhbnNmb3JtLnJpZ2h0KQotICAgICAgICByZXR1cm4gX29wZXJhdG9yc1t0cmFuc2Zvcm0ub3BdKHNlcGxlZnQsIHNlcHJpZ2h0KQorICAgICAgICByZXR1cm4gX29wZXJhdG9yc1t0cmFuc2Zvcm0ub3BdKHNlcGxlZnQsIHNlcHJpZ2h0KSAgCiAgICAgZWxpZiBpc2luc3RhbmNlKHRyYW5zZm9ybSwgTW9kZWwpOgogICAgICAgICByZXR1cm4gX2Nvb3JkX21hdHJpeCh0cmFuc2Zvcm0sICdsZWZ0JywgdHJhbnNmb3JtLm5fb3V0cHV0cykKIApAQCAtNDIzLDcgKzQyNCw3IEBAIGRlZiBfY29vcmRfbWF0cml4KG1vZGVsLCBwb3MsIG5vdXRwKToKICAgICBpZiBtb2RlbC5zZXBhcmFibGU6CiAgICAgICAgIG1hdCA9IG5wLnplcm9zKChub3V0cCwgbW9kZWwubl9pbnB1dHMpKQogICAgICAgICBmb3IgaSBpbiByYW5nZShtb2RlbC5uX2lucHV0cyk6Ci0gICAgICAgICAgICBtYXRbaSwgaV0gPSAxCisgICAgICAgICAgICBtYXRbaSwgaV0gPSAxICAKICAgICAgICAgaWYgcG9zID09ICdyaWdodCc6CiAgICAgICAgICAgICBtYXQgPSBucC5yb2xsKG1hdCwgKG5vdXRwIC0gbW9kZWwubl9vdXRwdXRzKSkKICAgICByZXR1cm4gbWF0CkBAIC00NDcsNyArNDQ4LDcgQEAgZGVmIF9jc3RhY2sobGVmdCwgcmlnaHQpOgogICAgICAgICBjcmlnaHQgPSBfY29vcmRfbWF0cml4KHJpZ2h0LCAncmlnaHQnLCBub3V0cCkKICAgICBlbHNlOgogICAgICAgICBjcmlnaHQgPSBucC56ZXJvcygobm91dHAsIHJpZ2h0LnNoYXBlWzFdKSkKLSAgICAgICAgY3JpZ2h0Wy1yaWdodC5zaGFwZVswXTosIC1yaWdodC5zaGFwZVsxXTpdID0gMQorICAgICAgICBjcmlnaHRbLXJpZ2h0LnNoYXBlWzBdOiwgLXJpZ2h0LnNoYXBlWzFdOl0gPSByaWdodAogCiAgICAgcmV0dXJuIG5wLmhzdGFjayhbY2xlZnQsIGNyaWdodF0pCiAKQEAgLTQ4Miw3ICs0ODMsNyBAQCBkZWYgX2Nkb3QobGVmdCwgcmlnaHQpOgogICAgIHRyeToKICAgICAgICAgcmVzdWx0ID0gbnAuZG90KGNsZWZ0LCBjcmlnaHQpCiAgICAgZXhjZXB0IFZhbHVlRXJyb3I6Ci0gICAgICAgIHJhaXNlIE1vZGVsRGVmaW5pdGlvbkVycm9yKAorICAgICAgICByYWlzZSBNb2RlbERlZmluaXRpb25FcnJvciggIAogICAgICAgICAgICAgJ01vZGVscyBjYW5ub3QgYmUgY29tYmluZWQgd2l0aCB0aGUgInwiIG9wZXJhdG9yOyAnCiAgICAgICAgICAgICAnbGVmdCBjb29yZF9tYXRyaXggaXMge30sIHJpZ2h0IGNvb3JkX21hdHJpeCBpcyB7fScuZm9ybWF0KAogICAgICAgICAgICAgICAgIGNyaWdodCwgY2xlZnQpKQpAQCAtNTEwLDcgKzUxMSw3IEBAIGRlZiBfc2VwYXJhYmxlKHRyYW5zZm9ybSk6CiAgICAgZWxpZiBpc2luc3RhbmNlKHRyYW5zZm9ybSwgQ29tcG91bmRNb2RlbCk6CiAgICAgICAgIHNlcGxlZnQgPSBfc2VwYXJhYmxlKHRyYW5zZm9ybS5sZWZ0KQogICAgICAgICBzZXByaWdodCA9IF9zZXBhcmFibGUodHJhbnNmb3JtLnJpZ2h0KQotICAgICAgICByZXR1cm4gX29wZXJhdG9yc1t0cmFuc2Zvcm0ub3BdKHNlcGxlZnQsIHNlcHJpZ2h0KQorICAgICAgICByZXR1cm4gX29wZXJhdG9yc1t0cmFuc2Zvcm0ub3BdKHNlcGxlZnQsIHNlcHJpZ2h0KSAgCiAgICAgZWxpZiBpc2luc3RhbmNlKHRyYW5zZm9ybSwgTW9kZWwpOgogICAgICAgICByZXR1cm4gX2Nvb3JkX21hdHJpeCh0cmFuc2Zvcm0sICdsZWZ0JywgdHJhbnNmb3JtLm5fb3V0cHV0cykKIApAQCAtNTMwLDcgKzUzMSw3IEBAIGRlZiBfY29vcmRfbWF0cml4KG1vZGVsLCBwb3MsIG5vdXRwKToKICAgICBpZiBtb2RlbC5zZXBhcmFibGU6CiAgICAgICAgIG1hdCA9IG5wLnplcm9zKChub3V0cCwgbW9kZWwubl9pbnB1dHMpKQogICAgICAgICBmb3IgaSBpbiByYW5nZShtb2RlbC5uX2lucHV0cyk6Ci0gICAgICAgICAgICBtYXRbaSwgaV0gPSAxCisgICAgICAgICAgICBtYXRbaSwgaV0gPSAxICAKICAgICAgICAgaWYgcG9zID09ICdyaWdodCc6CiAgICAgICAgICAgICBtYXQgPSBucC5yb2xsKG1hdCwgKG5vdXRwIC0gbW9kZWwubl9vdXRwdXRzKSkKICAgICByZXR1cm4gbWF0CkBAIC01NTQsNyArNTU1LDcgQEAgZGVmIF9jc3RhY2sobGVmdCwgcmlnaHQpOgogICAgICAgICBjcmlnaHQgPSBfY29vcmRfbWF0cml4KHJpZ2h0LCAncmlnaHQnLCBub3V0cCkKICAgICBlbHNlOgogICAgICAgICBjcmlnaHQgPSBucC56ZXJvcygobm91dHAsIHJpZ2h0LnNoYXBlWzFdKSkKLSAgICAgICAgY3JpZ2h0Wy1yaWdodC5zaGFwZVswXTosIC1yaWdodC5zaGFwZVsxXTpdID0gMQorICAgICAgICBjcmlnaHRbLXJpZ2h0LnNoYXBlWzBdOiwgLXJpZ2h0LnNoYXBlWzFdOl0gPSByaWdodAogCiAgICAgcmV0dXJuIG5wLmhzdGFjayhbY2xlZnQsIGNyaWdodF0pCiAKQEAgLTU4OSw3ICs1OTAsNyBAQCBkZWYgX2Nkb3QobGVmdCwgcmlnaHQpOgogICAgIHRyeToKICAgICAgICAgcmVzdWx0ID0gbnAuZG90KGNsZWZ0LCBjcmlnaHQpCiAgICAgZXhjZXB0IFZhbHVlRXJyb3I6Ci0gICAgICAgIHJhaXNlIE1vZGVsRGVmaW5pdGlvbkVycm9yKAorICAgICAgICByYWlzZSBNb2RlbERlZmluaXRpb25FcnJvciggIAogICAgICAgICAgICAgJ01vZGVscyBjYW5ub3QgYmUgY29tYmluZWQgd2l0aCB0aGUgInwiIG9wZXJhdG9yOyAnCiAgICAgICAgICAgICAnbGVmdCBjb29yZF9tYXRyaXggaXMge30sIHJpZ2h0IGNvb3JkX21hdHJpeCBpcyB7fScuZm9ybWF0KAogICAgICAgICAgICAgICAgIGNyaWdodCwgY2xlZnQpKQpAQCAtNjE3LDcgKzYxOCw3IEBAIGRlZiBfc2VwYXJhYmxlKHRyYW5zZm9ybSk6CiAgICAgZWxpZiBpc2luc3RhbmNlKHRyYW5zZm9ybSwgQ29tcG91bmRNb2RlbCk6CiAgICAgICAgIHNlcGxlZnQgPSBfc2VwYXJhYmxlKHRyYW5zZm9ybS5sZWZ0KQogICAgICAgICBzZXByaWdodCA9IF9zZXBhcmFibGUodHJhbnNmb3JtLnJpZ2h0KQotICAgICAgICByZXR1cm4gX29wZXJhdG9yc1t0cmFuc2Zvcm0ub3BdKHNlcGxlZnQsIHNlcHJpZ2h0KQorICAgICAgICByZXR1cm4gX29wZXJhdG9yc1t0cmFuc2Zvcm0ub3BdKHNlcGxlZnQsIHNlcHJpZ2h0KSAgCiAgICAgZWxpZiBpc2luc3RhbmNlKHRyYW5zZm9ybSwgTW9kZWwpOgogICAgICAgICByZXR1cm4gX2Nvb3JkX21hdHJpeCh0cmFuc2Zvcm0sICdsZWZ0JywgdHJhbnNmb3JtLm5fb3V0cHV0cykKIApAQCAtNjM3LDcgKzYzOCw3IEBAIGRlZiBfY29vcmRfbWF0cml4KG1vZGVsLCBwb3MsIG5vdXRwKToKICAgICBpZiBtb2RlbC5zZXBhcmFibGU6CiAgICAgICAgIG1hdCA9IG5wLnplcm9zKChub3V0cCwgbW9kZWwubl9pbnB1dHMpKQogICAgICAgICBmb3IgaSBpbiByYW5nZShtb2RlbC5uX2lucHV0cyk6Ci0gICAgICAgICAgICBtYXRbaSwgaV0gPSAxCisgICAgICAgICAgICBtYXRbaSwgaV0gPSAxICAKICAgICAgICAgaWYgcG9zID09ICdyaWdodCc6CiAgICAgICAgICAgICBtYXQgPSBucC5yb2xsKG1hdCwgKG5vdXRwIC0gbW9kZWwubl9vdXRwdXRzKSkKICAgICByZXR1cm4gbWF0CkBAIC02NjEsNyArNjYyLDcgQEAgZGVmIF9jc3RhY2sobGVmdCwgcmlnaHQpOgogICAgICAgICBjcmlnaHQgPSBfY29vcmRfbWF0cml4KHJpZ2h0LCAncmlnaHQnLCBub3V0cCkKICAgICBlbHNlOgogICAgICAgICBjcmlnaHQgPSBucC56ZXJvcygobm91dHAsIHJpZ2h0LnNoYXBlWzFdKSkKLSAgICAgICAgY3JpZ2h0Wy1yaWdodC5zaGFwZVswXTosIC1yaWdodC5zaGFwZVsxXTpdID0gMQorICAgICAgICBjcmlnaHRbLXJpZ2h0LnNoYXBlWzBdOiwgLXJpZ2h0LnNoYXBlWzFdOl0gPSByaWdodAogCiAgICAgcmV0dXJuIG5wLmhzdGFjayhbY2xlZnQsIGNyaWdodF0pCiAKQEAgLTY5Niw3ICs2OTcsNyBAQCBkZWYgX2Nkb3QobGVmdCwgcmlnaHQpOgogICAgIHRyeToKICAgICAgICAgcmVzdWx0ID0gbnAuZG90KGNsZWZ0LCBjcmlnaHQpCiAgICAgZXhjZXB0IFZhbHVlRXJyb3I6Ci0gICAgICAgIHJhaXNlIE1vZGVsRGVmaW5pdGlvbkVycm9yKAorICAgICAgICByYWlzZSBNb2RlbERlZmluaXRpb25FcnJvciggIAogICAgICAgICAgICAgJ01vZGVscyBjYW5ub3QgYmUgY29tYmluZWQgd2l0aCB0aGUgInwiIG9wZXJhdG9yOyAnCiAgICAgICAgICAgICAnbGVmdCBjb29yZF9tYXRyaXggaXMge30sIHJpZ2h0IGNvb3JkX21hdHJpeCBpcyB7fScuZm9ybWF0KAogICAgICAgICAgICAgICAgIGNyaWdodCwgY2xlZnQpKQpAQCAtNzI0LDcgKzcyNSw3IEBAIGRlZiBfc2VwYXJhYmxlKHRyYW5zZm9ybSk6CiAgICAgZWxpZiBpc2luc3RhbmNlKHRyYW5zZm9ybSwgQ29tcG91bmRNb2RlbCk6CiAgICAgICAgIHNlcGxlZnQgPSBfc2VwYXJhYmxlKHRyYW5zZm9ybS5sZWZ0KQogICAgICAgICBzZXByaWdodCA9IF9zZXBhcmFibGUodHJhbnNmb3JtLnJpZ2h0KQotICAgICAgICByZXR1cm4gX29wZXJhdG9yc1t0cmFuc2Zvcm0ub3BdKHNlcGxlZnQsIHNlcHJpZ2h0KQorICAgICAgICByZXR1cm4gX29wZXJhdG9yc1t0cmFuc2Zvcm0ub3BdKHNlcGxlZnQsIHNlcHJpZ2h0KSAgCiAgICAgZWxpZiBpc2luc3RhbmNlKHRyYW5zZm9ybSwgTW9kZWwpOgogICAgICAgICByZXR1cm4gX2Nvb3JkX21hdHJpeCh0cmFuc2Zvcm0sICdsZWZ0JywgdHJhbnNmb3JtLm5fb3V0cHV0cykKIApAQCAtNzQ0LDcgKzc0NSw3IEBAIGRlZiBfY29vcmRfbWF0cml4KG1vZGVsLCBwb3MsIG5vdXRwKToKICAgICBpZiBtb2RlbC5zZXBhcmFibGU6CiAgICAgICAgIG1hdCA9IG5wLnplcm9zKChub3V0cCwgbW9kZWwubl9pbnB1dHMpKQogICAgICAgICBmb3IgaSBpbiByYW5nZShtb2RlbC5uX2lucHV0cyk6Ci0gICAgICAgICAgICBtYXRbaSwgaV0gPSAxCisgICAgICAgICAgICBtYXRbaSwgaV0gPSAxICAKICAgICAgICAgaWYgcG9zID09ICdyaWdodCc6CiAgICAgICAgICAgICBtYXQgPSBucC5yb2xsKG1hdCwgKG5vdXRwIC0gbW9kZWwubl9vdXRwdXRzKSkKICAgICByZXR1cm4gbWF0CkBAIC03NjgsNyArNzY5LDcgQEAgZGVmIF9jc3RhY2sobGVmdCwgcmlnaHQpOgogICAgICAgICBjcmlnaHQgPSBfY29vcmRfbWF0cml4KHJpZ2h0LCAncmlnaHQnLCBub3V0cCkKICAgICBlbHNlOgogICAgICAgICBjcmlnaHQgPSBucC56ZXJvcygobm91dHAsIHJpZ2h0LnNoYXBlWzFdKSkKLSAgICAgICAgY3JpZ2h0Wy1yaWdodC5zaGFwZVswXTosIC1yaWdodC5zaGFwZVsxXTpdID0gMQorICAgICAgICBjcmlnaHRbLXJpZ2h0LnNoYXBlWzBdOiwgLXJpZ2h0LnNoYXBlWzFdOl0gPSByaWdodAogCiAgICAgcmV0dXJuIG5wLmhzdGFjayhbY2xlZnQsIGNyaWdodF0pCiAKQEAgLTgwMyw3ICs4MDQsNyBAQCBkZWYgX2Nkb3QobGVmdCwgcmlnaHQpOgogICAgIHRyeToKICAgICAgICAgcmVzdWx0ID0gbnAuZG90KGNsZWZ0LCBjcmlnaHQpCiAgICAgZXhjZXB0IFZhbHVlRXJyb3I6Ci0gICAgICAgIHJhaXNlIE1vZGVsRGVmaW5pdGlvbkVycm9yKAorICAgICAgICByYWlzZSBNb2RlbERlZmluaXRpb25FcnJvciggIAogICAgICAgICAgICAgJ01vZGVscyBjYW5ub3QgYmUgY29tYmluZWQgd2l0aCB0aGUgInwiIG9wZXJhdG9yOyAnCiAgICAgICAgICAgICAnbGVmdCBjb29yZF9tYXRyaXggaXMge30sIHJpZ2h0IGNvb3JkX21hdHJpeCBpcyB7fScuZm9ybWF0KAogICAgICAgICAgICAgICAgIGNyaWdodCwgY2xlZnQpKQpAQCAtODMxLDcgKzgzMiw3IEBAIGRlZiBfc2VwYXJhYmxlKHRyYW5zZm9ybSk6CiAgICAgZWxpZiBpc2luc3RhbmNlKHRyYW5zZm9ybSwgQ29tcG91bmRNb2RlbCk6CiAgICAgICAgIHNlcGxlZnQgPSBfc2VwYXJhYmxlKHRyYW5zZm9ybS5sZWZ0KQogICAgICAgICBzZXByaWdodCA9IF9zZXBhcmFibGUodHJhbnNmb3JtLnJpZ2h0KQotICAgICAgICByZXR1cm4gX29wZXJhdG9yc1t0cmFuc2Zvcm0ub3BdKHNlcGxlZnQsIHNlcHJpZ2h0KQorICAgICAgICByZXR1cm4gX29wZXJhdG9yc1t0cmFuc2Zvcm0ub3BdKHNlcGxlZnQsIHNlcHJpZ2h0KSAgCiAgICAgZWxpZiBpc2luc3RhbmNlKHRyYW5zZm9ybSwgTW9kZWwpOgogICAgICAgICByZXR1cm4gX2Nvb3JkX21hdHJpeCh0cmFuc2Zvcm0sICdsZWZ0JywgdHJhbnNmb3JtLm5fb3V0cHV0cykKIApAQCAtODUxLDcgKzg1Miw3IEBAIGRlZiBfY29vcmRfbWF0cml4KG1vZGVsLCBwb3MsIG5vdXRwKToKICAgICBpZiBtb2RlbC5zZXBhcmFibGU6CiAgICAgICAgIG1hdCA9IG5wLnplcm9zKChub3V0cCwgbW9kZWwubl9pbnB1dHMpKQogICAgICAgICBmb3IgaSBpbiByYW5nZShtb2RlbC5uX2lucHV0cyk6Ci0gICAgICAgICAgICBtYXRbaSwgaV0gPSAxCisgICAgICAgICAgICBtYXRbaSwgaV0gPSAxICAKICAgICAgICAgaWYgcG9zID09ICdyaWdodCc6CiAgICAgICAgICAgICBtYXQgPSBucC5yb2xsKG1hdCwgKG5vdXRwIC0gbW9kZWwubl9vdXRwdXRzKSkKICAgICByZXR1cm4gbWF0CkBAIC04NzUsNyArODc2LDcgQEAgZGVmIF9jc3RhY2sobGVmdCwgcmlnaHQpOgogICAgICAgICBjcmlnaHQgPSBfY29vcmRfbWF0cml4KHJpZ2h0LCAncmlnaHQnLCBub3V0cCkKICAgICBlbHNlOgogICAgICAgICBjcmlnaHQgPSBucC56ZXJvcygobm91dHAsIHJpZ2h0LnNoYXBlWzFdKSkKLSAgICAgICAgY3JpZ2h0Wy1yaWdodC5zaGFwZVswXTosIC1yaWdodC5zaGFwZVsxXTpdID0gMQorICAgICAgICBjcmlnaHRbLXJpZ2h0LnNoYXBlWzBdOiwgLXJpZ2h0LnNoYXBlWzFdOl0gPSByaWdodAogCiAgICAgcmV0dXJuIG5wLmhzdGFjayhbY2xlZnQsIGNyaWdodF0pCiAKQEAgLTkxMCw3ICs5MTEsNyBAQCBkZWYgX2Nkb3QobGVmdCwgcmlnaHQpOgogICAgIHRyeToKICAgICAgICAgcmVzdWx0ID0gbnAuZG90KGNsZWZ0LCBjcmlnaHQpCiAgICAgZXhjZXB0IFZhbHVlRXJyb3I6Ci0gICAgICAgIHJhaXNlIE1vZGVsRGVmaW5pdGlvbkVycm9yKAorICAgICAgICByYWlzZSBNb2RlbERlZmluaXRpb25FcnJvciggIAogICAgICAgICAgICAgJ01vZGVscyBjYW5ub3QgYmUgY29tYmluZWQgd2l0aCB0aGUgInwiIG9wZXJhdG9yOyAnCiAgICAgICAgICAgICAnbGVmdCBjb29yZF9tYXRyaXggaXMge30sIHJpZ2h0IGNvb3JkX21hdHJpeCBpcyB7fScuZm9ybWF0KAogICAgICAgICAgICAgICAgIGNyaWdodCwgY2xlZnQpKQpAQCAtOTM4LDcgKzkzOSw3IEBAIGRlZiBfc2VwYXJhYmxlKHRyYW5zZm9ybSk6CiAgICAgZWxpZiBpc2luc3RhbmNlKHRyYW5zZm9ybSwgQ29tcG91bmRNb2RlbCk6CiAgICAgICAgIHNlcGxlZnQgPSBfc2VwYXJhYmxlKHRyYW5zZm9ybS5sZWZ0KQogICAgICAgICBzZXByaWdodCA9IF9zZXBhcmFibGUodHJhbnNmb3JtLnJpZ2h0KQotICAgICAgICByZXR1cm4gX29wZXJhdG9yc1t0cmFuc2Zvcm0ub3BdKHNlcGxlZnQsIHNlcHJpZ2h0KQorICAgICAgICByZXR1cm4gX29wZXJhdG9yc1t0cmFuc2Zvcm0ub3BdKHNlcGxlZnQsIHNlcHJpZ2h0KSAgCiAgICAgZWxpZiBpc2luc3RhbmNlKHRyYW5zZm9ybSwgTW9kZWwpOgogICAgICAgICByZXR1cm4gX2Nvb3JkX21hdHJpeCh0cmFuc2Zvcm0sICdsZWZ0JywgdHJhbnNmb3JtLm5fb3V0cHV0cykKIApAQCAtOTU4LDcgKzk1OSw3IEBAIGRlZiBfY29vcmRfbWF0cml4KG1vZGVsLCBwb3MsIG5vdXRwKToKICAgICBpZiBtb2RlbC5zZXBhcmFibGU6CiAgICAgICAgIG1hdCA9IG5wLnplcm9zKChub3V0cCwgbW9kZWwubl9pbnB1dHMpKQogICAgICAgICBmb3IgaSBpbiByYW5nZShtb2RlbC5uX2lucHV0cyk6Ci0gICAgICAgICAgICBtYXRbaSwgaV0gPSAxCisgICAgICAgICAgICBtYXRbaSwgaV0gPSAxICAKICAgICAgICAgaWYgcG9zID09ICdyaWdodCc6CiAgICAgICAgICAgICBtYXQgPSBucC5yb2xsKG1hdCwgKG5vdXRwIC0gbW9kZWwubl9vdXRwdXRzKSkKICAgICByZXR1cm4gbWF0CkBAIC05ODIsNyArOTgzLDcgQEAgZGVmIF9jc3RhY2sobGVmdCwgcmlnaHQpOgogICAgICAgICBjcmlnaHQgPSBfY29vcmRfbWF0cml4KHJpZ2h0LCAncmlnaHQnLCBub3V0cCkKICAgICBlbHNlOgogICAgICAgICBjcmlnaHQgPSBucC56ZXJvcygobm91dHAsIHJpZ2h0LnNoYXBlWzFdKSkKLSAgICAgICAgY3JpZ2h0Wy1yaWdodC5zaGFwZVswXTosIC1yaWdodC5zaGFwZVsxXTpdID0gMQorICAgICAgICBjcmlnaHRbLXJpZ2h0LnNoYXBlWzBdOiwgLXJpZ2h0LnNoYXBlWzFdOl0gPSByaWdodAogCiAgICAgcmV0dXJuIG5wLmhzdGFjayhbY2xlZnQsIGNyaWdodF0pCiAKQEAgLTEwMTcsNyArMTAxOCw3IEBAIGRlZiBfY2RvdChsZWZ0LCByaWdodCk6CiAgICAgdHJ5OgogICAgICAgICByZXN1bHQgPSBucC5kb3QoY2xlZnQsIGNyaWdodCkKICAgICBleGNlcHQgVmFsdWVFcnJvcjoKLSAgICAgICAgcmFpc2UgTW9kZWxEZWZpbml0aW9uRXJyb3IoCisgICAgICAgIHJhaXNlIE1vZGVsRGVmaW5pdGlvbkVycm9yKCAgCiAgICAgICAgICAgICAnTW9kZWxzIGNhbm5vdCBiZSBjb21iaW5lZCB3aXRoIHRoZSAifCIgb3BlcmF0b3I7ICcKICAgICAgICAgICAgICdsZWZ0IGNvb3JkX21hdHJpeCBpcyB7fSwgcmlnaHQgY29vcmRfbWF0cml4IGlzIHt9Jy5mb3JtYXQoCiAgICAgICAgICAgICAgICAgY3JpZ2h0LCBjbGVmdCkpCkBAIC0xMDQ1LDcgKzEwNDYsNyBAQCBkZWYgX3NlcGFyYWJsZSh0cmFuc2Zvcm0pOgogICAgIGVsaWYgaXNpbnN0YW5jZSh0cmFuc2Zvcm0sIENvbXBvdW5kTW9kZWwpOgogICAgICAgICBzZXBsZWZ0ID0gX3NlcGFyYWJsZSh0cmFuc2Zvcm0ubGVmdCkKICAgICAgICAgc2VwcmlnaHQgPSBfc2VwYXJhYmxlKHRyYW5zZm9ybS5yaWdodCkKLSAgICAgICAgcmV0dXJuIF9vcGVyYXRvcnNbdHJhbnNmb3JtLm9wXShzZXBsZWZ0LCBzZXByaWdodCkKKyAgICAgICAgcmV0dXJuIF9vcGVyYXRvcnNbdHJhbnNmb3JtLm9wXShzZXBsZWZ0LCBzZXByaWdodCkgIAogICAgIGVsaWYgaXNpbnN0YW5jZSh0cmFuc2Zvcm0sIE1vZGVsKToKICAgICAgICAgcmV0dXJuIF9jb29yZF9tYXRyaXgodHJhbnNmb3JtLCAnbGVmdCcsIHRyYW5zZm9ybS5uX291dHB1dHMpCiAKQEAgLTEwNjUsNyArMTA2Niw3IEBAIGRlZiBfY29vcmRfbWF0cml4KG1vZGVsLCBwb3MsIG5vdXRwKToKICAgICBpZiBtb2RlbC5zZXBhcmFibGU6CiAgICAgICAgIG1hdCA9IG5wLnplcm9zKChub3V0cCwgbW9kZWwubl9pbnB1dHMpKQogICAgICAgICBmb3IgaSBpbiByYW5nZShtb2RlbC5uX2lucHV0cyk6Ci0gICAgICAgICAgICBtYXRbaSwgaV0gPSAxCisgICAgICAgICAgICBtYXRbaSwgaV0gPSAxICAKICAgICAgICAgaWYgcG9zID09ICdyaWdodCc6CiAgICAgICAgICAgICBtYXQgPSBucC5yb2xsKG1hdCwgKG5vdXRwIC0gbW9kZWwubl9vdXRwdXRzKSkKICAgICByZXR1cm4gbWF0CkBAIC0xMDg5LDcgKzEwOTAsNyBAQCBkZWYgX2NzdGFjayhsZWZ0LCByaWdodCk6CiAgICAgICAgIGNyaWdodCA9IF9jb29yZF9tYXRyaXgocmlnaHQsICdyaWdodCcsIG5vdXRwKQogICAgIGVsc2U6CiAgICAgICAgIGNyaWdodCA9IG5wLnplcm9zKChub3V0cCwgcmlnaHQuc2hhcGVbMV0pKQotICAgICAgICBjcmlnaHRbLXJpZ2h0LnNoYXBlWzBdOiwgLXJpZ2h0LnNoYXBlWzFdOl0gPSAxCisgICAgICAgIGNyaWdodFstcmlnaHQuc2hhcGVbMF06LCAtcmlnaHQuc2hhcGVbMV06XSA9IHJpZ2h0CiAKICAgICByZXR1cm4gbnAuaHN0YWNrKFtjbGVmdCwgY3JpZ2h0XSkKIApAQCAtMTEyNCw3ICsxMTI1LDcgQEAgZGVmIF9jZG90KGxlZnQsIHJpZ2h0KToKICAgICB0cnk6CiAgICAgICAgIHJlc3VsdCA9IG5wLmRvdChjbGVmdCwgY3JpZ2h0KQogICAgIGV4Y2VwdCBWYWx1ZUVycm9yOgotICAgICAgICByYWlzZSBNb2RlbERlZmluaXRpb25FcnJvcigKKyAgICAgICAgcmFpc2UgTW9kZWxEZWZpbml0aW9uRXJyb3IoICAKICAgICAgICAgICAgICdNb2RlbHMgY2Fubm90IGJlIGNvbWJpbmVkIHdpdGggdGhlICJ8IiBvcGVyYXRvcjsgJwogICAgICAgICAgICAgJ2xlZnQgY29vcmRfbWF0cml4IGlzIHt9LCByaWdodCBjb29yZF9tYXRyaXggaXMge30nLmZvcm1hdCgKICAgICAgICAgICAgICAgICBjcmlnaHQsIGNsZWZ0KSkKQEAgLTExNTIsNyArMTE1Myw3IEBAIGRlZiBfc2VwYXJhYmxlKHRyYW5zZm9ybSk6CiAgICAgZWxpZiBpc2luc3RhbmNlKHRyYW5zZm9ybSwgQ29tcG91bmRNb2RlbCk6CiAgICAgICAgIHNlcGxlZnQgPSBfc2VwYXJhYmxlKHRyYW5zZm9ybS5sZWZ0KQogICAgICAgICBzZXByaWdodCA9IF9zZXBhcmFibGUodHJhbnNmb3JtLnJpZ2h0KQotICAgICAgICByZXR1cm4gX29wZXJhdG9yc1t0cmFuc2Zvcm0ub3BdKHNlcGxlZnQsIHNlcHJpZ2h0KQorICAgICAgICByZXR1cm4gX29wZXJhdG9yc1t0cmFuc2Zvcm0ub3BdKHNlcGxlZnQsIHNlcHJpZ2h0KSAgCiAgICAgZWxpZiBpc2luc3RhbmNlKHRyYW5zZm9ybSwgTW9kZWwpOgogICAgICAgICByZXR1cm4gX2Nvb3JkX21hdHJpeCh0cmFuc2Zvcm0sICdsZWZ0JywgdHJhbnNmb3JtLm5fb3V0cHV0cykKIApAQCAtMTE3Miw3ICsxMTczLDcgQEAgZGVmIF9jb29yZF9tYXRyaXgobW9kZWwsIHBvcywgbm91dHApOgogICAgIGlmIG1vZGVsLnNlcGFyYWJsZToKICAgICAgICAgbWF0ID0gbnAuemVyb3MoKG5vdXRwLCBtb2RlbC5uX2lucHV0cykpCiAgICAgICAgIGZvciBpIGluIHJhbmdlKG1vZGVsLm5faW5wdXRzKToKLSAgICAgICAgICAgIG1hdFtpLCBpXSA9IDEKKyAgICAgICAgICAgIG1hdFtpLCBpXSA9IDEgIAogICAgICAgICBpZiBwb3MgPT0gJ3JpZ2h0JzoKICAgICAgICAgICAgIG1hdCA9IG5wLnJvbGwobWF0LCAobm91dHAgLSBtb2RlbC5uX291dHB1dHMpKQogICAgIHJldHVybiBtYXQKQEAgLTExOTYsNyArMTE5Nyw3IEBAIGRlZiBfY3N0YWNrKGxlZnQsIHJpZ2h0KToKICAgICAgICAgY3JpZ2h0ID0gX2Nvb3JkX21hdHJpeChyaWdodCwgJ3JpZ2h0Jywgbm91dHApCiAgICAgZWxzZToKICAgICAgICAgY3JpZ2h0ID0gbnAuemVyb3MoKG5vdXRwLCByaWdodC5zaGFwZVsxXSkpCi0gICAgICAgIGNyaWdodFstcmlnaHQuc2hhcGVbMF06LCAtcmlnaHQuc2hhcGVbMV06XSA9IDEKKyAgICAgICAgY3JpZ2h0Wy1yaWdodC5zaGFwZVswXTosIC1yaWdodC5zaGFwZVsxXTpdID0gcmlnaHQKIAogICAgIHJldHVybiBucC5oc3RhY2soW2NsZWZ0LCBjcmlnaHRdKQogCkBAIC0xMjMxLDcgKzEyMzIsNyBAQCBkZWYgX2Nkb3QobGVmdCwgcmlnaHQpOgogICAgIHRyeToKICAgICAgICAgcmVzdWx0ID0gbnAuZG90KGNsZWZ0LCBjcmlnaHQpCiAgICAgZXhjZXB0IFZhbHVlRXJyb3I6Ci0gICAgICAgIHJhaXNlIE1vZGVsRGVmaW5pdGlvbkVycm9yKAorICAgICAgICByYWlzZSBNb2RlbERlZmluaXRpb25FcnJvciggIAogICAgICAgICAgICAgJ01vZGVscyBjYW5ub3QgYmUgY29tYmluZWQgd2l0aCB0aGUgInwiIG9wZXJhdG9yOyAnCiAgICAgICAgICAgICAnbGVmdCBjb29yZF9tYXRyaXggaXMge30sIHJpZ2h0IGNvb3JkX21hdHJpeCBpcyB7fScuZm9ybWF0KAogICAgICAgICAgICAgICAgIGNyaWdodCwgY2xlZnQpKQpAQCAtMTI1OSw3ICsxMjYwLDcgQEAgZGVmIF9zZXBhcmFibGUodHJhbnNmb3JtKToKICAgICBlbGlmIGlzaW5zdGFuY2UodHJhbnNmb3JtLCBDb21wb3VuZE1vZGVsKToKICAgICAgICAgc2VwbGVmdCA9IF9zZXBhcmFibGUodHJhbnNmb3JtLmxlZnQpCiAgICAgICAgIHNlcHJpZ2h0ID0gX3NlcGFyYWJsZSh0cmFuc2Zvcm0ucmlnaHQpCi0gICAgICAgIHJldHVybiBfb3BlcmF0b3JzW3RyYW5zZm9ybS5vcF0oc2VwbGVmdCwgc2VwcmlnaHQpCisgICAgICAgIHJldHVybiBfb3BlcmF0b3JzW3RyYW5zZm9ybS5vcF0oc2VwbGVmdCwgc2VwcmlnaHQpICAKICAgICBlbGlmIGlzaW5zdGFuY2UodHJhbnNmb3JtLCBNb2RlbCk6CiAgICAgICAgIHJldHVybiBfY29vcmRfbWF0cml4KHRyYW5zZm9ybSwgJ2xlZnQnLCB0cmFuc2Zvcm0ubl9vdXRwdXRzKQogCkBAIC0xMjc5LDcgKzEyODAsNyBAQCBkZWYgX2Nvb3JkX21hdHJpeChtb2RlbCwgcG9zLCBub3V0cCk6CiAgICAgaWYgbW9kZWwuc2VwYXJhYmxlOgogICAgICAgICBtYXQgPSBucC56ZXJvcygobm91dHAsIG1vZGVsLm5faW5wdXRzKSkKICAgICAgICAgZm9yIGkgaW4gcmFuZ2UobW9kZWwubl9pbnB1dHMpOgotICAgICAgICAgICAgbWF0W2ksIGldID0gMQorICAgICAgICAgICAgbWF0W2ksIGldID0gMSAgCiAgICAgICAgIGlmIHBvcyA9PSAncmlnaHQnOgogICAgICAgICAgICAgbWF0ID0gbnAucm9sbChtYXQsIChub3V0cCAtIG1vZGVsLm5fb3V0cHV0cykpCiAgICAgcmV0dXJuIG1hdApAQCAtMTMwMyw3ICsxMzA0LDcgQEAgZGVmIF9jc3RhY2sobGVmdCwgcmlnaHQpOgogICAgICAgICBjcmlnaHQgPSBfY29vcmRfbWF0cml4KHJpZ2h0LCAncmlnaHQnLCBub3V0cCkKICAgICBlbHNlOgogICAgICAgICBjcmlnaHQgPSBucC56ZXJvcygobm91dHAsIHJpZ2h0LnNoYXBlWzFdKSkKLSAgICAgICAgY3JpZ2h0Wy1yaWdodC5zaGFwZVswXTosIC1yaWdodC5zaGFwZVsxXTpdID0gMQorICAgICAgICBjcmlnaHRbLXJpZ2h0LnNoYXBlWzBdOiwgLXJpZ2h0LnNoYXBlWzFdOl0gPSByaWdodAogCiAgICAgcmV0dXJuIG5wLmhzdGFjayhbY2xlZnQsIGNyaWdodF0pCiAKQEAgLTEzMzgsNyArMTMzOSw3IEBAIGRlZiBfY2RvdChsZWZ0LCByaWdodCk6CiAgICAgdHJ5OgogICAgICAgICByZXN1bHQgPSBucC5kb3QoY2xlZnQsIGNyaWdodCkKICAgICBleGNlcHQgVmFsdWVFcnJvcjoKLSAgICAgICAgcmFpc2UgTW9kZWxEZWZpbml0aW9uRXJyb3IoCisgICAgICAgIHJhaXNlIE1vZGVsRGVmaW5pdGlvbkVycm9yKCAgCiAgICAgICAgICAgICAnTW9kZWxzIGNhbm5vdCBiZSBjb21iaW5lZCB3aXRoIHRoZSAifCIgb3BlcmF0b3I7ICcKICAgICAgICAgICAgICdsZWZ0IGNvb3JkX21hdHJpeCBpcyB7fSwgcmlnaHQgY29vcmRfbWF0cml4IGlzIHt9Jy5mb3JtYXQoCiAgICAgICAgICAgICAgICAgY3JpZ2h0LCBjbGVmdCkpCkBAIC0xMzY2LDcgKzEzNjcsNyBAQCBkZWYgX3NlcGFyYWJsZSh0cmFuc2Zvcm0pOgogICAgIGVsaWYgaXNpbnN0YW5jZSh0cmFuc2Zvcm0sIENvbXBvdW5kTW9kZWwpOgogICAgICAgICBzZXBsZWZ0ID0gX3NlcGFyYWJsZSh0cmFuc2Zvcm0ubGVmdCkKICAgICAgICAgc2VwcmlnaHQgPSBfc2VwYXJhYmxlKHRyYW5zZm9ybS5yaWdodCkKLSAgICAgICAgcmV0dXJuIF9vcGVyYXRvcnNbdHJhbnNmb3JtLm9wXShzZXBsZWZ0LCBzZXByaWdodCkKKyAgICAgICAgcmV0dXJuIF9vcGVyYXRvcnNbdHJhbnNmb3JtLm9wXShzZXBsZWZ0LCBzZXByaWdodCkgIAogICAgIGVsaWYgaXNpbnN0YW5jZSh0cmFuc2Zvcm0sIE1vZGVsKToKICAgICAgICAgcmV0dXJuIF9jb29yZF9tYXRyaXgodHJhbnNmb3JtLCAnbGVmdCcsIHRyYW5zZm9ybS5uX291dHB1dHMpCiAKQEAgLTEzODYsNyArMTM4Nyw3IEBAIGRlZiBfY29vcmRfbWF0cml4KG1vZGVsLCBwb3MsIG5vdXRwKToKICAgICBpZiBtb2RlbC5zZXBhcmFibGU6CiAgICAgICAgIG1hdCA9IG5wLnplcm9zKChub3V0cCwgbW9kZWwubl9pbnB1dHMpKQogICAgICAgICBmb3IgaSBpbiByYW5nZShtb2RlbC5uX2lucHV0cyk6Ci0gICAgICAgICAgICBtYXRbaSwgaV0gPSAxCisgICAgICAgICAgICBtYXRbaSwgaV0gPSAxICAKICAgICAgICAgaWYgcG9zID09ICdyaWdodCc6CiAgICAgICAgICAgICBtYXQgPSBucC5yb2xsKG1hdCwgKG5vdXRwIC0gbW9kZWwubl9vdXRwdXRzKSkKICAgICByZXR1cm4gbWF0CkBAIC0xNDEwLDcgKzE0MTEsNyBAQCBkZWYgX2NzdGFjayhsZWZ0LCByaWdodCk6CiAgICAgICAgIGNyaWdodCA9IF9jb29yZF9tYXRyaXgocmlnaHQsICdyaWdodCcsIG5vdXRwKQogICAgIGVsc2U6CiAgICAgICAgIGNyaWdodCA9IG5wLnplcm9zKChub3V0cCwgcmlnaHQuc2hhcGVbMV0pKQotICAgICAgICBjcmlnaHRbLXJpZ2h0LnNoYXBlWzBdOiwgLXJpZ2h0LnNoYXBlWzFdOl0gPSAxCisgICAgICAgIGNyaWdodFstcmlnaHQuc2hhcGVbMF06LCAtcmlnaHQuc2hhcGVbMV06XSA9IHJpZ2h0CiAKICAgICByZXR1cm4gbnAuaHN0YWNrKFtjbGVmdCwgY3JpZ2h0XSkKIApAQCAtMTQ0NSw3ICsxNDQ2LDcgQEAgZGVmIF9jZG90KGxlZnQsIHJpZ2h0KToKICAgICB0cnk6CiAgICAgICAgIHJlc3VsdCA9IG5wLmRvdChjbGVmdCwgY3JpZ2h0KQogICAgIGV4Y2VwdCBWYWx1ZUVycm9yOgotICAgICAgICByYWlzZSBNb2RlbERlZmluaXRpb25FcnJvcigKKyAgICAgICAgcmFpc2UgTW9kZWxEZWZpbml0aW9uRXJyb3IoICAKICAgICAgICAgICAgICdNb2RlbHMgY2Fubm90IGJlIGNvbWJpbmVkIHdpdGggdGhlICJ8IiBvcGVyYXRvcjsgJwogICAgICAgICAgICAgJ2xlZnQgY29vcmRfbWF0cml4IGlzIHt9LCByaWdodCBjb29yZF9tYXRyaXggaXMge30nLmZvcm1hdCgKICAgICAgICAgICAgICAgICBjcmlnaHQsIGNsZWZ0KSkKQEAgLTE0NzMsNyArMTQ3NCw3IEBAIGRlZiBfc2VwYXJhYmxlKHRyYW5zZm9ybSk6CiAgICAgZWxpZiBpc2luc3RhbmNlKHRyYW5zZm9ybSwgQ29tcG91bmRNb2RlbCk6CiAgICAgICAgIHNlcGxlZnQgPSBfc2VwYXJhYmxlKHRyYW5zZm9ybS5sZWZ0KQogICAgICAgICBzZXByaWdodCA9IF9zZXBhcmFibGUodHJhbnNmb3JtLnJpZ2h0KQotICAgICAgICByZXR1cm4gX29wZXJhdG9yc1t0cmFuc2Zvcm0ub3BdKHNlcGxlZnQsIHNlcHJpZ2h0KQorICAgICAgICByZXR1cm4gX29wZXJhdG9yc1t0cmFuc2Zvcm0ub3BdKHNlcGxlZnQsIHNlcHJpZ2h0KSAgCiAgICAgZWxpZiBpc2luc3RhbmNlKHRyYW5zZm9ybSwgTW9kZWwpOgogICAgICAgICByZXR1cm4gX2Nvb3JkX21hdHJpeCh0cmFuc2Zvcm0sICdsZWZ0JywgdHJhbnNmb3JtLm5fb3V0cHV0cykKIApAQCAtMTQ5Myw3ICsxNDk0LDcgQEAgZGVmIF9jb29yZF9tYXRyaXgobW9kZWwsIHBvcywgbm91dHApOgogICAgIGlmIG1vZGVsLnNlcGFyYWJsZToKICAgICAgICAgbWF0ID0gbnAuemVyb3MoKG5vdXRwLCBtb2RlbC5uX2lucHV0cykpCiAgICAgICAgIGZvciBpIGluIHJhbmdlKG1vZGVsLm5faW5wdXRzKToKLSAgICAgICAgICAgIG1hdFtpLCBpXSA9IDEKKyAgICAgICAgICAgIG1hdFtpLCBpXSA9IDEgIAogICAgICAgICBpZiBwb3MgPT0gJ3JpZ2h0JzoKICAgICAgICAgICAgIG1hdCA9IG5wLnJvbGwobWF0LCAobm91dHAgLSBtb2RlbC5uX291dHB1dHMpKQogICAgIHJldHVybiBtYXQKQEAgLTE1MTcsNyArMTUxOCw3IEBAIGRlZiBfY3N0YWNrKGxlZnQsIHJpZ2h0KToKICAgICAgICAgY3JpZ2h0ID0gX2Nvb3JkX21hdHJpeChyaWdodCwgJ3JpZ2h0Jywgbm91dHApCiAgICAgZWxzZToKICAgICAgICAgY3JpZ2h0ID0gbnAuemVyb3MoKG5vdXRwLCByaWdodC5zaGFwZVsxXSkpCi0gICAgICAgIGNyaWdodFstcmlnaHQuc2hhcGVbMF06LCAtcmlnaHQuc2hhcGVbMV06XSA9IDEKKyAgICAgICAgY3JpZ2h0Wy1yaWdodC5zaGFwZVswXTosIC1yaWdodC5zaGFwZVsxXTpdID0gcmlnaHQKIAogICAgIHJldHVybiBucC5oc3RhY2soW2NsZWZ0LCBjcmlnaHRdKQogCkBAIC0xNTUyLDcgKzE1NTMsNyBAQCBkZWYgX2Nkb3QobGVmdCwgcmlnaHQpOgogICAgIHRyeToKICAgICAgICAgcmVzdWx0ID0gbnAuZG90KGNsZWZ0LCBjcmlnaHQpCiAgICAgZXhjZXB0IFZhbHVlRXJyb3I6Ci0gICAgICAgIHJhaXNlIE1vZGVsRGVmaW5pdGlvbkVycm9yKAorICAgICAgICByYWlzZSBNb2RlbERlZmluaXRpb25FcnJvciggIAogICAgICAgICAgICAgJ01vZGVscyBjYW5ub3QgYmUgY29tYmluZWQgd2l0aCB0aGUgInwiIG9wZXJhdG9yOyAnCiAgICAgICAgICAgICAnbGVmdCBjb29yZF9tYXRyaXggaXMge30sIHJpZ2h0IGNvb3JkX21hdHJpeCBpcyB7fScuZm9ybWF0KAogICAgICAgICAgICAgICAgIGNyaWdodCwgY2xlZnQpKQpAQCAtMTU4MCw3ICsxNTgxLDcgQEAgZGVmIF9zZXBhcmFibGUodHJhbnNmb3JtKToKICAgICBlbGlmIGlzaW5zdGFuY2UodHJhbnNmb3JtLCBDb21wb3VuZE1vZGVsKToKICAgICAgICAgc2VwbGVmdCA9IF9zZXBhcmFibGUodHJhbnNmb3JtLmxlZnQpCiAgICAgICAgIHNlcHJpZ2h0ID0gX3NlcGFyYWJsZSh0cmFuc2Zvcm0ucmlnaHQpCi0gICAgICAgIHJldHVybiBfb3BlcmF0b3JzW3RyYW5zZm9ybS5vcF0oc2VwbGVmdCwgc2VwcmlnaHQpCisgICAgICAgIHJldHVybiBfb3BlcmF0b3JzW3RyYW5zZm9ybS5vcF0oc2VwbGVmdCwgc2VwcmlnaHQpICAKICAgICBlbGlmIGlzaW5zdGFuY2UodHJhbnNmb3JtLCBNb2RlbCk6CiAgICAgICAgIHJldHVybiBfY29vcmRfbWF0cml4KHRyYW5zZm9ybSwgJ2xlZnQnLCB0cmFuc2Zvcm0ubl9vdXRwdXRzKQogCkBAIC0xNjAwLDcgKzE2MDEsNyBAQCBkZWYgX2Nvb3JkX21hdHJpeChtb2RlbCwgcG9zLCBub3V0cCk6CiAgICAgaWYgbW9kZWwuc2VwYXJhYmxlOgogICAgICAgICBtYXQgPSBucC56ZXJvcygobm91dHAsIG1vZGVsLm5faW5wdXRzKSkKICAgICAgICAgZm9yIGkgaW4gcmFuZ2UobW9kZWwubl9pbnB1dHMpOgotICAgICAgICAgICAgbWF0W2ksIGldID0gMQorICAgICAgICAgICAgbWF0W2ksIGldID0gMSAgCiAgICAgICAgIGlmIHBvcyA9PSAncmlnaHQnOgogICAgICAgICAgICAgbWF0ID0gbnAucm9sbChtYXQsIChub3V0cCAtIG1vZGVsLm5fb3V0cHV0cykpCiAgICAgcmV0dXJuIG1hdApAQCAtMTYyNCw3ICsxNjI1LDcgQEAgZGVmIF9jc3RhY2sobGVmdCwgcmlnaHQpOgogICAgICAgICBjcmlnaHQgPSBfY29vcmRfbWF0cml4KHJpZ2h0LCAncmlnaHQnLCBub3V0cCkKICAgICBlbHNlOgogICAgICAgICBjcmlnaHQgPSBucC56ZXJvcygobm91dHAsIHJpZ2h0LnNoYXBlWzFdKSkKLSAgICAgICAgY3JpZ2h0Wy1yaWdodC5zaGFwZVswXTosIC1yaWdodC5zaGFwZVsxXTpdID0gMQorICAgICAgICBjcmlnaHRbLXJpZ2h0LnNoYXBlWzBdOiwgLXJpZ2h0LnNoYXBlWzFdOl0gPSByaWdodAogCiAgICAgcmV0dXJuIG5wLmhzdGFjayhbY2xlZnQsIGNyaWdodF0pCiAKQEAgLTE2NTksNyArMTY2MCw3IEBAIGRlZiBfY2RvdChsZWZ0LCByaWdodCk6CiAgICAgdHJ5OgogICAgICAgICByZXN1bHQgPSBucC5kb3QoY2xlZnQsIGNyaWdodCkKICAgICBleGNlcHQgVmFsdWVFcnJvcjoKLSAgICAgICAgcmFpc2UgTW9kZWxEZWZpbml0aW9uRXJyb3IoCisgICAgICAgIHJhaXNlIE1vZGVsRGVmaW5pdGlvbkVycm9yKCAgCiAgICAgICAgICAgICAnTW9kZWxzIGNhbm5vdCBiZSBjb21iaW5lZCB3aXRoIHRoZSAifCIgb3BlcmF0b3I7ICcKICAgICAgICAgICAgICdsZWZ0IGNvb3JkX21hdHJpeCBpcyB7fSwgcmlnaHQgY29vcmRfbWF0cml4IGlzIHt9Jy5mb3JtYXQoCiAgICAgICAgICAgICAgICAgY3JpZ2h0LCBjbGVmdCkpCkBAIC0xNjg3LDcgKzE2ODgsNyBAQCBkZWYgX3NlcGFyYWJsZSh0cmFuc2Zvcm0pOgogICAgIGVsaWYgaXNpbnN0YW5jZSh0cmFuc2Zvcm0sIENvbXBvdW5kTW9kZWwpOgogICAgICAgICBzZXBsZWZ0ID0gX3NlcGFyYWJsZSh0cmFuc2Zvcm0ubGVmdCkKICAgICAgICAgc2VwcmlnaHQgPSBfc2VwYXJhYmxlKHRyYW5zZm9ybS5yaWdodCkKLSAgICAgICAgcmV0dXJuIF9vcGVyYXRvcnNbdHJhbnNmb3JtLm9wXShzZXBsZWZ0LCBzZXByaWdodCkKKyAgICAgICAgcmV0dXJuIF9vcGVyYXRvcnNbdHJhbnNmb3JtLm9wXShzZXBsZWZ0LCBzZXByaWdodCkgIAogICAgIGVsaWYgaXNpbnN0YW5jZSh0cmFuc2Zvcm0sIE1vZGVsKToKICAgICAgICAgcmV0dXJuIF9jb29yZF9tYXRyaXgodHJhbnNmb3JtLCAnbGVmdCcsIHRyYW5zZm9ybS5uX291dHB1dHMpCiAKQEAgLTE3MDcsNyArMTcwOCw3IEBAIGRlZiBfY29vcmRfbWF0cml4KG1vZGVsLCBwb3MsIG5vdXRwKToKICAgICBpZiBtb2RlbC5zZXBhcmFibGU6CiAgICAgICAgIG1hdCA9IG5wLnplcm9zKChub3V0cCwgbW9kZWwubl9pbnB1dHMpKQogICAgICAgICBmb3IgaSBpbiByYW5nZShtb2RlbC5uX2lucHV0cyk6Ci0gICAgICAgICAgICBtYXRbaSwgaV0gPSAxCisgICAgICAgICAgICBtYXRbaSwgaV0gPSAxICAKICAgICAgICAgaWYgcG9zID09ICdyaWdodCc6CiAgICAgICAgICAgICBtYXQgPSBucC5yb2xsKG1hdCwgKG5vdXRwIC0gbW9kZWwubl9vdXRwdXRzKSkKICAgICByZXR1cm4gbWF0CkBAIC0xNzMxLDcgKzE3MzIsNyBAQCBkZWYgX2NzdGFjayhsZWZ0LCByaWdodCk6CiAgICAgICAgIGNyaWdodCA9IF9jb29yZF9tYXRyaXgocmlnaHQsICdyaWdodCcsIG5vdXRwKQogICAgIGVsc2U6CiAgICAgICAgIGNyaWdodCA9IG5wLnplcm9zKChub3V0cCwgcmlnaHQuc2hhcGVbMV0pKQotICAgICAgICBjcmlnaHRbLXJpZ2h0LnNoYXBlWzBdOiwgLXJpZ2h0LnNoYXBlWzFdOl0gPSAxCisgICAgICAgIGNyaWdodFstcmlnaHQuc2hhcGVbMF06LCAtcmlnaHQuc2hhcGVbMV06XSA9IHJpZ2h0CiAKICAgICByZXR1cm4gbnAuaHN0YWNrKFtjbGVmdCwgY3JpZ2h0XSkKIApAQCAtMTc2Niw3ICsxNzY3LDcgQEAgZGVmIF9jZG90KGxlZnQsIHJpZ2h0KToKICAgICB0cnk6CiAgICAgICAgIHJlc3VsdCA9IG5wLmRvdChjbGVmdCwgY3JpZ2h0KQogICAgIGV4Y2VwdCBWYWx1ZUVycm9yOgotICAgICAgICByYWlzZSBNb2RlbERlZmluaXRpb25FcnJvcigKKyAgICAgICAgcmFpc2UgTW9kZWxEZWZpbml0aW9uRXJyb3IoICAKICAgICAgICAgICAgICdNb2RlbHMgY2Fubm90IGJlIGNvbWJpbmVkIHdpdGggdGhlICJ8IiBvcGVyYXRvcjsgJwogICAgICAgICAgICAgJ2xlZnQgY29vcmRfbWF0cml4IGlzIHt9LCByaWdodCBjb29yZF9tYXRyaXggaXMge30nLmZvcm1hdCgKICAgICAgICAgICAgICAgICBjcmlnaHQsIGNsZWZ0KSkKQEAgLTE3OTQsNyArMTc5NSw3IEBAIGRlZiBfc2VwYXJhYmxlKHRyYW5zZm9ybSk6CiAgICAgZWxpZiBpc2luc3RhbmNlKHRyYW5zZm9ybSwgQ29tcG91bmRNb2RlbCk6CiAgICAgICAgIHNlcGxlZnQgPSBfc2VwYXJhYmxlKHRyYW5zZm9ybS5sZWZ0KQogICAgICAgICBzZXByaWdodCA9IF9zZXBhcmFibGUodHJhbnNmb3JtLnJpZ2h0KQotICAgICAgICByZXR1cm4gX29wZXJhdG9yc1t0cmFuc2Zvcm0ub3BdKHNlcGxlZnQsIHNlcHJpZ2h0KQorICAgICAgICByZXR1cm4gX29wZXJhdG9yc1t0cmFuc2Zvcm0ub3BdKHNlcGxlZnQsIHNlcHJpZ2h0KSAgCiAgICAgZWxpZiBpc2luc3RhbmNlKHRyYW5zZm9ybSwgTW9kZWwpOgogICAgICAgICByZXR1cm4gX2Nvb3JkX21hdHJpeCh0cmFuc2Zvcm0sICdsZWZ0JywgdHJhbnNmb3JtLm5fb3V0cHV0cykKIApAQCAtMTgxNCw3ICsxODE1LDcgQEAgZGVmIF9jb29yZF9tYXRyaXgobW9kZWwsIHBvcywgbm91dHApOgogICAgIGlmIG1vZGVsLnNlcGFyYWJsZToKICAgICAgICAgbWF0ID0gbnAuemVyb3MoKG5vdXRwLCBtb2RlbC5uX2lucHV0cykpCiAgICAgICAgIGZvciBpIGluIHJhbmdlKG1vZGVsLm5faW5wdXRzKToKLSAgICAgICAgICAgIG1hdFtpLCBpXSA9IDEKKyAgICAgICAgICAgIG1hdFtpLCBpXSA9IDEgIAogICAgICAgICBpZiBwb3MgPT0gJ3JpZ2h0JzoKICAgICAgICAgICAgIG1hdCA9IG5wLnJvbGwobWF0LCAobm91dHAgLSBtb2RlbC5uX291dHB1dHMpKQogICAgIHJldHVybiBtYXQKQEAgLTE4MzgsNyArMTgzOSw3IEBAIGRlZiBfY3N0YWNrKGxlZnQsIHJpZ2h0KToKICAgICAgICAgY3JpZ2h0ID0gX2Nvb3JkX21hdHJpeChyaWdodCwgJ3JpZ2h0Jywgbm91dHApCiAgICAgZWxzZToKICAgICAgICAgY3JpZ2h0ID0gbnAuemVyb3MoKG5vdXRwLCByaWdodC5zaGFwZVsxXSkpCi0gICAgICAgIGNyaWdodFstcmlnaHQuc2hhcGVbMF06LCAtcmlnaHQuc2hhcGVbMV06XSA9IDEKKyAgICAgICAgY3JpZ2h0Wy1yaWdodC5zaGFwZVswXTosIC1yaWdodC5zaGFwZVsxXTpdID0gcmlnaHQKIAogICAgIHJldHVybiBucC5oc3RhY2soW2NsZWZ0LCBjcmlnaHRdKQogCkBAIC0xODczLDcgKzE4NzQsNyBAQCBkZWYgX2Nkb3QobGVmdCwgcmlnaHQpOgogICAgIHRyeToKICAgICAgICAgcmVzdWx0ID0gbnAuZG90KGNsZWZ0LCBjcmlnaHQpCiAgICAgZXhjZXB0IFZhbHVlRXJyb3I6Ci0gICAgICAgIHJhaXNlIE1vZGVsRGVmaW5pdGlvbkVycm9yKAorICAgICAgICByYWlzZSBNb2RlbERlZmluaXRpb25FcnJvciggIAogICAgICAgICAgICAgJ01vZGVscyBjYW5ub3QgYmUgY29tYmluZWQgd2l0aCB0aGUgInwiIG9wZXJhdG9yOyAnCiAgICAgICAgICAgICAnbGVmdCBjb29yZF9tYXRyaXggaXMge30sIHJpZ2h0IGNvb3JkX21hdHJpeCBpcyB7fScuZm9ybWF0KAogICAgICAgICAgICAgICAgIGNyaWdodCwgY2xlZnQpKQpAQCAtMTkwMSw3ICsxOTAyLDcgQEAgZGVmIF9zZXBhcmFibGUodHJhbnNmb3JtKToKICAgICBlbGlmIGlzaW5zdGFuY2UodHJhbnNmb3JtLCBDb21wb3VuZE1vZGVsKToKICAgICAgICAgc2VwbGVmdCA9IF9zZXBhcmFibGUodHJhbnNmb3JtLmxlZnQpCiAgICAgICAgIHNlcHJpZ2h0ID0gX3NlcGFyYWJsZSh0cmFuc2Zvcm0ucmlnaHQpCi0gICAgICAgIHJldHVybiBfb3BlcmF0b3JzW3RyYW5zZm9ybS5vcF0oc2VwbGVmdCwgc2VwcmlnaHQpCisgICAgICAgIHJldHVybiBfb3BlcmF0b3JzW3RyYW5zZm9ybS5vcF0oc2VwbGVmdCwgc2VwcmlnaHQpICAKICAgICBlbGlmIGlzaW5zdGFuY2UodHJhbnNmb3JtLCBNb2RlbCk6CiAgICAgICAgIHJldHVybiBfY29vcmRfbWF0cml4KHRyYW5zZm9ybSwgJ2xlZnQnLCB0cmFuc2Zvcm0ubl9vdXRwdXRzKQogCkBAIC0xOTIxLDcgKzE5MjIsNyBAQCBkZWYgX2Nvb3JkX21hdHJpeChtb2RlbCwgcG9zLCBub3V0cCk6CiAgICAgaWYgbW9kZWwuc2VwYXJhYmxlOgogICAgICAgICBtYXQgPSBucC56ZXJvcygobm91dHAsIG1vZGVsLm5faW5wdXRzKSkKICAgICAgICAgZm9yIGkgaW4gcmFuZ2UobW9kZWwubl9pbnB1dHMpOgotICAgICAgICAgICAgbWF0W2ksIGldID0gMQorICAgICAgICAgICAgbWF0W2ksIGldID0gMSAgCiAgICAgICAgIGlmIHBvcyA9PSAncmlnaHQnOgogICAgICAgICAgICAgbWF0ID0gbnAucm9sbChtYXQsIChub3V0cCAtIG1vZGVsLm5fb3V0cHV0cykpCiAgICAgcmV0dXJuIG1hdApAQCAtMTk0NSw3ICsxOTQ2LDcgQEAgZGVmIF9jc3RhY2sobGVmdCwgcmlnaHQpOgogICAgICAgICBjcmlnaHQgPSBfY29vcmRfbWF0cml4KHJpZ2h0LCAncmlnaHQnLCBub3V0cCkKICAgICBlbHNlOgogICAgICAgICBjcmlnaHQgPSBucC56ZXJvcygobm91dHAsIHJpZ2h0LnNoYXBlWzFdKSkKLSAgICAgICAgY3JpZ2h0Wy1yaWdodC5zaGFwZVswXTosIC1yaWdodC5zaGFwZVsxXTpdID0gMQorICAgICAgICBjcmlnaHRbLXJpZ2h0LnNoYXBlWzBdOiwgLXJpZ2h0LnNoYXBlWzFdOl0gPSByaWdodAogCiAgICAgcmV0dXJuIG5wLmhzdGFjayhbY2xlZnQsIGNyaWdodF0pCiAKQEAgLTE5ODAsNyArMTk4MSw3IEBAIGRlZiBfY2RvdChsZWZ0LCByaWdodCk6CiAgICAgdHJ5OgogICAgICAgICByZXN1bHQgPSBucC5kb3QoY2xlZnQsIGNyaWdodCkKICAgICBleGNlcHQgVmFsdWVFcnJvcjoKLSAgICAgICAgcmFpc2UgTW9kZWxEZWZpbml0aW9uRXJyb3IoCisgICAgICAgIHJhaXNlIE1vZGVsRGVmaW5pdGlvbkVycm9yKCAgCiAgICAgICAgICAgICAnTW9kZWxzIGNhbm5vdCBiZSBjb21iaW5lZCB3aXRoIHRoZSAifCIgb3BlcmF0b3I7ICcKICAgICAgICAgICAgICdsZWZ0IGNvb3JkX21hdHJpeCBpcyB7fSwgcmlnaHQgY29vcmRfbWF0cml4IGlzIHt9Jy5mb3JtYXQoCiAgICAgICAgICAgICAgICAgY3JpZ2h0LCBjbGVmdCkpCkBAIC0yMDA4LDcgKzIwMDksNyBAQCBkZWYgX3NlcGFyYWJsZSh0cmFuc2Zvcm0pOgogICAgIGVsaWYgaXNpbnN0YW5jZSh0cmFuc2Zvcm0sIENvbXBvdW5kTW9kZWwpOgogICAgICAgICBzZXBsZWZ0ID0gX3NlcGFyYWJsZSh0cmFuc2Zvcm0ubGVmdCkKICAgICAgICAgc2VwcmlnaHQgPSBfc2VwYXJhYmxlKHRyYW5zZm9ybS5yaWdodCkKLSAgICAgICAgcmV0dXJuIF9vcGVyYXRvcnNbdHJhbnNmb3JtLm9wXShzZXBsZWZ0LCBzZXByaWdodCkKKyAgICAgICAgcmV0dXJuIF9vcGVyYXRvcnNbdHJhbnNmb3JtLm9wXShzZXBsZWZ0LCBzZXByaWdodCkgIAogICAgIGVsaWYgaXNpbnN0YW5jZSh0cmFuc2Zvcm0sIE1vZGVsKToKICAgICAgICAgcmV0dXJuIF9jb29yZF9tYXRyaXgodHJhbnNmb3JtLCAnbGVmdCcsIHRyYW5zZm9ybS5uX291dHB1dHMpCiAKQEAgLTIwMjgsNyArMjAyOSw3IEBAIGRlZiBfY29vcmRfbWF0cml4KG1vZGVsLCBwb3MsIG5vdXRwKToKICAgICBpZiBtb2RlbC5zZXBhcmFibGU6CiAgICAgICAgIG1hdCA9IG5wLnplcm9zKChub3V0cCwgbW9kZWwubl9pbnB1dHMpKQogICAgICAgICBmb3IgaSBpbiByYW5nZShtb2RlbC5uX2lucHV0cyk6Ci0gICAgICAgICAgICBtYXRbaSwgaV0gPSAxCisgICAgICAgICAgICBtYXRbaSwgaV0gPSAxICAKICAgICAgICAgaWYgcG9zID09ICdyaWdodCc6CiAgICAgICAgICAgICBtYXQgPSBucC5yb2xsKG1hdCwgKG5vdXRwIC0gbW9kZWwubl9vdXRwdXRzKSkKICAgICByZXR1cm4gbWF0CkBAIC0yMDUyLDcgKzIwNTMsNyBAQCBkZWYgX2NzdGFjayhsZWZ0LCByaWdodCk6CiAgICAgICAgIGNyaWdodCA9IF9jb29yZF9tYXRyaXgocmlnaHQsICdyaWdodCcsIG5vdXRwKQogICAgIGVsc2U6CiAgICAgICAgIGNyaWdodCA9IG5wLnplcm9zKChub3V0cCwgcmlnaHQuc2hhcGVbMV0pKQotICAgICAgICBjcmlnaHRbLXJpZ2h0LnNoYXBlWzBdOiwgLXJpZ2h0LnNoYXBlWzFdOl0gPSAxCisgICAgICAgIGNyaWdodFstcmlnaHQuc2hhcGVbMF06LCAtcmlnaHQuc2hhcGVbMV06XSA9IHJpZ2h0CiAKICAgICByZXR1cm4gbnAuaHN0YWNrKFtjbGVmdCwgY3JpZ2h0XSkKIApAQCAtMjA4Nyw3ICsyMDg4LDcgQEAgZGVmIF9jZG90KGxlZnQsIHJpZ2h0KToKICAgICB0cnk6CiAgICAgICAgIHJlc3VsdCA9IG5wLmRvdChjbGVmdCwgY3JpZ2h0KQogICAgIGV4Y2VwdCBWYWx1ZUVycm9yOgotICAgICAgICByYWlzZSBNb2RlbERlZmluaXRpb25FcnJvcigKKyAgICAgICAgcmFpc2UgTW9kZWxEZWZpbml0aW9uRXJyb3IoICAKICAgICAgICAgICAgICdNb2RlbHMgY2Fubm90IGJlIGNvbWJpbmVkIHdpdGggdGhlICJ8IiBvcGVyYXRvcjsgJwogICAgICAgICAgICAgJ2xlZnQgY29vcmRfbWF0cml4IGlzIHt9LCByaWdodCBjb29yZF9tYXRyaXggaXMge30nLmZvcm1hdCgKICAgICAgICAgICAgICAgICBjcmlnaHQsIGNsZWZ0KSkKQEAgLTIxMTUsNyArMjExNiw3IEBAIGRlZiBfc2VwYXJhYmxlKHRyYW5zZm9ybSk6CiAgICAgZWxpZiBpc2luc3RhbmNlKHRyYW5zZm9ybSwgQ29tcG91bmRNb2RlbCk6CiAgICAgICAgIHNlcGxlZnQgPSBfc2VwYXJhYmxlKHRyYW5zZm9ybS5sZWZ0KQogICAgICAgICBzZXByaWdodCA9IF9zZXBhcmFibGUodHJhbnNmb3JtLnJpZ2h0KQotICAgICAgICByZXR1cm4gX29wZXJhdG9yc1t0cmFuc2Zvcm0ub3BdKHNlcGxlZnQsIHNlcHJpZ2h0KQorICAgICAgICByZXR1cm4gX29wZXJhdG9yc1t0cmFuc2Zvcm0ub3BdKHNlcGxlZnQsIHNlcHJpZ2h0KSAgCiAgICAgZWxpZiBpc2luc3RhbmNlKHRyYW5zZm9ybSwgTW9kZWwpOgogICAgICAgICByZXR1cm4gX2Nvb3JkX21hdHJpeCh0cmFuc2Zvcm0sICdsZWZ0JywgdHJhbnNmb3JtLm5fb3V0cHV0cykKIApAQCAtMjEzNSw3ICsyMTM2LDcgQEAgZGVmIF9jb29yZF9tYXRyaXgobW9kZWwsIHBvcywgbm91dHApOgogICAgIGlmIG1vZGVsLnNlcGFyYWJsZToKICAgICAgICAgbWF0ID0gbnAuemVyb3MoKG5vdXRwLCBtb2RlbC5uX2lucHV0cykpCiAgICAgICAgIGZvciBpIGluIHJhbmdlKG1vZGVsLm5faW5wdXRzKToKLSAgICAgICAgICAgIG1hdFtpLCBpXSA9IDEKKyAgICAgICAgICAgIG1hdFtpLCBpXSA9IDEgIAogICAgICAgICBpZiBwb3MgPT0gJ3JpZ2h0JzoKICAgICAgICAgICAgIG1hdCA9IG5wLnJvbGwobWF0LCAobm91dHAgLSBtb2RlbC5uX291dHB1dHMpKQogICAgIHJldHVybiBtYXQKQEAgLTIxNTksNyArMjE2MCw3IEBAIGRlZiBfY3N0YWNrKGxlZnQsIHJpZ2h0KToKICAgICAgICAgY3JpZ2h0ID0gX2Nvb3JkX21hdHJpeChyaWdodCwgJ3JpZ2h0Jywgbm91dHApCiAgICAgZWxzZToKICAgICAgICAgY3JpZ2h0ID0gbnAuemVyb3MoKG5vdXRwLCByaWdodC5zaGFwZVsxXSkpCi0gICAgICAgIGNyaWdodFstcmlnaHQuc2hhcGVbMF06LCAtcmlnaHQuc2hhcGVbMV06XSA9IDEKKyAgICAgICAgY3JpZ2h0Wy1yaWdodC5zaGFwZVswXTosIC1yaWdodC5zaGFwZVsxXTpdID0gcmlnaHQKIAogICAgIHJldHVybiBucC5oc3RhY2soW2NsZWZ0LCBjcmlnaHRdKQogCkBAIC0yMTk0LDcgKzIxOTUsNyBAQCBkZWYgX2Nkb3QobGVmdCwgcmlnaHQpOgogICAgIHRyeToKICAgICAgICAgcmVzdWx0ID0gbnAuZG90KGNsZWZ0LCBjcmlnaHQpCiAgICAgZXhjZXB0IFZhbHVlRXJyb3I6Ci0gICAgICAgIHJhaXNlIE1vZGVsRGVmaW5pdGlvbkVycm9yKAorICAgICAgICByYWlzZSBNb2RlbERlZmluaXRpb25FcnJvciggIAogICAgICAgICAgICAgJ01vZGVscyBjYW5ub3QgYmUgY29tYmluZWQgd2l0aCB0aGUgInwiIG9wZXJhdG9yOyAnCiAgICAgICAgICAgICAnbGVmdCBjb29yZF9tYXRyaXggaXMge30sIHJpZ2h0IGNvb3JkX21hdHJpeCBpcyB7fScuZm9ybWF0KAogICAgICAgICAgICAgICAgIGNyaWdodCwgY2xlZnQpKQpAQCAtMjIyMiw3ICsyMjIzLDcgQEAgZGVmIF9zZXBhcmFibGUodHJhbnNmb3JtKToKICAgICBlbGlmIGlzaW5zdGFuY2UodHJhbnNmb3JtLCBDb21wb3VuZE1vZGVsKToKICAgICAgICAgc2VwbGVmdCA9IF9zZXBhcmFibGUodHJhbnNmb3JtLmxlZnQpCiAgICAgICAgIHNlcHJpZ2h0ID0gX3NlcGFyYWJsZSh0cmFuc2Zvcm0ucmlnaHQpCi0gICAgICAgIHJldHVybiBfb3BlcmF0b3JzW3RyYW5zZm9ybS5vcF0oc2VwbGVmdCwgc2VwcmlnaHQpCisgICAgICAgIHJldHVybiBfb3BlcmF0b3JzW3RyYW5zZm9ybS5vcF0oc2VwbGVmdCwgc2VwcmlnaHQpICAKICAgICBlbGlmIGlzaW5zdGFuY2UodHJhbnNmb3JtLCBNb2RlbCk6CiAgICAgICAgIHJldHVybiBfY29vcmRfbWF0cml4KHRyYW5zZm9ybSwgJ2xlZnQnLCB0cmFuc2Zvcm0ubl9vdXRwdXRzKQogCkBAIC0yMjQyLDcgKzIyNDMsNyBAQCBkZWYgX2Nvb3JkX21hdHJpeChtb2RlbCwgcG9zLCBub3V0cCk6CiAgICAgaWYgbW9kZWwuc2VwYXJhYmxlOgogICAgICAgICBtYXQgPSBucC56ZXJvcygobm91dHAsIG1vZGVsLm5faW5wdXRzKSkKICAgICAgICAgZm9yIGkgaW4gcmFuZ2UobW9kZWwubl9pbnB1dHMpOgotICAgICAgICAgICAgbWF0W2ksIGldID0gMQorICAgICAgICAgICAgbWF0W2ksIGldID0gMSAgCiAgICAgICAgIGlmIHBvcyA9PSAncmlnaHQnOgogICAgICAgICAgICAgbWF0ID0gbnAucm9sbChtYXQsIChub3V0cCAtIG1vZGVsLm5fb3V0cHV0cykpCiAgICAgcmV0dXJuIG1hdApAQCAtMjI2Niw3ICsyMjY3LDcgQEAgZGVmIF9jc3RhY2sobGVmdCwgcmlnaHQpOgogICAgICAgICBjcmlnaHQgPSBfY29vcmRfbWF0cml4KHJpZ2h0LCAncmlnaHQnLCBub3V0cCkKICAgICBlbHNlOgogICAgICAgICBjcmlnaHQgPSBucC56ZXJvcygobm91dHAsIHJpZ2h0LnNoYXBlWzFdKSkKLSAgICAgICAgY3JpZ2h0Wy1yaWdodC5zaGFwZVswXTosIC1yaWdodC5zaGFwZVsxXTpdID0gMQorICAgICAgICBjcmlnaHRbLXJpZ2h0LnNoYXBlWzBdOiwgLXJpZ2h0LnNoYXBlWzFdOl0gPSByaWdodAogCiAgICAgcmV0dXJuIG5wLmhzdGFjayhbY2xlZnQsIGNyaWdodF0pCiAKQEAgLTIzMDEsNyArMjMwMiw3IEBAIGRlZiBfY2RvdChsZWZ0LCByaWdodCk6CiAgICAgdHJ5OgogICAgICAgICByZXN1bHQgPSBucC5kb3QoY2xlZnQsIGNyaWdodCkKICAgICBleGNlcHQgVmFsdWVFcnJvcjoKLSAgICAgICAgcmFpc2UgTW9kZWxEZWZpbml0aW9uRXJyb3IoCisgICAgICAgIHJhaXNlIE1vZGVsRGVmaW5pdGlvbkVycm9yKCAgCiAgICAgICAgICAgICAnTW9kZWxzIGNhbm5vdCBiZSBjb21iaW5lZCB3aXRoIHRoZSAifCIgb3BlcmF0b3I7ICcKICAgICAgICAgICAgICdsZWZ0IGNvb3JkX21hdHJpeCBpcyB7fSwgcmlnaHQgY29vcmRfbWF0cml4IGlzIHt9Jy5mb3JtYXQoCiAgICAgICAgICAgICAgICAgY3JpZ2h0LCBjbGVmdCkpCkBAIC0yMzI5LDMgKzIzMzAsMyBAQCBkZWYgX3NlcGFyYWJsZSh0cmFuc2Zvcm0pOgogICAgIGVsaWYgaXNpbnN0YW5jZSh0cmFuc2Zvcm0sIENvbXBvdW5kTW9kZWwpOgogICAgICAgICBzZXBsZWZ0ID0gX3NlcGFyYWJsZSh0cmFuc2Zvcm0ubGVmdCkKICAgICAgICAgc2UK'))" && git apply --check /tmp/swe_agent_patch.diff
+2026-06-07 14:09:33,475 INFO STDERR: error: corrupt patch at line 716
+
+2026-06-07 14:09:33,475 INFO Exit code: 128
+2026-06-07 14:09:33,475 INFO Running command: patch --dry-run --batch --fuzz=5 -p1 -i /tmp/swe_agent_patch.diff
+2026-06-07 14:09:33,626 INFO STDOUT: checking file astropy/modeling/separable.py
+Hunk #2 succeeded at 243 (offset 9 lines).
+Hunk #3 succeeded at 281 (offset 12 lines).
+Hunk #4 succeeded at 307 (offset 10 lines).
+Hunk #5 FAILED at 317.
+Hunk #6 FAILED at 341.
+Hunk #7 FAILED at 376.
+Hunk #8 FAILED at 404.
+Hunk #9 FAILED at 424.
+Hunk #10 F... [truncated]
+2026-06-07 14:09:33,626 INFO STDERR: patch: **** malformed patch at line 715:          se
+
+
+2026-06-07 14:09:33,626 INFO Exit code: 2
+2026-06-07 14:09:33,627 INFO Stopping container determined_shannon
+2026-06-07 14:09:38,755 INFO Removing container determined_shannon

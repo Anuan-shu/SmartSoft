@@ -1,0 +1,212 @@
+2026-06-07 14:13:02,830 INFO Preparing Docker environment for astropy__astropy-6938
+2026-06-07 14:13:02,856 INFO Image already exists locally, skipping pull: swebench/sweb.eval.x86_64.astropy_1776_astropy-6938
+2026-06-07 14:13:03,028 INFO Running command: pwd
+2026-06-07 14:13:03,207 INFO STDOUT: /testbed
+
+2026-06-07 14:13:03,207 INFO Exit code: 0
+2026-06-07 14:13:04,498 INFO Running command: find /testbed -type f -name "*.py" | xargs grep -l "fitsrec" | head -20
+2026-06-07 14:13:04,708 INFO STDOUT: /testbed/astropy/io/fits/__init__.py
+/testbed/astropy/io/fits/column.py
+/testbed/astropy/io/fits/hdu/compressed.py
+/testbed/astropy/io/fits/hdu/groups.py
+/testbed/astropy/io/fits/hdu/table.py
+/testbed/astropy/io/fits/tests/test_table.py
+
+2026-06-07 14:13:04,708 INFO Exit code: 0
+2026-06-07 14:13:05,727 INFO Running command: grep -n "Replace exponent separator" /testbed/astropy/io/fits/fitsrec.py
+2026-06-07 14:13:05,906 INFO STDOUT: 1262:        # Replace exponent separator in floating point numbers
+
+2026-06-07 14:13:05,907 INFO Exit code: 0
+2026-06-07 14:13:07,155 INFO Running command: sed -n '1250,1280p' /testbed/astropy/io/fits/fitsrec.py
+2026-06-07 14:13:07,315 INFO STDOUT:             if len(value) > starts[col_idx + 1] - starts[col_idx]:
+                raise ValueError(
+                    "Value {!r} does not fit into the output's itemsize of "
+                    "{}.".format(value, spans[col_idx]))
+
+            if trailing_decimal and value[0] == ' ':
+           ... [truncated]
+2026-06-07 14:13:07,315 INFO Exit code: 0
+2026-06-07 14:13:08,330 INFO Running command: sed -n '1240,1270p' /testbed/astropy/io/fits/fitsrec.py
+2026-06-07 14:13:08,491 INFO STDOUT:         # Even if the format precision is 0, we should output a decimal point
+        # as long as there is space to do so--not including a decimal point in
+        # a float value is discouraged by the FITS Standard
+        trailing_decimal = (format.precision == 0 and
+                            f... [truncated]
+2026-06-07 14:13:08,491 INFO Exit code: 0
+2026-06-07 14:13:09,909 INFO Running command: grep -B5 -A5 "output_field.replace" /testbed/astropy/io/fits/fitsrec.py
+2026-06-07 14:13:10,061 INFO STDOUT: 
+            output_field[jdx] = value
+
+        # Replace exponent separator in floating point numbers
+        if 'D' in format:
+            output_field.replace(encode_ascii('E'), encode_ascii('D'))
+
+
+def _get_recarray_field(array, key):
+    """
+    Compatibility function for using the recarray bas... [truncated]
+2026-06-07 14:13:10,061 INFO Exit code: 0
+2026-06-07 14:13:12,617 INFO Running command: grep -n "output_field" /testbed/astropy/io/fits/fitsrec.py | head -20
+2026-06-07 14:13:12,768 INFO STDOUT: 1154:    def _scale_back_strings(self, col_idx, input_field, output_field):
+1160:        # At the other end the *output_field* may also be of type 'S' or of
+1165:        # unicode strings (dtype 'U').  Therefore the output_field of the
+1171:        # If the output_field is non-ASCII we will worry ab... [truncated]
+2026-06-07 14:13:12,768 INFO Exit code: 0
+2026-06-07 14:13:14,116 INFO Running command: grep -n "def _scale_back_ascii" /testbed/astropy/io/fits/fitsrec.py -A 30
+2026-06-07 14:13:14,269 INFO STDOUT: 1196:    def _scale_back_ascii(self, col_idx, input_field, output_field):
+1197-        """
+1198-        Convert internal array values back to ASCII table representation.
+1199-
+1200-        The ``input_field`` is the internal representation of the values, and
+1201-        the ``output_field`` is the ... [truncated]
+2026-06-07 14:13:14,269 INFO Exit code: 0
+2026-06-07 14:13:15,683 INFO Running command: grep -n "output_field" /testbed/astropy/io/fits/fitsrec.py -B2 -A2 | grep -A2 -B2 "replace"
+2026-06-07 14:13:15,833 INFO STDOUT: 1262-        # Replace exponent separator in floating point numbers
+1263-        if 'D' in format:
+1264:            output_field.replace(encode_ascii('E'), encode_ascii('D'))
+1265-
+1266-
+
+2026-06-07 14:13:15,834 INFO Exit code: 0
+2026-06-07 14:13:17,296 INFO Running command: python -c "import numpy as np; from numpy import chararray; a = chararray.chararray((3,), itemsize=5); a[:] = '1.23E4'; print('before:', a); b = a.replace('E', 'D'); print('after replace:', a); print('returned:', b)"
+2026-06-07 14:13:17,590 INFO STDERR: Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+AttributeError: type object 'chararray' has no attribute 'chararray'
+
+2026-06-07 14:13:17,590 INFO Exit code: 1
+2026-06-07 14:13:19,480 INFO Running command: python -c "import numpy as np; a = np.chararray((3,), itemsize=5); a[:] = '1.23E4'; print('before:', a); b = a.replace('E', 'D'); print('after replace:', a); print('returned:', b)"
+2026-06-07 14:13:19,758 INFO STDOUT: before: [b'1.23E' b'1.23E' b'1.23E']
+
+2026-06-07 14:13:19,758 INFO STDERR: Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/opt/miniconda3/envs/testbed/lib/python3.6/site-packages/numpy/core/defchararray.py", line 2425, in replace
+    return asarray(replace(self, old, new, count))
+  File "/opt/miniconda3/envs/testbed/lib/python3.6/site-pac... [truncated]
+2026-06-07 14:13:19,758 INFO Exit code: 1
+2026-06-07 14:13:21,270 INFO Running command: python -c "import numpy as np; a = np.chararray((3,), itemsize=5); a[:] = b'1.23E4'; print('before:', a); b = a.replace(b'E', b'D'); print('after replace:', a); print('returned:', b)"
+2026-06-07 14:13:21,552 INFO STDOUT: before: [b'1.23E' b'1.23E' b'1.23E']
+after replace: [b'1.23E' b'1.23E' b'1.23E']
+returned: [b'1.23D' b'1.23D' b'1.23D']
+
+2026-06-07 14:13:21,552 INFO Exit code: 0
+2026-06-07 14:13:23,021 INFO Running command: cd /testbed && python -m pytest astropy/io/fits/tests/test_checksum.py::TestChecksumFunctions::test_ascii_table_data -xvs
+2026-06-07 14:13:24,784 INFO STDOUT: Internet access disabled
+============================= test session starts ==============================
+platform linux -- Python 3.6.13, pytest-3.3.1, py-1.11.0, pluggy-0.6.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .
+
+Running tests with Astropy version 3.0.dev20979.
+Running tests in a... [truncated]
+2026-06-07 14:13:24,784 INFO Exit code: 0
+2026-06-07 14:13:25,974 INFO Running command: cd /testbed && python -m pytest astropy/io/fits/tests/test_table.py::TestTableFunctions::test_ascii_table -xvs
+2026-06-07 14:13:27,029 INFO STDOUT: Internet access disabled
+============================= test session starts ==============================
+platform linux -- Python 3.6.13, pytest-3.3.1, py-1.11.0, pluggy-0.6.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .
+
+Running tests with Astropy version 3.0.dev20979.
+Running tests in a... [truncated]
+2026-06-07 14:13:27,029 INFO Exit code: 0
+2026-06-07 14:13:28,470 INFO Running command: grep -n "encode_ascii" /testbed/astropy/io/fits/fitsrec.py -B2 -A2
+2026-06-07 14:13:28,626 INFO STDOUT: 16-                     _AsciiColDefs, _FormatX, _FormatP, _VLF, _get_index,
+17-                     _wrapx, _unwrapx, _makep, Delayed)
+18:from .util import decode_ascii, encode_ascii, _rstrip_inplace
+19-from ...utils import lazyproperty
+20-
+--
+835-        # array buffer.
+836-        dummy = np.char... [truncated]
+2026-06-07 14:13:28,626 INFO Exit code: 0
+2026-06-07 14:13:30,494 INFO Running command: cd /testbed && python -c "import numpy as np; from astropy.io.fits.fitsrec import encode_ascii; a = np.chararray((3,), itemsize=5); a[:] = encode_ascii('1.23E4'); print('before:', a); b = a.replace(encode_ascii('E'), encode_ascii('D')); print('after replace:', a); print('returned:', b); print('Are they same object?', a is b)"
+2026-06-07 14:13:31,202 INFO STDOUT: before: [b'1.23E' b'1.23E' b'1.23E']
+after replace: [b'1.23E' b'1.23E' b'1.23E']
+returned: [b'1.23D' b'1.23D' b'1.23D']
+Are they same object? False
+
+2026-06-07 14:13:31,202 INFO Exit code: 0
+2026-06-07 14:13:32,677 INFO Running command: cd /testbed && grep -n "output_field" /testbed/astropy/io/fits/fitsrec.py -B5 -A5
+2026-06-07 14:13:32,825 INFO STDOUT: 1149-                raw_field[:] = np.choose(field, choices)
+1150-
+1151-        # Store the updated heapsize
+1152-        self._heapsize = heapsize
+1153-
+1154:    def _scale_back_strings(self, col_idx, input_field, output_field):
+1155-        # There are a few possibilities this has to be able to h... [truncated]
+2026-06-07 14:13:32,825 INFO Exit code: 0
+2026-06-07 14:13:34,201 INFO Running command: cd /testbed && python -c "import astropy.io.fits.fitsrec as fr; import inspect; print(inspect.getsource(fr._scale_back_ascii))"
+2026-06-07 14:13:34,864 INFO STDERR: Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+AttributeError: module 'astropy.io.fits.fitsrec' has no attribute '_scale_back_ascii'
+
+2026-06-07 14:13:34,864 INFO Exit code: 1
+2026-06-07 14:13:36,322 INFO Running command: cd /testbed && python -c "import astropy.io.fits.fitsrec; import inspect; print(inspect.getsource(astropy.io.fits.fitsrec.FITS_rec._scale_back_ascii))"
+2026-06-07 14:13:37,009 INFO STDOUT:     def _scale_back_ascii(self, col_idx, input_field, output_field):
+        """
+        Convert internal array values back to ASCII table representation.
+
+        The ``input_field`` is the internal representation of the values, and
+        the ``output_field`` is the character array representing t... [truncated]
+2026-06-07 14:13:37,009 INFO Exit code: 0
+2026-06-07 14:13:38,857 INFO Running command: cd /testbed && sed -i "1264s/output_field.replace/output_field[:] = output_field.replace/" astropy/io/fits/fitsrec.py
+2026-06-07 14:13:39,034 INFO Exit code: 0
+2026-06-07 14:13:40,480 INFO Running command: cd /testbed && python -m pytest astropy/io/fits/tests/test_checksum.py::TestChecksumFunctions::test_ascii_table_data -xvs
+2026-06-07 14:13:41,549 INFO STDOUT: Internet access disabled
+============================= test session starts ==============================
+platform linux -- Python 3.6.13, pytest-3.3.1, py-1.11.0, pluggy-0.6.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .
+
+Running tests with Astropy version 3.0.dev20979.
+Running tests in a... [truncated]
+2026-06-07 14:13:41,549 INFO Exit code: 1
+2026-06-07 14:13:43,773 INFO Running command: cd /testbed && git diff HEAD
+2026-06-07 14:13:44,341 INFO STDOUT: diff --git a/astropy/io/fits/fitsrec.py b/astropy/io/fits/fitsrec.py
+index 574b4073b1..8890e158e2 100644
+--- a/astropy/io/fits/fitsrec.py
++++ b/astropy/io/fits/fitsrec.py
+@@ -1261,7 +1261,7 @@ class FITS_rec(np.recarray):
+ 
+         # Replace exponent separator in floating point numbers
+         if ... [truncated]
+2026-06-07 14:13:44,341 INFO Exit code: 0
+2026-06-07 14:13:46,443 INFO Running command: cd /testbed && python -c "import numpy as np; from astropy.io.fits.fitsrec import encode_ascii; a = np.chararray((3,), itemsize=5); a[:] = encode_ascii('1.23E4'); print('before:', a); a[:] = a.replace(encode_ascii('E'), encode_ascii('D')); print('after assignment:', a)"
+2026-06-07 14:13:47,131 INFO STDOUT: before: [b'1.23E' b'1.23E' b'1.23E']
+after assignment: [b'1.23D' b'1.23D' b'1.23D']
+
+2026-06-07 14:13:47,131 INFO Exit code: 0
+2026-06-07 14:13:48,965 INFO Running command: cd /testbed && python -m pytest astropy/io/fits/tests/test_table.py::TestTableFunctions::test_ascii_table -xvs
+2026-06-07 14:13:50,067 INFO STDOUT: Internet access disabled
+============================= test session starts ==============================
+platform linux -- Python 3.6.13, pytest-3.3.1, py-1.11.0, pluggy-0.6.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .
+
+Running tests with Astropy version 3.0.dev20979.
+Running tests in a... [truncated]
+2026-06-07 14:13:50,067 INFO Exit code: 0
+2026-06-07 14:13:52,319 INFO Running command: cd /testbed && python -c "import numpy as np; from astropy.io.fits.fitsrec import encode_ascii; a = np.chararray((3,), itemsize=5); a[:] = encode_ascii('1.23E4'); print('before:', a); b = a.replace(encode_ascii('E'), encode_ascii('D')); print('replace result:', b); print('a unchanged:', a)"
+2026-06-07 14:13:52,995 INFO STDOUT: before: [b'1.23E' b'1.23E' b'1.23E']
+replace result: [b'1.23D' b'1.23D' b'1.23D']
+a unchanged: [b'1.23E' b'1.23E' b'1.23E']
+
+2026-06-07 14:13:52,996 INFO Exit code: 0
+2026-06-07 14:13:54,511 INFO Running command: cd /testbed && python -c "import astropy.io.fits.fitsrec; import inspect; print(inspect.getsource(astropy.io.fits.fitsrec.encode_ascii))"
+2026-06-07 14:13:55,208 INFO STDOUT: def encode_ascii(s):
+    if isinstance(s, str):
+        return s.encode('ascii')
+    elif (isinstance(s, np.ndarray) and
+          issubclass(s.dtype.type, np.str_)):
+        ns = np.char.encode(s, 'ascii').view(type(s))
+        if ns.dtype.itemsize != s.dtype.itemsize / 4:
+            ns = ns.astyp... [truncated]
+2026-06-07 14:13:55,208 INFO Exit code: 0
+2026-06-07 14:13:55,208 INFO Running command: git diff --no-ext-diff
+2026-06-07 14:13:55,365 INFO STDOUT: diff --git a/astropy/io/fits/fitsrec.py b/astropy/io/fits/fitsrec.py
+index 574b4073b1..8890e158e2 100644
+--- a/astropy/io/fits/fitsrec.py
++++ b/astropy/io/fits/fitsrec.py
+@@ -1261,7 +1261,7 @@ class FITS_rec(np.recarray):
+ 
+         # Replace exponent separator in floating point numbers
+         if ... [truncated]
+2026-06-07 14:13:55,365 INFO Exit code: 0
+2026-06-07 14:13:55,365 INFO Stopping container boring_snyder
+2026-06-07 14:14:00,503 INFO Removing container boring_snyder

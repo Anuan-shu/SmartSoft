@@ -1,0 +1,205 @@
+2026-06-07 14:11:49,541 INFO Preparing Docker environment for astropy__astropy-14995
+2026-06-07 14:11:49,576 INFO Image already exists locally, skipping pull: swebench/sweb.eval.x86_64.astropy_1776_astropy-14995
+2026-06-07 14:11:49,753 INFO Running command: pwd
+2026-06-07 14:11:49,937 INFO STDOUT: /testbed
+
+2026-06-07 14:11:49,937 INFO Exit code: 0
+2026-06-07 14:11:52,468 INFO Running command: find /testbed -type f -name "*.py" | xargs grep -l "operand is None" | head -20
+2026-06-07 14:11:52,656 INFO STDOUT: /testbed/astropy/nddata/mixins/ndarithmetic.py
+
+2026-06-07 14:11:52,656 INFO Exit code: 0
+2026-06-07 14:11:54,964 INFO Running command: grep -n "operand is None" /testbed/astropy/nddata/mixins/ndarithmetic.py
+2026-06-07 14:11:55,125 INFO STDOUT: 265:        use_masked_arith = operand is None and self.mask is not None
+523:        elif operand is None:
+
+2026-06-07 14:11:55,125 INFO Exit code: 0
+2026-06-07 14:11:57,154 INFO Running command: grep -B5 -A5 "elif operand is None:" /testbed/astropy/nddata/mixins/ndarithmetic.py
+2026-06-07 14:11:57,303 INFO STDOUT:         ) or handle_mask is None:
+            return None
+        elif self.mask is None and operand is not None:
+            # Make a copy so there is no reference in the result.
+            return deepcopy(operand.mask)
+        elif operand is None:
+            return deepcopy(self.mask)
+        e... [truncated]
+2026-06-07 14:11:57,303 INFO Exit code: 0
+2026-06-07 14:12:00,089 INFO Running command: cd /testbed && python -c "import numpy as np; from astropy.nddata import NDDataRef; array = np.array([[0, 1, 0], [1, 0, 1], [0, 1, 0]]); mask = np.array([[0, 1, 64], [8, 0, 1], [2, 1, 0]]); nref_nomask = NDDataRef(array); nref_mask = NDDataRef(array, mask=mask); print('Test 1:', nref_mask.multiply(1., handle_mask=np.bitwise_or).mask)"
+2026-06-07 14:12:01,242 INFO STDERR: Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/testbed/astropy/nddata/mixins/ndarithmetic.py", line 618, in multiply
+    return self._prepare_then_do_arithmetic(
+  File "/testbed/astropy/nddata/mixins/ndarithmetic.py", line 731, in _prepare_then_do_arithmetic
+    ... [truncated]
+2026-06-07 14:12:01,242 INFO Exit code: 1
+2026-06-07 14:12:03,272 INFO Running command: grep -B10 -A10 "_arithmetic_mask" /testbed/astropy/nddata/mixins/ndarithmetic.py | head -30
+2026-06-07 14:12:03,425 INFO STDOUT:         operation_ignores_mask : bool, optional
+            When True, masked values will be excluded from operations;
+            otherwise the operation will be performed on all values,
+            including masked ones.
+
+        axis : int or tuple of ints, optional
+            axis or axes over ... [truncated]
+2026-06-07 14:12:03,425 INFO Exit code: 0
+2026-06-07 14:12:05,889 INFO Running command: grep -n "def _arithmetic_mask" /testbed/astropy/nddata/mixins/ndarithmetic.py
+2026-06-07 14:12:06,084 INFO STDOUT: 485:    def _arithmetic_mask(self, operation, operand, handle_mask, axis=None, **kwds):
+
+2026-06-07 14:12:06,084 INFO Exit code: 0
+2026-06-07 14:12:08,763 INFO Running command: cat /testbed/astropy/nddata/mixins/ndarithmetic.py | sed -n '485,540p'
+2026-06-07 14:12:08,911 INFO STDOUT:     def _arithmetic_mask(self, operation, operand, handle_mask, axis=None, **kwds):
+        """
+        Calculate the resulting mask.
+
+        This is implemented as the piecewise ``or`` operation if both have a
+        mask.
+
+        Parameters
+        ----------
+        operation : callable
+      ... [truncated]
+2026-06-07 14:12:08,911 INFO Exit code: 0
+2026-06-07 14:12:11,074 INFO Running command: cd /testbed && python -c "import numpy as np; from astropy.nddata import NDDataRef; array = np.array([[0, 1, 0], [1, 0, 1], [0, 1, 0]]); mask = np.array([[0, 1, 64], [8, 0, 1], [2, 1, 0]]); nref_nomask = NDDataRef(array); nref_mask = NDDataRef(array, mask=mask); print('Test 1:', nref_mask.multiply(1., handle_mask=np.bitwise_or).mask)"
+2026-06-07 14:12:11,717 INFO STDERR: Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/testbed/astropy/nddata/mixins/ndarithmetic.py", line 618, in multiply
+    return self._prepare_then_do_arithmetic(
+  File "/testbed/astropy/nddata/mixins/ndarithmetic.py", line 731, in _prepare_then_do_arithmetic
+    ... [truncated]
+2026-06-07 14:12:11,717 INFO Exit code: 1
+2026-06-07 14:12:14,909 INFO Running command: cd /testbed && python -c "import numpy as np; from astropy.nddata import NDDataRef; array = np.array([[0, 1, 0], [1, 0, 1], [0, 1, 0]]); mask = np.array([[0, 1, 64], [8, 0, 1], [2, 1, 0]]); nref_nomask = NDDataRef(array); nref_mask = NDDataRef(array, mask=mask); print('Test 1:', nref_mask.multiply(1., handle_mask=np.bitwise_or).mask)"
+2026-06-07 14:12:15,529 INFO STDERR: Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/testbed/astropy/nddata/mixins/ndarithmetic.py", line 618, in multiply
+    return self._prepare_then_do_arithmetic(
+  File "/testbed/astropy/nddata/mixins/ndarithmetic.py", line 731, in _prepare_then_do_arithmetic
+    ... [truncated]
+2026-06-07 14:12:15,529 INFO Exit code: 1
+2026-06-07 14:12:19,331 INFO Running command: cd /testbed && python -c "import numpy as np; from astropy.nddata import NDDataRef; array = np.array([[0, 1, 0], [1, 0, 1], [0, 1, 0]]); mask = np.array([[0, 1, 64], [8, 0, 1], [2, 1, 0]]); nref_nomask = NDDataRef(array); nref_mask = NDDataRef(array, mask=mask); print('Test 1:', nref_mask.multiply(1., handle_mask=np.bitwise_or).mask)"
+2026-06-07 14:12:19,982 INFO STDERR: Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/testbed/astropy/nddata/mixins/ndarithmetic.py", line 618, in multiply
+    return self._prepare_then_do_arithmetic(
+  File "/testbed/astropy/nddata/mixins/ndarithmetic.py", line 731, in _prepare_then_do_arithmetic
+    ... [truncated]
+2026-06-07 14:12:19,982 INFO Exit code: 1
+2026-06-07 14:12:22,335 INFO Running command: cd /testbed && python -c "import numpy as np; from astropy.nddata import NDDataRef; array = np.array([[0, 1, 0], [1, 0, 1], [0, 1, 0]]); mask = np.array([[0, 1, 64], [8, 0, 1], [2, 1, 0]]); nref_nomask = NDDataRef(array); nref_mask = NDDataRef(array, mask=mask); print('Test 1:', nref_mask.multiply(1., handle_mask=np.bitwise_or).mask)"
+2026-06-07 14:12:22,941 INFO STDERR: Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/testbed/astropy/nddata/mixins/ndarithmetic.py", line 618, in multiply
+    return self._prepare_then_do_arithmetic(
+  File "/testbed/astropy/nddata/mixins/ndarithmetic.py", line 731, in _prepare_then_do_arithmetic
+    ... [truncated]
+2026-06-07 14:12:22,941 INFO Exit code: 1
+2026-06-07 14:12:24,388 INFO Running command: grep -n "elif operand is None:" /testbed/astropy/nddata/mixins/ndarithmetic.py
+2026-06-07 14:12:24,536 INFO STDOUT: 523:        elif operand is None:
+
+2026-06-07 14:12:24,536 INFO Exit code: 0
+2026-06-07 14:12:26,578 INFO Running command: cd /testbed && sed -n '485,540p' /testbed/astropy/nddata/mixins/ndarithmetic.py
+2026-06-07 14:12:26,729 INFO STDOUT:     def _arithmetic_mask(self, operation, operand, handle_mask, axis=None, **kwds):
+        """
+        Calculate the resulting mask.
+
+        This is implemented as the piecewise ``or`` operation if both have a
+        mask.
+
+        Parameters
+        ----------
+        operation : callable
+      ... [truncated]
+2026-06-07 14:12:26,729 INFO Exit code: 0
+2026-06-07 14:12:29,046 INFO Running command: cd /testbed && python -c "import numpy as np; from astropy.nddata import NDDataRef; array = np.array([[0, 1, 0], [1, 0, 1], [0, 1, 0]]); mask = np.array([[0, 1, 64], [8, 0, 1], [2, 1, 0]]); nref_nomask = NDDataRef(array); nref_mask = NDDataRef(array, mask=mask); print('Test 1:', nref_mask.multiply(1., handle_mask=np.bitwise_or).mask)"
+2026-06-07 14:12:29,644 INFO STDERR: Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/testbed/astropy/nddata/mixins/ndarithmetic.py", line 618, in multiply
+    return self._prepare_then_do_arithmetic(
+  File "/testbed/astropy/nddata/mixins/ndarithmetic.py", line 731, in _prepare_then_do_arithmetic
+    ... [truncated]
+2026-06-07 14:12:29,644 INFO Exit code: 1
+2026-06-07 14:12:31,245 INFO Running command: cd /testbed && git diff HEAD~1 HEAD -- astropy/nddata/mixins/ndarithmetic.py
+2026-06-07 14:12:31,395 INFO Exit code: 0
+2026-06-07 14:12:32,912 INFO Running command: cd /testbed && git log --oneline -n 20 -- astropy/nddata/mixins/ndarithmetic.py
+2026-06-07 14:12:33,094 INFO STDOUT: aaf1f4a96 Renaming kwarg to operation_ignores_mask
+e9e0b4e70 Preserving units in corner case
+4c9c77c1e Adding  kwarg for nddata
+2c64c65d4 Removing unnecessary unit assignment for future dask compatibility
+549687892 Adding narrative documentation, fixing bugs it illuminated
+feeb716b7 introducing coll... [truncated]
+2026-06-07 14:12:33,094 INFO Exit code: 0
+2026-06-07 14:12:35,075 INFO Running command: cd /testbed && git show feeb716b7:astropy/nddata/mixins/ndarithmetic.py | sed -n '485,540p'
+2026-06-07 14:12:35,229 INFO STDOUT:         result_mask : any type
+            If only one mask was present this mask is returned.
+            If neither had a mask ``None`` is returned. Otherwise
+            ``handle_mask`` must create (and copy) the returned mask.
+        """
+        # If only one mask is present we need not bother ... [truncated]
+2026-06-07 14:12:35,229 INFO Exit code: 0
+2026-06-07 14:12:37,874 INFO Running command: cd /testbed && git show feeb716b7:astropy/nddata/mixins/ndarithmetic.py | grep -n "elif operand.mask is None:" -A 2 -B 2
+2026-06-07 14:12:38,030 INFO Exit code: 1
+2026-06-07 14:12:39,741 INFO Running command: cd /testbed && git log --oneline -n 5 --grep="mask" -- astropy/nddata/mixins/ndarithmetic.py
+2026-06-07 14:12:40,015 INFO STDOUT: aaf1f4a96 Renaming kwarg to operation_ignores_mask
+feeb716b7 introducing collapse operations on NDDataArray
+e24b2fb40 callables for mask, meta and wcs
+
+2026-06-07 14:12:40,015 INFO Exit code: 0
+2026-06-07 14:12:42,193 INFO Running command: cd /testbed && git show e24b2fb40:astropy/nddata/mixins/ndarithmetic.py | sed -n '485,540p'
+2026-06-07 14:12:42,353 INFO STDOUT:         operand : `NDData`-like instance
+            The second operand wrapped in an instance of the same class as
+            self.
+
+        handle_mask : callable, ``False`` or ``None``, optional
+            see :meth:`NDArithmeticMixin.add`
+
+        Returns
+        -------
+        result_mask : ... [truncated]
+2026-06-07 14:12:42,353 INFO Exit code: 0
+2026-06-07 14:12:44,769 INFO Running command: cd /testbed && python -c "import numpy as np; from astropy.nddata import NDDataRef; array = np.array([[0, 1, 0], [1, 0, 1], [0, 1, 0]]); mask = np.array([[0, 1, 64], [8, 0, 1], [2, 1, 0]]); nref_nomask = NDDataRef(array); nref_mask = NDDataRef(array, mask=mask); print('Test 1:', nref_mask.multiply(1., handle_mask=np.bitwise_or).mask)"
+2026-06-07 14:12:45,404 INFO STDERR: Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/testbed/astropy/nddata/mixins/ndarithmetic.py", line 618, in multiply
+    return self._prepare_then_do_arithmetic(
+  File "/testbed/astropy/nddata/mixins/ndarithmetic.py", line 731, in _prepare_then_do_arithmetic
+    ... [truncated]
+2026-06-07 14:12:45,404 INFO Exit code: 1
+2026-06-07 14:12:48,059 INFO Running command: grep -n "elif operand is None:" /testbed/astropy/nddata/mixins/ndarithmetic.py -B 2 -A 2
+2026-06-07 14:12:48,214 INFO STDOUT: 521-            # Make a copy so there is no reference in the result.
+522-            return deepcopy(operand.mask)
+523:        elif operand is None:
+524-            return deepcopy(self.mask)
+525-        else:
+
+2026-06-07 14:12:48,214 INFO Exit code: 0
+2026-06-07 14:12:50,398 INFO Running command: cd /testbed && sed -i '523s/operand is None/operand.mask is None/' astropy/nddata/mixins/ndarithmetic.py
+2026-06-07 14:12:50,550 INFO Exit code: 0
+2026-06-07 14:12:53,377 INFO Running command: cd /testbed && python -c "import numpy as np; from astropy.nddata import NDDataRef; array = np.array([[0, 1, 0], [1, 0, 1], [0, 1, 0]]); mask = np.array([[0, 1, 64], [8, 0, 1], [2, 1, 0]]); nref_nomask = NDDataRef(array); nref_mask = NDDataRef(array, mask=mask); print('Test 1:', nref_mask.multiply(1., handle_mask=np.bitwise_or).mask); print('Test 2:', nref_mask.multiply(nref_nomask, handle_mask=np.bitwise_or).mask); print('Test 3:', nref_nomask.multiply(nref_mask, handle_mask=np.bitwise_or).mask)"
+2026-06-07 14:12:54,010 INFO STDOUT: Test 1: [[ 0  1 64]
+ [ 8  0  1]
+ [ 2  1  0]]
+Test 2: [[ 0  1 64]
+ [ 8  0  1]
+ [ 2  1  0]]
+Test 3: [[ 0  1 64]
+ [ 8  0  1]
+ [ 2  1  0]]
+
+2026-06-07 14:12:54,010 INFO Exit code: 0
+2026-06-07 14:12:55,470 INFO Running command: cd /testbed && python -m pytest astropy/nddata/mixins/tests/test_ndarithmetic.py::test_nddata_bitmask_arithmetic -xvs
+2026-06-07 14:12:57,115 INFO STDOUT: Internet access disabled
+[1m============================= test session starts ==============================[0m
+platform linux -- Python 3.9.20, pytest-7.4.0, pluggy-1.3.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .pytest_cache
+
+Running tests with Astropy version 6.0.dev328+gb16c7d12c.d... [truncated]
+2026-06-07 14:12:57,115 INFO STDERR: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+ERROR: not found: /testbed/astropy/nddata/mixins/tests/test_ndarithmetic.py::test_nddata_bitmask_arithmetic
+(no name '/testbed/astropy/n... [truncated]
+2026-06-07 14:12:57,115 INFO Exit code: 4
+2026-06-07 14:12:57,115 INFO Running command: git diff --no-ext-diff
+2026-06-07 14:12:57,633 INFO STDOUT: diff --git a/astropy/nddata/mixins/ndarithmetic.py b/astropy/nddata/mixins/ndarithmetic.py
+index 4153dfccb..f5ffc0dbb 100644
+--- a/astropy/nddata/mixins/ndarithmetic.py
++++ b/astropy/nddata/mixins/ndarithmetic.py
+@@ -520,7 +520,7 @@ class NDArithmeticMixin:
+         elif self.mask is None and operan... [truncated]
+2026-06-07 14:12:57,633 INFO Exit code: 0
+2026-06-07 14:12:57,634 INFO Stopping container confident_yonath
+2026-06-07 14:13:02,790 INFO Removing container confident_yonath
