@@ -25,6 +25,9 @@ UNIFIED DIFF PATCH
 Rules:
 - Use non-interactive shell commands only.
 - Prefer focused inspections (`ls`, `find`, `grep`, `sed`, `python -m pytest <target>`).
+- Work in `/testbed`; do not clone repositories or install large new dependencies.
+- First inspect the relevant source and tests, then make the smallest correct code change.
+- Use `git diff` to inspect your final changes before returning a patch.
 - Never use destructive system-level commands (reboot, shutdown, mkfs, etc.).
 - If you edit files, produce the final answer as a unified diff patch.
 - Do not output markdown fences or any extra text outside the required tags.
@@ -38,8 +41,8 @@ Return ONLY:
 No extra text.
 """
 
-MAX_STEPS = 12
-MAX_OBS_CHARS = 1200
+MAX_STEPS = 25
+MAX_OBS_CHARS = 4000
 FORBIDDEN_COMMAND_PATTERNS = (
     "shutdown",
     "reboot",
@@ -49,6 +52,9 @@ FORBIDDEN_COMMAND_PATTERNS = (
     "fdisk",
     "dd if=",
     "rm -rf /",
+    "rm -fr /",
+    "git reset --hard",
+    "git clean -fd",
     ":(){:|:&};:",
 )
 
@@ -71,6 +77,22 @@ def _extract_tagged(text: str, tag: str) -> str:
 def _is_forbidden_command(command: str) -> bool:
     lowered = command.lower()
     return any(token in lowered for token in FORBIDDEN_COMMAND_PATTERNS)
+
+
+def _command_timeout(command: str) -> int:
+    lowered = command.lower()
+    if any(token in lowered for token in ("pytest", "tox", "unittest", "runtests.py")):
+        return 300
+    if any(token in lowered for token in ("pip install", "conda install", "apt-get", "npm install")):
+        return 300
+    return 120
+
+
+def _current_diff(env: DockerEnv) -> str:
+    result = env.run("git diff --no-ext-diff", timeout=60)
+    if result.exit_code != 0:
+        return ""
+    return extract_patch(result.stdout)
 
 
 def _parse_model_action(content: str) -> tuple[str, str]:
@@ -101,8 +123,18 @@ def _build_task_prompt(
         if not final_only
         else "Now stop acting and produce the final patch."
     )
+    hints = context.hints_text.strip() or "(none)"
     return f"""Problem statement:
 {context.problem_statement}
+
+Task metadata:
+- instance_id: {context.instance_id}
+- repo: {context.repo}
+- base_commit: {context.base_commit}
+- version: {context.version or "(unknown)"}
+- hints: {hints}
+- fail_to_pass tests: {context.fail_to_pass}
+- pass_to_pass tests: {context.pass_to_pass}
 
 Interaction history:
 {history_block}
@@ -138,6 +170,9 @@ def solve_task(context: TaskContext, env: DockerEnv, model: ModelClient) -> str:
         action_type, payload = _parse_model_action(response.content)
 
         if action_type == "final_patch":
+            diff = _current_diff(env)
+            if diff:
+                return diff
             return extract_patch(payload)
 
         if action_type != "command":
@@ -161,9 +196,13 @@ def solve_task(context: TaskContext, env: DockerEnv, model: ModelClient) -> str:
             )
             continue
 
-        result = env.run(command, timeout=120)
+        result = env.run(command, timeout=_command_timeout(command))
         observation = _format_observation(result.exit_code, result.stdout, result.stderr)
         history.append(f"[step {step} command]\n{command}\n[step {step} observation]\n{observation}")
+
+    diff = _current_diff(env)
+    if diff:
+        return diff
 
     # Finalization pass: force model to output only final patch.
     final_prompt = _build_task_prompt(context, history, steps_remaining=0, final_only=True)
@@ -177,5 +216,4 @@ def solve_task(context: TaskContext, env: DockerEnv, model: ModelClient) -> str:
         return extract_patch(final_payload)
 
     # Last fallback: if model already modified files but failed format, emit git diff.
-    diff_result = env.run("git diff", timeout=60)
-    return extract_patch(diff_result.stdout)
+    return _current_diff(env)
