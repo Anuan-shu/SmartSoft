@@ -1,0 +1,198 @@
+2026-06-07 13:29:06,564 INFO Preparing Docker environment for astropy__astropy-14365
+2026-06-07 13:29:06,604 INFO Image already exists locally, skipping pull: swebench/sweb.eval.x86_64.astropy_1776_astropy-14365
+2026-06-07 13:29:06,779 INFO Running command: pwd
+2026-06-07 13:29:06,970 INFO STDOUT: /testbed
+
+2026-06-07 13:29:06,970 INFO Exit code: 0
+2026-06-07 13:29:08,102 INFO Running command: find /testbed -type f -name "*.py" | xargs grep -l "ascii.qdp" | head -20
+2026-06-07 13:29:08,461 INFO STDOUT: /testbed/astropy/io/ascii/tests/test_qdp.py
+/testbed/astropy/io/ascii/qdp.py
+
+2026-06-07 13:29:08,461 INFO Exit code: 0
+2026-06-07 13:29:09,652 INFO Running command: grep -n "READ SERR" /testbed/astropy/io/ascii/qdp.py
+2026-06-07 13:29:09,813 INFO STDOUT: 35:    >>> _line_type("READ SERR 3")
+150:    """Give list of column names from the READ SERR and TERR commands.
+460:        print(f"READ SERR {col_string}", file=fobj)
+531:        READ SERR 3
+551:        READ SERR 3
+572:    a symmetric error (just like the ``READ SERR`` and ``READ TERR`` commands
+60... [truncated]
+2026-06-07 13:29:09,813 INFO Exit code: 0
+2026-06-07 13:29:10,905 INFO Running command: grep -n "Unrecognized QDP line" /testbed/astropy/io/ascii/qdp.py
+2026-06-07 13:29:11,067 INFO STDOUT: 56:    ValueError: Unrecognized QDP line...
+60:    ValueError: Unrecognized QDP line...
+78:        raise ValueError(f"Unrecognized QDP line: {line}")
+
+2026-06-07 13:29:11,068 INFO Exit code: 0
+2026-06-07 13:29:13,080 INFO Running command: grep -n "def _line_type" /testbed/astropy/io/ascii/qdp.py
+2026-06-07 13:29:13,228 INFO STDOUT: 20:def _line_type(line, delimiter=None):
+
+2026-06-07 13:29:13,228 INFO Exit code: 0
+2026-06-07 13:29:14,453 INFO Running command: cat /testbed/astropy/io/ascii/qdp.py | head -100
+2026-06-07 13:29:14,607 INFO STDOUT: # Licensed under a 3-clause BSD style license - see LICENSE.rst
+"""
+This package contains functions for reading and writing QDP tables that are
+not meant to be used directly, but instead are available as readers/writers in
+`astropy.table`. See :ref:`astropy:table_io` for more details.
+"""
+import cop... [truncated]
+2026-06-07 13:29:14,607 INFO Exit code: 0
+2026-06-07 13:29:15,755 INFO Running command: grep -n "_command_re" /testbed/astropy/io/ascii/qdp.py
+2026-06-07 13:29:15,906 INFO STDOUT: 63:    _command_re = r"READ [TS]ERR(\s+[0-9]+)+"
+70:    _type_re = rf"^\s*((?P<command>{_command_re})|(?P<new>{_new_re})|(?P<data>{_data_re})?\s*(\!(?P<comment>.*))?\s*$"
+
+2026-06-07 13:29:15,906 INFO Exit code: 0
+2026-06-07 13:29:19,077 INFO Running command: sed -n '60,80p' /testbed/astropy/io/ascii/qdp.py
+2026-06-07 13:29:19,226 INFO STDOUT:     ValueError: Unrecognized QDP line...
+    """
+    _decimal_re = r"[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?"
+    _command_re = r"READ [TS]ERR(\s+[0-9]+)+"
+
+    sep = delimiter
+    if delimiter is None:
+        sep = r"\s+"
+    _new_re = rf"NO({sep}NO)+"
+    _data_re = rf"({_decimal_re}|NO|[-+]?nan)... [truncated]
+2026-06-07 13:29:19,227 INFO Exit code: 0
+2026-06-07 13:29:20,837 INFO Running command: grep -n -i "read serr" /testbed/astropy/io/ascii/qdp.py
+2026-06-07 13:29:21,002 INFO STDOUT: 35:    >>> _line_type("READ SERR 3")
+150:    """Give list of column names from the READ SERR and TERR commands.
+460:        print(f"READ SERR {col_string}", file=fobj)
+531:        READ SERR 3
+551:        READ SERR 3
+572:    a symmetric error (just like the ``READ SERR`` and ``READ TERR`` commands
+60... [truncated]
+2026-06-07 13:29:21,002 INFO Exit code: 0
+2026-06-07 13:29:22,120 INFO Running command: grep -n -B2 -A2 "_command_re" /testbed/astropy/io/ascii/qdp.py
+2026-06-07 13:29:22,272 INFO STDOUT: 61-    """
+62-    _decimal_re = r"[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?"
+63:    _command_re = r"READ [TS]ERR(\s+[0-9]+)+"
+64-
+65-    sep = delimiter
+--
+68-    _new_re = rf"NO({sep}NO)+"
+69-    _data_re = rf"({_decimal_re}|NO|[-+]?nan)({sep}({_decimal_re}|NO|[-+]?nan))*)"
+70:    _type_re = rf"^\s*(... [truncated]
+2026-06-07 13:29:22,272 INFO Exit code: 0
+2026-06-07 13:29:23,903 INFO Running command: grep -n -i "re.IGNORECASE" /testbed/astropy/io/ascii/qdp.py
+2026-06-07 13:29:24,048 INFO Exit code: 1
+2026-06-07 13:29:26,250 INFO Running command: grep -n "re.compile" /testbed/astropy/io/ascii/qdp.py
+2026-06-07 13:29:26,400 INFO STDOUT: 71:    _line_type_re = re.compile(_type_re)
+
+2026-06-07 13:29:26,400 INFO Exit code: 0
+2026-06-07 13:29:28,676 INFO Running command: python -m pytest astropy/io/ascii/tests/test_qdp.py::test_roundtrip -xvs
+2026-06-07 13:29:30,559 INFO STDOUT: Internet access disabled
+[1m============================= test session starts ==============================[0m
+platform linux -- Python 3.9.20, pytest-7.4.0, pluggy-1.3.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .pytest_cache
+
+Running tests with Astropy version 5.3.dev882+g7269fa3e3.d... [truncated]
+2026-06-07 13:29:30,559 INFO STDERR: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+
+2026-06-07 13:29:30,559 INFO Exit code: 0
+2026-06-07 13:29:32,380 INFO Running command: python -m pytest astropy/io/ascii/tests/test_qdp.py::test_roundtrip -xvs -k "True"
+2026-06-07 13:29:33,411 INFO STDOUT: Internet access disabled
+[1m============================= test session starts ==============================[0m
+platform linux -- Python 3.9.20, pytest-7.4.0, pluggy-1.3.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .pytest_cache
+
+Running tests with Astropy version 5.3.dev882+g7269fa3e3.d... [truncated]
+2026-06-07 13:29:33,411 INFO STDERR: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+
+2026-06-07 13:29:33,411 INFO Exit code: 5
+2026-06-07 13:29:34,567 INFO Running command: python -m pytest astropy/io/ascii/tests/test_qdp.py::test_roundtrip -xvs --co
+2026-06-07 13:29:35,602 INFO STDOUT: Internet access disabled
+[1m============================= test session starts ==============================[0m
+platform linux -- Python 3.9.20, pytest-7.4.0, pluggy-1.3.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .pytest_cache
+
+Running tests with Astropy version 5.3.dev882+g7269fa3e3.d... [truncated]
+2026-06-07 13:29:35,602 INFO STDERR: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+
+2026-06-07 13:29:35,602 INFO Exit code: 0
+2026-06-07 13:29:36,939 INFO Running command: python -m pytest astropy/io/ascii/tests/test_qdp.py::test_roundtrip -xvs --tb=short
+2026-06-07 13:29:37,960 INFO STDOUT: Internet access disabled
+[1m============================= test session starts ==============================[0m
+platform linux -- Python 3.9.20, pytest-7.4.0, pluggy-1.3.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .pytest_cache
+
+Running tests with Astropy version 5.3.dev882+g7269fa3e3.d... [truncated]
+2026-06-07 13:29:37,960 INFO STDERR: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+
+2026-06-07 13:29:37,960 INFO Exit code: 0
+2026-06-07 13:29:39,372 INFO Running command: grep -n "def _line_type" /testbed/astropy/io/ascii/qdp.py
+2026-06-07 13:29:39,518 INFO STDOUT: 20:def _line_type(line, delimiter=None):
+
+2026-06-07 13:29:39,518 INFO Exit code: 0
+2026-06-07 13:29:40,839 INFO Running command: cat /testbed/astropy/io/ascii/qdp.py
+2026-06-07 13:29:40,995 INFO STDOUT: # Licensed under a 3-clause BSD style license - see LICENSE.rst
+"""
+This package contains functions for reading and writing QDP tables that are
+not meant to be used directly, but instead are available as readers/writers in
+`astropy.table`. See :ref:`astropy:table_io` for more details.
+"""
+import cop... [truncated]
+2026-06-07 13:29:40,996 INFO Exit code: 0
+2026-06-07 13:29:42,415 INFO Running command: grep -n "_command_re" /testbed/astropy/io/ascii/qdp.py
+2026-06-07 13:29:42,563 INFO STDOUT: 63:    _command_re = r"READ [TS]ERR(\s+[0-9]+)+"
+70:    _type_re = rf"^\s*((?P<command>{_command_re})|(?P<new>{_new_re})|(?P<data>{_data_re})?\s*(\!(?P<comment>.*))?\s*$"
+
+2026-06-07 13:29:42,563 INFO Exit code: 0
+2026-06-07 13:29:44,159 INFO Running command: python -c "import re; print(re.compile(r'READ [TS]ERR(\s+[0-9]+)+', re.IGNORECASE).match('read serr 1 2'))"
+2026-06-07 13:29:44,327 INFO STDOUT: <re.Match object; span=(0, 13), match='read serr 1 2'>
+
+2026-06-07 13:29:44,327 INFO Exit code: 0
+2026-06-07 13:29:45,812 INFO Running command: grep -n "re.compile" /testbed/astropy/io/ascii/qdp.py
+2026-06-07 13:29:45,960 INFO STDOUT: 71:    _line_type_re = re.compile(_type_re)
+
+2026-06-07 13:29:45,961 INFO Exit code: 0
+2026-06-07 13:29:47,335 INFO Running command: sed -i 's/_line_type_re = re.compile(_type_re)/_line_type_re = re.compile(_type_re, re.IGNORECASE)/' /testbed/astropy/io/ascii/qdp.py
+2026-06-07 13:29:47,487 INFO Exit code: 0
+2026-06-07 13:29:49,117 INFO Running command: python -m pytest astropy/io/ascii/tests/test_qdp.py::test_roundtrip -xvs --tb=short
+2026-06-07 13:29:50,147 INFO STDOUT: Internet access disabled
+[1m============================= test session starts ==============================[0m
+platform linux -- Python 3.9.20, pytest-7.4.0, pluggy-1.3.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .pytest_cache
+
+Running tests with Astropy version 5.3.dev882+g7269fa3e3.d... [truncated]
+2026-06-07 13:29:50,147 INFO STDERR: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+
+2026-06-07 13:29:50,147 INFO Exit code: 0
+2026-06-07 13:29:51,922 INFO Running command: python -m pytest astropy/io/ascii/tests/test_qdp.py -xvs --tb=short
+2026-06-07 13:29:52,981 INFO STDOUT: Internet access disabled
+[1m============================= test session starts ==============================[0m
+platform linux -- Python 3.9.20, pytest-7.4.0, pluggy-1.3.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .pytest_cache
+
+Running tests with Astropy version 5.3.dev882+g7269fa3e3.d... [truncated]
+2026-06-07 13:29:52,981 INFO STDERR: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+
+2026-06-07 13:29:52,981 INFO Exit code: 0
+2026-06-07 13:29:55,428 INFO Running command: cd /testbed && python -c "from astropy.table import Table; import tempfile; f = tempfile.NamedTemporaryFile(mode='w', suffix='.qdp', delete=False); f.write('read serr 1 2\\n1 0.5 1 0.5'); f.close(); t = Table.read(f.name, format='ascii.qdp'); print(t); import os; os.unlink(f.name)"
+2026-06-07 13:29:56,012 INFO STDOUT: col1 col1_err col2 col2_err
+---- -------- ---- --------
+   1      0.5    1      0.5
+
+2026-06-07 13:29:56,012 INFO STDERR: WARNING: table_id not specified. Reading the first available table [astropy.io.ascii.qdp]
+
+2026-06-07 13:29:56,012 INFO Exit code: 0
+2026-06-07 13:29:57,194 INFO Running command: git diff HEAD
+2026-06-07 13:29:57,719 INFO STDOUT: diff --git a/astropy/io/ascii/qdp.py b/astropy/io/ascii/qdp.py
+index 83a4f004a..768beb0de 100644
+--- a/astropy/io/ascii/qdp.py
++++ b/astropy/io/ascii/qdp.py
+@@ -68,7 +68,7 @@ def _line_type(line, delimiter=None):
+     _new_re = rf"NO({sep}NO)+"
+     _data_re = rf"({_decimal_re}|NO|[-+]?nan)({sep}({_... [truncated]
+2026-06-07 13:29:57,720 INFO Exit code: 0
+2026-06-07 13:29:57,720 INFO Running command: git diff --no-ext-diff
+2026-06-07 13:29:57,899 INFO STDOUT: diff --git a/astropy/io/ascii/qdp.py b/astropy/io/ascii/qdp.py
+index 83a4f004a..768beb0de 100644
+--- a/astropy/io/ascii/qdp.py
++++ b/astropy/io/ascii/qdp.py
+@@ -68,7 +68,7 @@ def _line_type(line, delimiter=None):
+     _new_re = rf"NO({sep}NO)+"
+     _data_re = rf"({_decimal_re}|NO|[-+]?nan)({sep}({_... [truncated]
+2026-06-07 13:29:57,899 INFO Exit code: 0
+2026-06-07 13:29:57,899 INFO Stopping container zen_tu
+2026-06-07 13:30:03,022 INFO Removing container zen_tu
