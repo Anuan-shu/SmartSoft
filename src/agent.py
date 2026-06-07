@@ -43,10 +43,12 @@ Return ONLY:
 </final_patch>
 No extra text.
 The patch must be produced from `git diff --no-ext-diff` whenever possible.
+Do not include repeated hunks, truncated lines, or whitespace-only changes.
 """
 
 MAX_STEPS = 25
 MAX_OBS_CHARS = 4000
+MAX_MODEL_PATCH_LINES = 350
 HUNK_HEADER_RE = re.compile(r"^@@ -(?P<old_start>\d+)(?:,\d+)? \+(?P<new_start>\d+)(?:,\d+)? @@(?P<suffix>.*)$")
 FORBIDDEN_COMMAND_PATTERNS = (
     "shutdown",
@@ -163,10 +165,59 @@ def _normalize_patch(patch: str) -> str:
     return cleaned if cleaned.endswith("\n") else f"{cleaned}\n"
 
 
+def _patch_quality_issue(patch: str) -> str:
+    cleaned = _normalize_patch(patch)
+    if not cleaned:
+        return "empty patch"
+
+    lines = cleaned.splitlines()
+    if len(lines) > MAX_MODEL_PATCH_LINES:
+        return f"patch is too large ({len(lines)} lines); likely repeated or runaway output"
+
+    hunk_bodies: dict[tuple[str, ...], int] = {}
+    index = 0
+    while index < len(lines):
+        if not HUNK_HEADER_RE.match(lines[index]):
+            index += 1
+            continue
+        index += 1
+        body: list[str] = []
+        while index < len(lines):
+            line = lines[index]
+            if line.startswith("diff --git ") or HUNK_HEADER_RE.match(line):
+                break
+            body.append(line.rstrip())
+            index += 1
+        signature = tuple(body)
+        if signature:
+            hunk_bodies[signature] = hunk_bodies.get(signature, 0) + 1
+            if hunk_bodies[signature] > 1:
+                return "patch contains repeated hunks"
+
+    meaningful_changes = [
+        line
+        for line in lines
+        if line.startswith(("+", "-"))
+        and not line.startswith(("+++", "---"))
+        and line[1:].strip()
+    ]
+    if not meaningful_changes:
+        return "patch has no meaningful changed lines"
+
+    last_nonempty = next((line for line in reversed(lines) if line.strip()), "")
+    if last_nonempty and not last_nonempty.startswith((" ", "+", "-", "\\", "@@", "diff --git", "index ", "---", "+++")):
+        return f"patch appears truncated near: {last_nonempty[:80]}"
+
+    return ""
+
+
 def _check_patch(env: DockerEnv, patch: str) -> tuple[bool, str]:
     cleaned = _normalize_patch(patch)
     if not cleaned:
         return False, "empty patch"
+    quality_issue = _patch_quality_issue(cleaned)
+    if quality_issue:
+        return False, quality_issue
     encoded = base64.b64encode(cleaned.encode("utf-8")).decode("ascii")
     command = (
         "python -c "
@@ -315,10 +366,11 @@ def solve_task(context: TaskContext, env: DockerEnv, model: ModelClient) -> str:
     final_type, final_payload = _parse_model_action(final_response.content)
     if final_type == "final_patch":
         patch = _normalize_patch(final_payload)
-        patch_ok, _ = _check_patch(env, patch)
+        patch_ok, patch_reason = _check_patch(env, patch)
         if patch_ok:
             return patch
-        return patch
+        history.append(f"[final invalid]\npatch check failure:\n{patch_reason}")
+        return ""
 
     # Last fallback: if model already modified files but failed format, emit git diff.
     return _current_diff(env)
