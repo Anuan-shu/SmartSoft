@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import re
 
 from utils.docker_env import DockerEnv
@@ -28,6 +29,8 @@ Rules:
 - Work in `/testbed`; do not clone repositories or install large new dependencies.
 - First inspect the relevant source and tests, then make the smallest correct code change.
 - Use `git diff` to inspect your final changes before returning a patch.
+- Prefer changing production source files only; do not edit tests unless the task explicitly requires it.
+- Do not invent a patch from memory. If no files were edited in the container, continue with commands.
 - Never use destructive system-level commands (reboot, shutdown, mkfs, etc.).
 - If you edit files, produce the final answer as a unified diff patch.
 - Do not output markdown fences or any extra text outside the required tags.
@@ -93,6 +96,20 @@ def _current_diff(env: DockerEnv) -> str:
     if result.exit_code != 0:
         return ""
     return extract_patch(result.stdout)
+
+
+def _patch_applies(env: DockerEnv, patch: str) -> bool:
+    cleaned = extract_patch(patch)
+    if not cleaned:
+        return False
+    encoded = base64.b64encode(cleaned.encode("utf-8")).decode("ascii")
+    command = (
+        "python -c "
+        f"\"import base64, pathlib; pathlib.Path('/tmp/swe_agent_patch.diff').write_bytes(base64.b64decode('{encoded}'))\" "
+        "&& git apply --check /tmp/swe_agent_patch.diff"
+    )
+    result = env.run(command, timeout=60)
+    return result.exit_code == 0
 
 
 def _parse_model_action(content: str) -> tuple[str, str]:
@@ -173,7 +190,16 @@ def solve_task(context: TaskContext, env: DockerEnv, model: ModelClient) -> str:
             diff = _current_diff(env)
             if diff:
                 return diff
-            return extract_patch(payload)
+            patch = extract_patch(payload)
+            if _patch_applies(env, patch):
+                return patch
+            history.append(
+                f"[step {step} invalid]\n"
+                "Model returned a final patch, but no files were edited in the container "
+                "and the supplied patch does not apply cleanly. Continue by inspecting "
+                "and editing files, then use git diff."
+            )
+            continue
 
         if action_type != "command":
             history.append(
@@ -213,7 +239,10 @@ def solve_task(context: TaskContext, env: DockerEnv, model: ModelClient) -> str:
     )
     final_type, final_payload = _parse_model_action(final_response.content)
     if final_type == "final_patch":
-        return extract_patch(final_payload)
+        patch = extract_patch(final_payload)
+        if _patch_applies(env, patch):
+            return patch
+        return ""
 
     # Last fallback: if model already modified files but failed format, emit git diff.
     return _current_diff(env)
