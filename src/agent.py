@@ -47,6 +47,7 @@ The patch must be produced from `git diff --no-ext-diff` whenever possible.
 
 MAX_STEPS = 25
 MAX_OBS_CHARS = 4000
+HUNK_HEADER_RE = re.compile(r"^@@ -(?P<old_start>\d+)(?:,\d+)? \+(?P<new_start>\d+)(?:,\d+)? @@(?P<suffix>.*)$")
 FORBIDDEN_COMMAND_PATTERNS = (
     "shutdown",
     "reboot",
@@ -99,10 +100,66 @@ def _current_diff(env: DockerEnv) -> str:
     return _normalize_patch(result.stdout)
 
 
+def _format_range(start: str, count: int) -> str:
+    return start if count == 1 else f"{start},{count}"
+
+
+def _repair_hunk_headers(patch: str) -> str:
+    lines = patch.splitlines()
+    repaired: list[str] = []
+    index = 0
+
+    while index < len(lines):
+        line = lines[index]
+        match = HUNK_HEADER_RE.match(line)
+        if not match:
+            repaired.append(line)
+            index += 1
+            continue
+
+        header_index = len(repaired)
+        repaired.append(line)
+        index += 1
+        old_count = 0
+        new_count = 0
+
+        while index < len(lines):
+            body_line = lines[index]
+            if body_line.startswith("diff --git ") or HUNK_HEADER_RE.match(body_line):
+                break
+
+            # Models sometimes emit an empty context line without the leading
+            # space required by unified diff. Preserve intent and keep counts valid.
+            if body_line == "":
+                body_line = " "
+
+            if body_line.startswith(" "):
+                old_count += 1
+                new_count += 1
+            elif body_line.startswith("-"):
+                old_count += 1
+            elif body_line.startswith("+"):
+                new_count += 1
+            elif not body_line.startswith("\\"):
+                body_line = f" {body_line}"
+                old_count += 1
+                new_count += 1
+
+            repaired.append(body_line)
+            index += 1
+
+        old_range = _format_range(match.group("old_start"), old_count)
+        new_range = _format_range(match.group("new_start"), new_count)
+        repaired[header_index] = f"@@ -{old_range} +{new_range} @@{match.group('suffix')}"
+
+    return "\n".join(repaired)
+
+
 def _normalize_patch(patch: str) -> str:
     cleaned = extract_patch(patch)
     if not cleaned:
         return ""
+    cleaned = _repair_hunk_headers(cleaned)
     return cleaned if cleaned.endswith("\n") else f"{cleaned}\n"
 
 
