@@ -9,30 +9,49 @@ from utils.patches import extract_patch
 from utils.tasks import TaskContext
 
 
-SYSTEM_PROMPT = """You are an autonomous SWE-bench CLI agent running inside a repository container.
-Think through shell commands, inspect code, edit files, and validate with tests.
+SYSTEM_PROMPT = """You are an autonomous SWE-bench CLI agent running inside a repository container at `/testbed`.
+Your goal is to make the FAIL_TO_PASS tests pass while keeping the PASS_TO_PASS tests green,
+by editing the real source files in the container and validating with tests.
 
-Return EXACTLY ONE of the following formats per turn:
-1) For taking an action:
+Return EXACTLY ONE of the following formats per turn (nothing else):
+1) To run a single shell command:
 <command>
 ONE SINGLE SHELL COMMAND
 </command>
 
-2) When you are done:
+2) When the fix is applied and verified:
 <final_patch>
 UNIFIED DIFF PATCH
 </final_patch>
 
+Recommended workflow:
+- Step 1: reproduce the failure by running the FAIL_TO_PASS test(s), e.g.
+  `cd /testbed && python -m pytest <test_id> -x` so you see the real error.
+- Step 2: locate the relevant source with `grep -rn` / `sed -n 'A,Bp' file` and read the exact code.
+- Step 3: APPLY the fix DIRECTLY to the file in the container. You must actually modify files,
+  not just read them. Edit using one self-contained command, for example a Python heredoc:
+  ```
+  python - <<'PY'
+  import pathlib
+  p = pathlib.Path("astropy/io/ascii/rst.py")
+  text = p.read_text()
+  text = text.replace("OLD EXACT SNIPPET", "NEW SNIPPET")
+  p.write_text(text)
+  PY
+  ```
+  or a heredoc `git apply <<'EOF' ... EOF`. Prefer replacing exact, unique substrings.
+- Step 4: re-run the FAIL_TO_PASS and a few PASS_TO_PASS tests to confirm the fix works.
+- Step 5: run `git diff --no-ext-diff` to confirm your edits, then return `<final_patch>` with that diff.
+
 Rules:
-- Use non-interactive shell commands only.
-- Prefer focused inspections (`ls`, `find`, `grep`, `sed`, `python -m pytest <target>`).
-- Work in `/testbed`; do not clone repositories or install large new dependencies.
-- First inspect the relevant source and tests, then make the smallest correct code change.
-- Use `git diff` to inspect your final changes before returning a patch.
-- Prefer changing production source files only; do not edit tests unless the task explicitly requires it.
-- Do not invent a patch from memory. If no files were edited in the container, continue with commands.
-- Never use destructive system-level commands (reboot, shutdown, mkfs, etc.).
-- If you edit files, produce the final answer as a unified diff patch.
+- Use only non-interactive shell commands; one command per turn.
+- Make the SMALLEST correct change. Change production source files only; do not edit test files
+  unless the task explicitly requires it.
+- The returned patch is graded by re-applying it to a clean checkout, so it MUST reflect edits you
+  actually made in `/testbed`. The framework will re-derive the patch from `git diff` for you, so
+  always make your edits land on disk rather than inventing a diff from memory.
+- Do not clone repositories or install large new dependencies; assume the environment is ready.
+- Never use destructive system-level commands (reboot, shutdown, mkfs, rm -rf /, git reset --hard, etc.).
 - Do not output markdown fences or any extra text outside the required tags.
 """
 
@@ -211,6 +230,24 @@ def _patch_quality_issue(patch: str) -> str:
     return ""
 
 
+PATCH_FILE = "/tmp/swe_agent_patch.diff"
+APPLY_STRATEGIES = (
+    f"git apply --whitespace=nowarn {PATCH_FILE}",
+    f"git apply --3way --whitespace=nowarn {PATCH_FILE}",
+    f"git apply -C1 --whitespace=nowarn {PATCH_FILE}",
+    f"patch -p1 --fuzz=3 --no-backup-if-mismatch -i {PATCH_FILE}",
+)
+
+
+def _write_patch_file(env: DockerEnv, patch: str) -> None:
+    encoded = base64.b64encode(patch.encode("utf-8")).decode("ascii")
+    env.run(
+        "python -c "
+        f"\"import base64, pathlib; pathlib.Path('{PATCH_FILE}').write_bytes(base64.b64decode('{encoded}'))\"",
+        timeout=60,
+    )
+
+
 def _check_patch(env: DockerEnv, patch: str) -> tuple[bool, str]:
     cleaned = _normalize_patch(patch)
     if not cleaned:
@@ -218,22 +255,35 @@ def _check_patch(env: DockerEnv, patch: str) -> tuple[bool, str]:
     quality_issue = _patch_quality_issue(cleaned)
     if quality_issue:
         return False, quality_issue
-    encoded = base64.b64encode(cleaned.encode("utf-8")).decode("ascii")
-    command = (
-        "python -c "
-        f"\"import base64, pathlib; pathlib.Path('/tmp/swe_agent_patch.diff').write_bytes(base64.b64decode('{encoded}'))\" "
-        "&& git apply --check /tmp/swe_agent_patch.diff"
-    )
-    result = env.run(command, timeout=60)
+    _write_patch_file(env, cleaned)
+    result = env.run(f"git apply --check {PATCH_FILE}", timeout=60)
     if result.exit_code == 0:
         return True, "git apply --check succeeded"
 
-    dry_run = env.run("patch --dry-run --batch --fuzz=5 -p1 -i /tmp/swe_agent_patch.diff", timeout=60)
+    dry_run = env.run(f"patch --dry-run --batch --fuzz=5 -p1 -i {PATCH_FILE}", timeout=60)
     if dry_run.exit_code == 0:
         return True, "patch dry-run succeeded"
 
     detail = dry_run.stderr or dry_run.stdout or result.stderr or result.stdout
     return False, _truncate(detail, max_chars=1000)
+
+
+def _apply_patch_to_container(env: DockerEnv, patch: str) -> tuple[bool, str]:
+    """Materialize the model patch onto disk so the final diff matches the repo state."""
+    cleaned = _normalize_patch(patch)
+    if not cleaned:
+        return False, "empty patch"
+    quality_issue = _patch_quality_issue(cleaned)
+    if quality_issue:
+        return False, quality_issue
+    _write_patch_file(env, cleaned)
+    last_detail = ""
+    for command in APPLY_STRATEGIES:
+        result = env.run(command, timeout=120)
+        if result.exit_code == 0:
+            return True, command
+        last_detail = result.stderr or result.stdout or last_detail
+    return False, _truncate(last_detail, max_chars=1000)
 
 
 def _parse_model_action(content: str) -> tuple[str, str]:
@@ -296,8 +346,26 @@ def _format_observation(exit_code: int, stdout: str, stderr: str) -> str:
     )
 
 
+def _finalize_model_patch(env: DockerEnv, payload: str) -> tuple[str, str]:
+    """Return (patch, reason). Prefer the real git diff after applying edits to disk."""
+    diff = _current_diff(env)
+    if diff:
+        return diff, "git diff from container edits"
+
+    applied, detail = _apply_patch_to_container(env, payload)
+    if applied:
+        real_diff = _current_diff(env)
+        if real_diff:
+            return real_diff, f"applied model patch then re-derived git diff ({detail})"
+        normalized = _normalize_patch(payload)
+        if normalized:
+            return normalized, "applied model patch (git diff empty, returning normalized patch)"
+    return "", detail or "model patch could not be applied to the container"
+
+
 def solve_task(context: TaskContext, env: DockerEnv, model: ModelClient) -> str:
     history: list[str] = []
+    executed_commands: set[str] = set()
 
     for step in range(1, MAX_STEPS + 1):
         steps_remaining = MAX_STEPS - step + 1
@@ -311,19 +379,16 @@ def solve_task(context: TaskContext, env: DockerEnv, model: ModelClient) -> str:
         action_type, payload = _parse_model_action(response.content)
 
         if action_type == "final_patch":
-            diff = _current_diff(env)
-            if diff:
-                return diff
-            patch = _normalize_patch(payload)
-            patch_ok, patch_reason = _check_patch(env, patch)
-            if patch_ok:
+            patch, reason = _finalize_model_patch(env, payload)
+            if patch:
                 return patch
             history.append(
                 f"[step {step} invalid]\n"
                 "Model returned a final patch, but no files were edited in the container "
                 "and the supplied patch does not apply cleanly.\n"
-                f"patch check failure:\n{patch_reason}\n"
-                "Continue by running commands that edit files in /testbed, then return git diff."
+                f"apply failure:\n{reason}\n"
+                "Continue by running commands that EDIT files in /testbed (e.g. a python heredoc that "
+                "rewrites the source), then verify with tests."
             )
             continue
 
@@ -348,15 +413,26 @@ def solve_task(context: TaskContext, env: DockerEnv, model: ModelClient) -> str:
             )
             continue
 
+        repeated_note = ""
+        if command in executed_commands:
+            repeated_note = (
+                "\nnote: this exact command was already run earlier with the same result. "
+                "Stop re-inspecting and EDIT the source file now, then run the tests."
+            )
+        executed_commands.add(command)
+
         result = env.run(command, timeout=_command_timeout(command))
         observation = _format_observation(result.exit_code, result.stdout, result.stderr)
-        history.append(f"[step {step} command]\n{command}\n[step {step} observation]\n{observation}")
+        history.append(
+            f"[step {step} command]\n{command}\n[step {step} observation]\n{observation}{repeated_note}"
+        )
 
+    # Out of steps: prefer real edits already on disk.
     diff = _current_diff(env)
     if diff:
         return diff
 
-    # Finalization pass: force model to output only final patch.
+    # Finalization pass: force model to output only the final patch.
     final_prompt = _build_task_prompt(context, history, steps_remaining=0, final_only=True)
     final_response = model.generate(
         SYSTEM_PROMPT + "\n\n" + FINAL_PATCH_PROMPT,
@@ -365,12 +441,9 @@ def solve_task(context: TaskContext, env: DockerEnv, model: ModelClient) -> str:
     )
     final_type, final_payload = _parse_model_action(final_response.content)
     if final_type == "final_patch":
-        patch = _normalize_patch(final_payload)
-        patch_ok, patch_reason = _check_patch(env, patch)
-        if patch_ok:
+        patch, _reason = _finalize_model_patch(env, final_payload)
+        if patch:
             return patch
-        history.append(f"[final invalid]\npatch check failure:\n{patch_reason}")
-        return ""
 
     # Last fallback: if model already modified files but failed format, emit git diff.
     return _current_diff(env)
