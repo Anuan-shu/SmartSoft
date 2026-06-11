@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import re
+import shlex
 
 from utils.docker_env import DockerEnv
 from utils.models import ModelClient
@@ -340,6 +341,32 @@ def _looks_like_missing_test(command: str, observation: str) -> bool:
     return any(marker in lowered for marker in MISSING_TEST_MARKERS)
 
 
+def _looks_like_edit(command: str) -> bool:
+    lowered = command.lower()
+    if "<<" in command and ("py" in lowered or "eof" in lowered):
+        return True
+    edit_markers = ("write_text", "writelines", "git apply", "sed -i", "tee ", ">>", "patch -p")
+    return any(marker in lowered for marker in edit_markers)
+
+
+def _changed_py_files(env: DockerEnv) -> list[str]:
+    result = env.run("git diff --no-ext-diff --name-only -- '*.py'", timeout=30)
+    if result.exit_code != 0:
+        return []
+    return [line.strip() for line in result.stdout.splitlines() if line.strip()]
+
+
+def _syntax_errors(env: DockerEnv) -> str:
+    files = _changed_py_files(env)
+    if not files:
+        return ""
+    quoted = " ".join(shlex.quote(path) for path in files)
+    result = env.run(f"python -m py_compile {quoted}", timeout=60)
+    if result.exit_code == 0:
+        return ""
+    return _truncate(result.stderr or result.stdout, max_chars=800)
+
+
 def _build_task_prompt(
     context: TaskContext,
     history: list[str],
@@ -420,6 +447,16 @@ def solve_task(context: TaskContext, env: DockerEnv, model: ModelClient) -> str:
         if action_type == "final_patch":
             patch, reason = _finalize_model_patch(env, payload)
             if patch:
+                syntax_issue = _syntax_errors(env)
+                if syntax_issue:
+                    history.append(
+                        f"[step {step} invalid]\n"
+                        "Your edits left a Python file that fails to compile, so the patch is rejected.\n"
+                        f"py_compile error:\n{syntax_issue}\n"
+                        "Fix the syntax/indentation in the source (keep all original arguments), then "
+                        "verify with `python -m py_compile <file>` before finalizing again."
+                    )
+                    continue
                 return patch
             history.append(
                 f"[step {step} invalid]\n"
@@ -474,6 +511,16 @@ def solve_task(context: TaskContext, env: DockerEnv, model: ModelClient) -> str:
                 "grading time. Stop trying to run it. Read the problem statement, implement the "
                 "complete fix in the source, and validate behavior with your own minimal repro in /tmp."
             )
+
+        if result.exit_code == 0 and _looks_like_edit(command):
+            syntax_issue = _syntax_errors(env)
+            if syntax_issue:
+                history.append(
+                    f"[step {step} warning]\n"
+                    "Your last edit broke Python syntax in a changed file:\n"
+                    f"{syntax_issue}\n"
+                    "Repair it now and keep all original arguments/indentation intact."
+                )
 
     # Out of steps: prefer real edits already on disk.
     diff = _current_diff(env)
