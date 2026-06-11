@@ -1,0 +1,98 @@
+2026-06-11 07:18:34,529 INFO Preparing Docker environment for astropy__astropy-14995
+2026-06-11 07:18:34,558 INFO Image already exists locally, skipping pull: swebench/sweb.eval.x86_64.astropy_1776_astropy-14995
+2026-06-11 07:18:34,745 INFO Running command: pwd
+2026-06-11 07:18:34,906 INFO STDOUT: /testbed
+
+2026-06-11 07:18:34,906 INFO Exit code: 0
+2026-06-11 07:18:39,197 INFO Running command: cd /testbed && grep -n "operand.mask is None\|operand is None" astropy/nddata/mixins/ndarithmetic.py
+2026-06-11 07:18:39,438 INFO STDOUT: 265:        use_masked_arith = operand is None and self.mask is not None
+517:            self.mask is None and operand is not None and operand.mask is None
+523:        elif operand is None:
+
+2026-06-11 07:18:39,438 INFO Exit code: 0
+2026-06-11 07:18:42,234 INFO Running command: cd /testbed && sed -n '510,540p' astropy/nddata/mixins/ndarithmetic.py
+2026-06-11 07:18:42,380 INFO STDOUT:         result_mask : any type
+            If only one mask was present this mask is returned.
+            If neither had a mask ``None`` is returned. Otherwise
+            ``handle_mask`` must create (and copy) the returned mask.
+        """
+        # If only one mask is present we need not bother ... [truncated]
+2026-06-11 07:18:42,380 INFO Exit code: 0
+2026-06-11 07:18:46,867 INFO Running command: cd /testbed && python - <<'PY'
+import pathlib
+p = pathlib.Path("astropy/nddata/mixins/ndarithmetic.py")
+text = p.read_text()
+# Fix the bug: line 523 checks "operand is None" but should check "operand.mask is None"
+text = text.replace(
+    "        elif operand is None:\n            return deepcopy(self.mask)",
+    "        elif operand is not None and operand.mask is None:\n            return deepcopy(self.mask)"
+)
+p.write_text(text)
+PY
+2026-06-11 07:18:47,042 INFO Exit code: 0
+2026-06-11 07:18:51,683 INFO Running command: cd /testbed && python -c "
+import numpy as np
+from astropy.nddata import NDDataRef
+
+array = np.array([[0, 1, 0], [1, 0, 1], [0, 1, 0]])
+mask = np.array([[0, 1, 64], [8, 0, 1], [2, 1, 0]])
+
+nref_nomask = NDDataRef(array)
+nref_mask = NDDataRef(array, mask=mask)
+
+# multiply mask by constant (mask * no mask)
+result = nref_mask.multiply(1., handle_mask=np.bitwise_or)
+print('mask * constant mask:', result.mask)
+
+# multiply mask by no mask (mask * no mask)
+result2 = nref_mask.multiply(nref_nomask, handle_mask=np.bitwise_or)
+print('mask * no mask mask:', result2.mask)
+
+# multiply no mask by mask (no mask * mask)
+result3 = nref_nomask.multiply(nref_mask, handle_mask=np.bitwise_or)
+print('no mask * mask mask:', result3.mask)
+
+print('All tests passed!')
+"
+2026-06-11 07:18:54,624 INFO STDOUT: mask * constant mask: [[ 0  1 64]
+ [ 8  0  1]
+ [ 2  1  0]]
+mask * no mask mask: [[ 0  1 64]
+ [ 8  0  1]
+ [ 2  1  0]]
+no mask * mask mask: [[ 0  1 64]
+ [ 8  0  1]
+ [ 2  1  0]]
+All tests passed!
+
+2026-06-11 07:18:54,624 INFO Exit code: 0
+2026-06-11 07:19:05,020 INFO Running command: cd /testbed && python -m pytest astropy/nddata/mixins/tests/test_ndarithmetic.py -x -q 2>&1 | tail -30
+2026-06-11 07:19:07,158 INFO STDOUT: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+Internet access disabled
+[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m... [truncated]
+2026-06-11 07:19:07,158 INFO Exit code: 0
+2026-06-11 07:19:10,109 INFO Running command: cd /testbed && python -m pytest astropy/nddata/mixins/tests/test_ndarithmetic.py::test_nddata_bitmask_arithmetic -x -v 2>&1 | tail -20
+2026-06-11 07:19:11,224 INFO STDOUT: Scikit-image: not available
+asdf-astropy: not available
+pyarrow: not available
+
+Using Astropy options: remote_data: none.
+
+hypothesis profile 'ci' -> database=None, deadline=None, print_blob=True, derandomize=True
+CI: undefined
+ARCH_ON_CI: undefined
+IS_CRON: undefined
+
+rootdir: /testbed
+configfile: ... [truncated]
+2026-06-11 07:19:11,224 INFO Exit code: 0
+2026-06-11 07:19:16,889 INFO Running command: git diff --no-ext-diff
+2026-06-11 07:19:20,896 INFO STDOUT: diff --git a/astropy/nddata/mixins/ndarithmetic.py b/astropy/nddata/mixins/ndarithmetic.py
+index 4153dfccb..65241018f 100644
+--- a/astropy/nddata/mixins/ndarithmetic.py
++++ b/astropy/nddata/mixins/ndarithmetic.py
+@@ -520,7 +520,7 @@ class NDArithmeticMixin:
+         elif self.mask is None and operan... [truncated]
+2026-06-11 07:19:20,897 INFO Exit code: 0
+2026-06-11 07:19:20,897 INFO Stopping container sweet_borg
+2026-06-11 07:19:26,020 INFO Removing container sweet_borg

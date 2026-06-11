@@ -1,0 +1,102 @@
+2026-06-11 07:19:26,057 INFO Preparing Docker environment for astropy__astropy-6938
+2026-06-11 07:19:26,085 INFO Image already exists locally, skipping pull: swebench/sweb.eval.x86_64.astropy_1776_astropy-6938
+2026-06-11 07:19:26,588 INFO Running command: pwd
+2026-06-11 07:19:31,814 INFO STDOUT: /testbed
+
+2026-06-11 07:19:31,815 INFO Exit code: 0
+2026-06-11 07:19:34,524 INFO Running command: cd /testbed && grep -rn "output_field.replace" astropy/io/fits/
+2026-06-11 07:19:35,768 INFO STDOUT: astropy/io/fits/fitsrec.py:1264:            output_field.replace(encode_ascii('E'), encode_ascii('D'))
+
+2026-06-11 07:19:35,768 INFO Exit code: 0
+2026-06-11 07:19:38,394 INFO Running command: cd /testbed && sed -n '1255,1275p' astropy/io/fits/fitsrec.py
+2026-06-11 07:19:38,542 INFO STDOUT:             if trailing_decimal and value[0] == ' ':
+                # We have some extra space in the field for the trailing
+                # decimal point
+                value = value[1:] + '.'
+
+            output_field[jdx] = value
+
+        # Replace exponent separator in floating point numbers... [truncated]
+2026-06-11 07:19:38,542 INFO Exit code: 0
+2026-06-11 07:19:41,383 INFO Running command: cd /testbed && sed -n '1240,1265p' astropy/io/fits/fitsrec.py
+2026-06-11 07:19:41,527 INFO STDOUT:         # Even if the format precision is 0, we should output a decimal point
+        # as long as there is space to do so--not including a decimal point in
+        # a float value is discouraged by the FITS Standard
+        trailing_decimal = (format.precision == 0 and
+                            f... [truncated]
+2026-06-11 07:19:41,528 INFO Exit code: 0
+2026-06-11 07:19:45,989 INFO Running command: cd /testbed && python - <<'PY'
+import pathlib
+p = pathlib.Path("astropy/io/fits/fitsrec.py")
+text = p.read_text()
+old = "            output_field.replace(encode_ascii('E'), encode_ascii('D'))"
+new = "            output_field = output_field.replace(encode_ascii('E'), encode_ascii('D'))"
+assert old in text, "Could not find the old line"
+text = text.replace(old, new)
+p.write_text(text)
+print("Fixed")
+PY
+2026-06-11 07:19:47,108 INFO STDOUT: Fixed
+
+2026-06-11 07:19:47,108 INFO Exit code: 0
+2026-06-11 07:19:49,880 INFO Running command: cd /testbed && python -m pytest astropy/io/fits/tests/test_checksum.py::TestChecksumFunctions::test_ascii_table_data -x -v 2>&1 | tail -30
+2026-06-11 07:19:58,768 INFO STDOUT: Executable: /opt/miniconda3/envs/testbed/bin/python
+
+Full Python Version: 
+3.6.13 |Anaconda, Inc.| (default, Jun  4 2021, 14:25:59) 
+[GCC 7.5.0]
+
+encodings: sys: utf-8, locale: ANSI_X3.4-1968, filesystem: ascii
+byteorder: little
+float info: dig: 15, mant_dig: 15
+
+Numpy: 1.16.0
+Scipy: not available
+M... [truncated]
+2026-06-11 07:19:58,768 INFO Exit code: 0
+2026-06-11 07:20:01,255 INFO Running command: cd /testbed && python -m pytest astropy/io/fits/tests/test_table.py::TestTableFunctions::test_ascii_table -x -v 2>&1 | tail -20
+2026-06-11 07:20:02,278 INFO STDOUT: Numpy: 1.16.0
+Scipy: not available
+Matplotlib: not available
+h5py: not available
+Pandas: not available
+Cython: 0.27.3
+Using Astropy options: remote_data: none.
+
+rootdir: /testbed, inifile: setup.cfg
+plugins: xdist-1.20.1, remotedata-0.2.0, openfiles-0.2.0, mock-1.6.3, forked-0.2, filter-subpackage-0... [truncated]
+2026-06-11 07:20:02,278 INFO Exit code: 0
+2026-06-11 07:20:06,716 INFO Running command: cd /testbed && python -m pytest astropy/io/fits/tests/test_checksum.py::TestChecksumFunctions::test_sample_file astropy/io/fits/tests/test_checksum.py::TestChecksumFunctions::test_image_create astropy/io/fits/tests/test_checksum.py::TestChecksumFunctions::test_scaled_data astropy/io/fits/tests/test_checksum.py::TestChecksumFunctions::test_scaled_data_auto_rescale astropy/io/fits/tests/test_checksum.py::TestChecksumFunctions::test_uint16_data astropy/io/fits/tests/test_checksum.py::TestChecksumFunctions::test_groups_hdu_data astropy/io/fits/tests/test_checksum.py::TestChecksumFunctions::test_open_with_no_keywords astropy/io/fits/tests/test_checksum.py::TestChecksumFunctions::test_writeto_convenience astropy/io/fits/tests/test_checksum.py::TestChecksumFunctions::test_hdu_writeto astropy/io/fits/tests/test_checksum.py::TestChecksumFunctions::test_datasum_only astropy/io/fits/tests/test_table.py::test_regression_scalar_indexing -x -v 2>&1 | tail -30
+2026-06-11 07:20:07,952 INFO STDOUT: Numpy: 1.16.0
+Scipy: not available
+Matplotlib: not available
+h5py: not available
+Pandas: not available
+Cython: 0.27.3
+Using Astropy options: remote_data: none.
+
+rootdir: /testbed, inifile: setup.cfg
+plugins: xdist-1.20.1, remotedata-0.2.0, openfiles-0.2.0, mock-1.6.3, forked-0.2, filter-subpackage-0... [truncated]
+2026-06-11 07:20:07,952 INFO Exit code: 0
+2026-06-11 07:20:10,704 INFO Running command: cd /testbed && git diff --no-ext-diff
+2026-06-11 07:20:14,591 INFO STDOUT: diff --git a/astropy/io/fits/fitsrec.py b/astropy/io/fits/fitsrec.py
+index 574b4073b1..cb79142dce 100644
+--- a/astropy/io/fits/fitsrec.py
++++ b/astropy/io/fits/fitsrec.py
+@@ -1261,7 +1261,7 @@ class FITS_rec(np.recarray):
+ 
+         # Replace exponent separator in floating point numbers
+         if ... [truncated]
+2026-06-11 07:20:14,591 INFO Exit code: 0
+2026-06-11 07:20:18,269 INFO Running command: git diff --no-ext-diff
+2026-06-11 07:20:18,423 INFO STDOUT: diff --git a/astropy/io/fits/fitsrec.py b/astropy/io/fits/fitsrec.py
+index 574b4073b1..cb79142dce 100644
+--- a/astropy/io/fits/fitsrec.py
++++ b/astropy/io/fits/fitsrec.py
+@@ -1261,7 +1261,7 @@ class FITS_rec(np.recarray):
+ 
+         # Replace exponent separator in floating point numbers
+         if ... [truncated]
+2026-06-11 07:20:18,423 INFO Exit code: 0
+2026-06-11 07:20:18,423 INFO Stopping container quizzical_jackson
+2026-06-11 07:20:23,544 INFO Removing container quizzical_jackson

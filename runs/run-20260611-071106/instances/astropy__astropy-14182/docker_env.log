@@ -1,0 +1,468 @@
+2026-06-11 07:15:43,987 INFO Preparing Docker environment for astropy__astropy-14182
+2026-06-11 07:15:44,018 INFO Image already exists locally, skipping pull: swebench/sweb.eval.x86_64.astropy_1776_astropy-14182
+2026-06-11 07:15:44,201 INFO Running command: pwd
+2026-06-11 07:15:44,361 INFO STDOUT: /testbed
+
+2026-06-11 07:15:44,361 INFO Exit code: 0
+2026-06-11 07:15:46,015 INFO Running command: cd /testbed && python -m pytest astropy/io/ascii/tests/test_rst.py::test_rst_with_header_rows -xvs 2>&1 | head -30
+2026-06-11 07:15:49,357 INFO STDOUT: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+Internet access disabled
+[1m============================= test session starts ==============================[0m
+platform linux -- Pyth... [truncated]
+2026-06-11 07:15:49,357 INFO Exit code: 0
+2026-06-11 07:15:50,951 INFO Running command: cd /testbed && python -m pytest astropy/io/ascii/tests/test_rst.py::test_rst_with_header_rows -xvs 2>&1 | tail -30
+2026-06-11 07:15:51,994 INFO STDOUT: float info: dig: 15, mant_dig: 15
+
+Package versions: 
+Numpy: 1.25.2
+Scipy: not available
+Matplotlib: not available
+h5py: not available
+Pandas: not available
+PyERFA: 2.0.0.3
+Cython: not available
+Scikit-image: not available
+asdf: not available
+pyarrow: not available
+
+Using Astropy options: remote_dat... [truncated]
+2026-06-11 07:15:51,994 INFO Exit code: 0
+2026-06-11 07:16:10,142 INFO Running command: cd /testbed && find . -type f -name "*.py" -path "*/io/ascii/*" | xargs grep -l "class RST" 2>/dev/null
+2026-06-11 07:16:10,399 INFO STDOUT: ./astropy/io/ascii/rst.py
+
+2026-06-11 07:16:10,399 INFO Exit code: 0
+2026-06-11 07:16:11,877 INFO Running command: cd /testbed && grep -n "class RST" astropy/io/ascii/rst.py
+2026-06-11 07:16:12,025 INFO STDOUT: 35:class RST(FixedWidth):
+
+2026-06-11 07:16:12,026 INFO Exit code: 0
+2026-06-11 07:16:21,814 INFO Running command: cd /testbed && python - <<'PY'
+import pathlib
+p = pathlib.Path("astropy/io/ascii/rst.py")
+text = p.read_text()
+print(text)
+PY
+2026-06-11 07:16:22,027 INFO STDOUT: # Licensed under a 3-clause BSD style license
+"""
+:Author: Simon Gibbons (simongibbons@gmail.com)
+"""
+
+
+from .core import DefaultSplitter
+from .fixedwidth import (
+    FixedWidth,
+    FixedWidthData,
+    FixedWidthHeader,
+    FixedWidthTwoLineDataSplitter,
+)
+
+
+class SimpleRSTHeader(FixedWidthHeader)... [truncated]
+2026-06-11 07:16:22,027 INFO Exit code: 0
+2026-06-11 07:16:25,008 INFO Running command: cd /testbed && grep -n "class FixedWidth" astropy/io/ascii/fixedwidth.py | head -5
+2026-06-11 07:16:25,152 INFO STDOUT: 16:class FixedWidthSplitter(core.BaseSplitter):
+59:class FixedWidthHeaderSplitter(DefaultSplitter):
+65:class FixedWidthHeader(basic.BasicHeader):
+252:class FixedWidthData(basic.BasicData):
+306:class FixedWidth(basic.Basic):
+
+2026-06-11 07:16:25,152 INFO Exit code: 0
+2026-06-11 07:16:26,915 INFO Running command: cd /testbed && python - <<'PY'
+import pathlib
+p = pathlib.Path("astropy/io/ascii/fixedwidth.py")
+text = p.read_text()
+print(text[:500])
+PY
+2026-06-11 07:16:27,083 INFO STDOUT: # Licensed under a 3-clause BSD style license - see LICENSE.rst
+"""An extensible ASCII table reader and writer.
+
+fixedwidth.py:
+  Read or write a table with fixed width columns.
+
+:Copyright: Smithsonian Astrophysical Observatory (2011)
+:Author: Tom Aldcroft (aldcroft@head.cfa.harvard.edu)
+"""
+
+
+from... [truncated]
+2026-06-11 07:16:27,083 INFO Exit code: 0
+2026-06-11 07:16:30,197 INFO Running command: cd /testbed && python - <<'PY'
+import pathlib
+p = pathlib.Path("astropy/io/ascii/fixedwidth.py")
+text = p.read_text()
+# Find the write method in FixedWidth class
+idx = text.find("class FixedWidth(basic.Basic):")
+print(text[idx:idx+2000])
+PY
+2026-06-11 07:16:30,368 INFO STDOUT: class FixedWidth(basic.Basic):
+    """Fixed width table with single header line defining column names and positions.
+
+    Examples::
+
+      # Bar delimiter in header and data
+
+      |  Col1 |   Col2      |  Col3 |
+      |  1.2  | hello there |     3 |
+      |  2.4  | many words  |     7 |
+
+      # B... [truncated]
+2026-06-11 07:16:30,368 INFO Exit code: 0
+2026-06-11 07:16:37,025 INFO Running command: cd /testbed && python - <<'PY'
+import pathlib
+p = pathlib.Path("astropy/io/ascii/rst.py")
+text = p.read_text()
+lines = text.splitlines(keepends=True)
+# Find the __init__ method of RST class
+for i, line in enumerate(lines):
+    if line.strip() == 'def __init__(self):':
+        # Replace with signature that accepts header_rows and passes it to super
+        indent = len(line) - len(line.lstrip())
+        new_line = ' ' * indent + 'def __init__(self, header_rows=None):\n'
+        lines[i] = new_line
+        # Next line is super().__init__(...)
+        j = i + 1
+        while j < len(lines) and lines[j].strip() == '':
+            j += 1
+        if lines[j].strip().startswith('super().__init__'):
+            # Change to pass header_rows
+            lines[j] = ' ' * indent + '        super().__init__(delimiter_pad=None, bookend=False, header_rows=header_rows)\n'
+        break
+p.write_text(''.join(lines))
+print('Modified __init__')
+PY
+2026-06-11 07:16:37,207 INFO STDOUT: Modified __init__
+
+2026-06-11 07:16:37,207 INFO Exit code: 0
+2026-06-11 07:16:39,276 INFO Running command: cd /testbed && python - <<'PY'
+import pathlib
+p = pathlib.Path("astropy/io/ascii/rst.py")
+text = p.read_text()
+print(text)
+PY
+2026-06-11 07:16:39,447 INFO STDOUT: # Licensed under a 3-clause BSD style license
+"""
+:Author: Simon Gibbons (simongibbons@gmail.com)
+"""
+
+
+from .core import DefaultSplitter
+from .fixedwidth import (
+    FixedWidth,
+    FixedWidthData,
+    FixedWidthHeader,
+    FixedWidthTwoLineDataSplitter,
+)
+
+
+class SimpleRSTHeader(FixedWidthHeader)... [truncated]
+2026-06-11 07:16:39,447 INFO Exit code: 0
+2026-06-11 07:16:44,115 INFO Running command: cd /testbed && python - <<'PY'
+import sys
+from astropy.table import QTable
+import astropy.units as u
+tbl = QTable({'wave': [350, 950]*u.nm, 'response': [0.7, 1.2]*u.count})
+# Test with header_rows=["name", "unit"]
+import io
+out = io.StringIO()
+tbl.write(out, format="ascii.rst", header_rows=["name", "unit"])
+print("=== With header_rows ===")
+print(out.getvalue())
+# Test without header_rows (default)
+out2 = io.StringIO()
+tbl.write(out2, format="ascii.rst")
+print("=== Without header_rows ===")
+print(out2.getvalue())
+PY
+2026-06-11 07:16:44,639 INFO STDOUT: === With header_rows ===
+   nm       ct
+ wave response
+   nm       ct
+===== ========
+350.0      0.7
+950.0      1.2
+   nm       ct
+
+=== Without header_rows ===
+===== ========
+ wave response
+===== ========
+350.0      0.7
+950.0      1.2
+===== ========
+
+
+2026-06-11 07:16:44,639 INFO Exit code: 0
+2026-06-11 07:16:47,858 INFO Running command: cd /testbed && python - <<'PY'
+import sys
+from astropy.table import QTable
+import astropy.units as u
+import io
+tbl = QTable({'wave': [350, 950]*u.nm, 'response': [0.7, 1.2]*u.count})
+out = io.StringIO()
+tbl.write(out, format="ascii.fixed_width", header_rows=["name", "unit"])
+print("Fixed-width with header_rows:")
+print(out.getvalue())
+PY
+2026-06-11 07:16:48,414 INFO STDOUT: Fixed-width with header_rows:
+|  wave | response |
+|    nm |       ct |
+| 350.0 |      0.7 |
+| 950.0 |      1.2 |
+
+
+2026-06-11 07:16:48,414 INFO Exit code: 0
+2026-06-11 07:16:50,297 INFO Running command: cd /testbed && python -m pytest astropy/io/ascii/tests/test_rst.py::test_rst_with_header_rows -xvs 2>&1 | head -50
+2026-06-11 07:16:51,297 INFO STDOUT: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+Internet access disabled
+[1m============================= test session starts ==============================[0m
+platform linux -- Pyth... [truncated]
+2026-06-11 07:16:51,298 INFO Exit code: 0
+2026-06-11 07:16:52,865 INFO Running command: cd /testbed && python -m pytest astropy/io/ascii/tests/test_rst.py -xvs -k header_rows 2>&1 | head -100
+2026-06-11 07:16:53,870 INFO STDOUT: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+Internet access disabled
+[1m============================= test session starts ==============================[0m
+platform linux -- Pyth... [truncated]
+2026-06-11 07:16:53,871 INFO Exit code: 0
+2026-06-11 07:16:55,980 INFO Running command: cd /testbed && python -m pytest astropy/io/ascii/tests/test_rst.py -xvs 2>&1 | head -150
+2026-06-11 07:16:56,970 INFO STDOUT: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+Internet access disabled
+[1m============================= test session starts ==============================[0m
+platform linux -- Pyth... [truncated]
+2026-06-11 07:16:56,970 INFO Exit code: 0
+2026-06-11 07:17:00,400 INFO Running command: cd /testbed && python - <<'PY'
+import pathlib
+p = pathlib.Path("astropy/io/ascii/rst.py")
+text = p.read_text()
+# Find the RST class and its __init__ method
+lines = text.splitlines(keepends=True)
+for i, line in enumerate(lines):
+    if line.strip() == 'class RST(FixedWidth):':
+        # Find the __init__ method inside this class
+        for j in range(i+1, len(lines)):
+            if lines[j].strip().startswith('def __init__'):
+                # Replace the __init__ signature
+                indent = len(lines[j]) - len(lines[j].lstrip())
+                lines[j] = ' ' * indent + 'def __init__(self, header_rows=None):\n'
+                # Find the super().__init__ call
+                for k in range(j+1, len(lines)):
+                    if 'super().__init__' in lines[k]:
+                        # Modify the call to pass header_rows
+                        indent2 = len(lines[k]) - len(lines[k].lstrip())
+                        lines[k] = ' ' * indent2 + '        super().__init__(header_rows=header_rows)\n'
+                        break
+                break
+        break
+p.write_text(''.join(lines))
+PY
+2026-06-11 07:17:00,571 INFO Exit code: 0
+2026-06-11 07:17:02,719 INFO Running command: cd /testbed && python - <<'PY'
+import pathlib
+p = pathlib.Path("astropy/io/ascii/rst.py")
+text = p.read_text()
+print(text)
+PY
+2026-06-11 07:17:02,889 INFO STDOUT: # Licensed under a 3-clause BSD style license
+"""
+:Author: Simon Gibbons (simongibbons@gmail.com)
+"""
+
+
+from .core import DefaultSplitter
+from .fixedwidth import (
+    FixedWidth,
+    FixedWidthData,
+    FixedWidthHeader,
+    FixedWidthTwoLineDataSplitter,
+)
+
+
+class SimpleRSTHeader(FixedWidthHeader)... [truncated]
+2026-06-11 07:17:02,890 INFO Exit code: 0
+2026-06-11 07:17:06,886 INFO Running command: cd /testbed && python - <<'PY'
+import sys
+from astropy.table import QTable
+import astropy.units as u
+import io
+
+tbl = QTable({'wave': [350, 950]*u.nm, 'response': [0.7, 1.2]*u.count})
+
+# Test with header_rows=["name", "unit"]
+out = io.StringIO()
+tbl.write(out, format="ascii.rst", header_rows=["name", "unit"])
+print("=== With header_rows ===")
+print(out.getvalue())
+
+# Test without header_rows (default)
+out2 = io.StringIO()
+tbl.write(out2, format="ascii.rst")
+print("=== Without header_rows ===")
+print(out2.getvalue())
+PY
+2026-06-11 07:17:07,410 INFO STDOUT: === With header_rows ===
+     nm         ct  
+   wave   response  
+     nm         ct  
+  =====   ========  
+  350.0        0.7  
+  950.0        1.2  
+     nm         ct  
+
+=== Without header_rows ===
+  =====   ========  
+   wave   response  
+  =====   ========  
+  350.0        0.7  
+  950.0        ... [truncated]
+2026-06-11 07:17:07,410 INFO Exit code: 0
+2026-06-11 07:17:12,992 INFO Running command: cd /testbed && python - <<'PY'
+import pathlib
+p = pathlib.Path("astropy/io/ascii/fixedwidth.py")
+text = p.read_text()
+# Find the write method of FixedWidth class
+lines = text.splitlines(keepends=True)
+in_class = False
+in_method = False
+for i, line in enumerate(lines):
+    if line.strip().startswith('class FixedWidth'):
+        in_class = True
+    if in_class and line.strip().startswith('def write'):
+        in_method = True
+        print(f"Line {i}: {line.rstrip()}")
+        for j in range(i+1, min(i+60, len(lines))):
+            if lines[j].strip().startswith('def ') and lines[j].strip() != 'def write':
+                break
+            print(f"Line {j}: {lines[j].rstrip()}")
+        break
+PY
+2026-06-11 07:17:13,161 INFO STDOUT: Line 245:     def write(self, lines):
+Line 246:         # Header line not written until data are formatted.  Until then it is
+Line 247:         # not known how wide each column will be for fixed width.
+Line 248:         pass
+Line 249: 
+Line 250: 
+Line 251: class FixedWidthData(basic.BasicData):
+Line... [truncated]
+2026-06-11 07:17:13,161 INFO Exit code: 0
+2026-06-11 07:17:17,874 INFO Running command: cd /testbed && python - <<'PY'
+import pathlib
+p = pathlib.Path("astropy/io/ascii/fixedwidth.py")
+text = p.read_text()
+lines = text.splitlines(keepends=True)
+# Find the FixedWidth class write method
+for i, line in enumerate(lines):
+    if line.strip().startswith('class FixedWidth') and 'Data' not in line and 'Header' not in line and 'Splitter' not in line:
+        print(f"Found FixedWidth class at line {i}")
+        for j in range(i, min(i+200, len(lines))):
+            print(f"Line {j}: {lines[j].rstrip()}")
+        break
+PY
+2026-06-11 07:17:18,055 INFO STDOUT: Found FixedWidth class at line 305
+Line 305: class FixedWidth(basic.Basic):
+Line 306:     """Fixed width table with single header line defining column names and positions.
+Line 307: 
+Line 308:     Examples::
+Line 309: 
+Line 310:       # Bar delimiter in header and data
+Line 311: 
+Line 312:       |  ... [truncated]
+2026-06-11 07:17:18,055 INFO Exit code: 0
+2026-06-11 07:17:23,972 INFO Running command: cd /testbed && python - <<'PY'
+import pathlib
+p = pathlib.Path("astropy/io/ascii/fixedwidth.py")
+text = p.read_text()
+lines = text.splitlines(keepends=True)
+# Find the FixedWidthHeader write method
+for i, line in enumerate(lines):
+    if 'class FixedWidthHeader' in line:
+        print(f"Found FixedWidthHeader at line {i}")
+        for j in range(i, min(i+200, len(lines))):
+            if 'class ' in lines[j] and j > i:
+                break
+            print(f"Line {j}: {lines[j].rstrip()}")
+        break
+PY
+2026-06-11 07:17:24,141 INFO STDOUT: Found FixedWidthHeader at line 58
+Line 58: class FixedWidthHeaderSplitter(DefaultSplitter):
+
+2026-06-11 07:17:24,141 INFO Exit code: 0
+2026-06-11 07:17:29,094 INFO Running command: cd /testbed && python - <<'PY'
+import pathlib
+p = pathlib.Path("astropy/io/ascii/fixedwidth.py")
+text = p.read_text()
+lines = text.splitlines(keepends=True)
+# Find the FixedWidthHeader class
+for i, line in enumerate(lines):
+    if 'class FixedWidthHeader' in line and '(' in line:
+        print(f"Found FixedWidthHeader at line {i}")
+        for j in range(i, min(i+200, len(lines))):
+            if 'class ' in lines[j] and j > i:
+                break
+            print(f"Line {j}: {lines[j].rstrip()}")
+        break
+PY
+2026-06-11 07:17:29,262 INFO STDOUT: Found FixedWidthHeader at line 58
+Line 58: class FixedWidthHeaderSplitter(DefaultSplitter):
+
+2026-06-11 07:17:29,262 INFO Exit code: 0
+2026-06-11 07:17:30,919 INFO Running command: cd /testbed && grep -n "class FixedWidthHeader" astropy/io/ascii/fixedwidth.py
+2026-06-11 07:17:31,063 INFO STDOUT: 59:class FixedWidthHeaderSplitter(DefaultSplitter):
+65:class FixedWidthHeader(basic.BasicHeader):
+
+2026-06-11 07:17:31,064 INFO Exit code: 0
+2026-06-11 07:17:34,567 INFO Running command: cd /testbed && python - <<'PY'
+import pathlib
+p = pathlib.Path("astropy/io/ascii/fixedwidth.py")
+text = p.read_text()
+lines = text.splitlines(keepends=True)
+# Find the FixedWidthHeader class write method
+for i, line in enumerate(lines):
+    if 'class FixedWidthHeader(basic.BasicHeader):' in line:
+        print(f"Found FixedWidthHeader at line {i}")
+        for j in range(i, min(i+300, len(lines))):
+            if 'class ' in lines[j] and j > i:
+                break
+            print(f"Line {j}: {lines[j].rstrip()}")
+        break
+PY
+2026-06-11 07:17:34,741 INFO STDOUT: Found FixedWidthHeader at line 64
+Line 64: class FixedWidthHeader(basic.BasicHeader):
+Line 65:     """
+Line 66:     Fixed width table header reader.
+Line 67:     """
+Line 68: 
+
+2026-06-11 07:17:34,741 INFO Exit code: 0
+2026-06-11 07:17:38,439 INFO Running command: cd /testbed && python - <<'PY'
+import pathlib
+p = pathlib.Path("astropy/io/ascii/fixedwidth.py")
+text = p.read_text()
+lines = text.splitlines(keepends=True)
+# Find the FixedWidthHeader class write method
+for i, line in enumerate(lines):
+    if 'class FixedWidthHeader(basic.BasicHeader):' in line:
+        for j in range(i, min(i+300, len(lines))):
+            if 'class ' in lines[j] and j > i:
+                break
+            print(f"Line {j}: {lines[j].rstrip()}")
+        break
+PY
+2026-06-11 07:17:38,623 INFO STDOUT: Line 64: class FixedWidthHeader(basic.BasicHeader):
+Line 65:     """
+Line 66:     Fixed width table header reader.
+Line 67:     """
+Line 68: 
+
+2026-06-11 07:17:38,623 INFO Exit code: 0
+2026-06-11 07:17:38,623 INFO Running command: git diff --no-ext-diff
+2026-06-11 07:17:44,186 INFO STDOUT: diff --git a/astropy/io/ascii/rst.py b/astropy/io/ascii/rst.py
+index abdeba8ef..ea8299260 100644
+--- a/astropy/io/ascii/rst.py
++++ b/astropy/io/ascii/rst.py
+@@ -57,8 +57,8 @@ class RST(FixedWidth):
+     data_class = SimpleRSTData
+     header_class = SimpleRSTHeader
+ 
+-    def __init__(self):
+-      ... [truncated]
+2026-06-11 07:17:44,186 INFO Exit code: 0
+2026-06-11 07:17:44,186 INFO Stopping container crazy_galois
+2026-06-11 07:17:49,304 INFO Removing container crazy_galois

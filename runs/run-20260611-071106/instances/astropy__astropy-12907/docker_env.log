@@ -1,0 +1,614 @@
+2026-06-11 07:11:25,743 INFO Preparing Docker environment for astropy__astropy-12907
+2026-06-11 07:11:25,939 INFO Image already exists locally, skipping pull: swebench/sweb.eval.x86_64.astropy_1776_astropy-12907
+2026-06-11 07:11:27,121 INFO Running command: pwd
+2026-06-11 07:11:33,124 INFO STDOUT: /testbed
+
+2026-06-11 07:11:33,124 INFO Exit code: 0
+2026-06-11 07:11:41,536 INFO Running command: cd /testbed && python -m pytest astropy/modeling/tests/test_separable.py::test_separable -xvs 2>&1 | head -50
+2026-06-11 07:11:55,519 INFO STDOUT: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+Internet access disabled
+============================= test session starts ==============================
+platform linux -- Python 3.9.2... [truncated]
+2026-06-11 07:11:55,519 INFO Exit code: 0
+2026-06-11 07:12:00,771 INFO Running command: cd /testbed && python -m pytest astropy/modeling/tests/test_separable.py::test_separable[compound_model6-result6] -xvs 2>&1 | head -80
+2026-06-11 07:12:01,933 INFO STDOUT: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+Internet access disabled
+============================= test session starts ==============================
+platform linux -- Python 3.9.2... [truncated]
+2026-06-11 07:12:01,933 INFO Exit code: 0
+2026-06-11 07:12:06,936 INFO Running command: cd /testbed && python -c "
+import astropy.modeling as m
+from astropy.modeling.separable import separability_matrix
+cm = m.models.Linear1D(10) & m.models.Linear1D(5)
+print('cm separability:')
+print(separability_matrix(cm))
+print()
+print('Pix2Sky_TAN & Linear1D(10) & Linear1D(5):')
+print(separability_matrix(m.models.Pix2Sky_TAN() & m.models.Linear1D(10) & m.models.Linear1D(5)))
+print()
+print('Pix2Sky_TAN & cm (nested):')
+print(separability_matrix(m.models.Pix2Sky_TAN() & cm))
+" 2>&1
+2026-06-11 07:12:07,562 INFO STDOUT: cm separability:
+[[ True False]
+ [False  True]]
+
+Pix2Sky_TAN & Linear1D(10) & Linear1D(5):
+[[ True  True False False]
+ [ True  True False False]
+ [False False  True False]
+ [False False False  True]]
+
+Pix2Sky_TAN & cm (nested):
+[[ True  True False False]
+ [ True  True False False]
+ [False False  Tru... [truncated]
+2026-06-11 07:12:07,562 INFO Exit code: 0
+2026-06-11 07:12:13,807 INFO Running command: find /testbed -type f -name "*.py" -exec grep -l "separability_matrix" {} \; | head -20
+2026-06-11 07:12:16,063 INFO STDOUT: /testbed/astropy/modeling/core.py
+/testbed/astropy/modeling/separable.py
+/testbed/astropy/modeling/tests/test_separable.py
+/testbed/astropy/modeling/tests/test_core.py
+/testbed/astropy/modeling/tests/test_models.py
+
+2026-06-11 07:12:16,063 INFO Exit code: 0
+2026-06-11 07:12:27,653 INFO Running command: cd /testbed && grep -n "def separability_matrix" astropy/modeling/separable.py
+2026-06-11 07:12:27,798 INFO STDOUT: 66:def separability_matrix(transform):
+
+2026-06-11 07:12:27,798 INFO Exit code: 0
+2026-06-11 07:12:33,801 INFO Running command: cd /testbed && sed -n '66,200p' astropy/modeling/separable.py
+2026-06-11 07:12:33,947 INFO STDOUT: def separability_matrix(transform):
+    """
+    Compute the correlation between outputs and inputs.
+
+    Parameters
+    ----------
+    transform : `~astropy.modeling.core.Model`
+        A (compound) model.
+
+    Returns
+    -------
+    separable_matrix : ndarray
+        A boolean correlation matrix o... [truncated]
+2026-06-11 07:12:33,947 INFO Exit code: 0
+2026-06-11 07:12:38,615 INFO Running command: cd /testbed && sed -n '200,400p' astropy/modeling/separable.py
+2026-06-11 07:12:38,761 INFO STDOUT:             mat[-model.n_outputs:, -model.n_inputs:] = m
+        return mat
+    if not model.separable:
+        # this does not work for more than 2 coordinates
+        mat = np.zeros((noutp, model.n_inputs))
+        if pos == 'left':
+            mat[:model.n_outputs, : model.n_inputs] = 1
+        e... [truncated]
+2026-06-11 07:12:38,761 INFO Exit code: 0
+2026-06-11 07:12:51,429 INFO Running command: cd /testbed && python -c "
+import numpy as np
+import astropy.modeling as m
+from astropy.modeling.separable import separability_matrix, _cstack, _coord_matrix
+cm = m.models.Linear1D(10) & m.models.Linear1D(5)
+print('cm:')
+print(cm)
+print('cm.n_inputs, cm.n_outputs:', cm.n_inputs, cm.n_outputs)
+print('cm.left:', cm.left)
+print('cm.right:', cm.right)
+print('---')
+# Let's manually compute _separable(cm)
+from astropy.modeling.separable import _separable
+print('_separable(cm):')
+print(_separable(cm))
+print('---')
+# Now compute _separable for Pix2Sky_TAN() & cm
+pix = m.models.Pix2Sky_TAN()
+print('pix.n_inputs, pix.n_outputs:', pix.n_inputs, pix.n_outputs)
+print('pix.separable:', pix.separable)
+print('---')
+# Let's see what _coord_matrix does for pix
+print('_coord_matrix(pix, \"left\", pix.n_outputs):')
+print(_coord_matrix(pix, 'left', pix.n_outputs))
+print('---')
+# Now compute _separable(cm) again
+sep_cm = _separable(cm)
+print('sep_cm shape:', sep_cm.shape)
+print('sep_cm:')
+print(sep_cm)
+print('---')
+# Now compute _cstack(pix, sep_cm) (since op is '&')
+print('_cstack(pix, sep_cm):')
+print(_cstack(pix, sep_cm))
+print('---')
+# Compare with separability_matrix(pix & cm)
+print('separability_matrix(pix & cm):')
+print(separability_matrix(pix & cm))
+" 2>&1
+2026-06-11 07:12:52,084 INFO STDOUT: cm:
+Model: CompoundModel
+Inputs: ('x0', 'x1')
+Outputs: ('y0', 'y1')
+Model set size: 1
+Expression: [0] & [1]
+Components: 
+    [0]: <Linear1D(slope=10., intercept=0.)>
+
+    [1]: <Linear1D(slope=5., intercept=0.)>
+Parameters:
+    slope_0 intercept_0 slope_1 intercept_1
+    ------- ----------- ------- -... [truncated]
+2026-06-11 07:12:52,084 INFO Exit code: 0
+2026-06-11 07:13:16,727 INFO Running command: cd /testbed && python -c "
+import astropy.modeling as m
+from astropy.modeling.separable import _cstack, _coord_matrix
+import numpy as np
+
+# Let's examine the _cstack function more closely
+print('--- _cstack logic ---')
+cm = m.models.Linear1D(10) & m.models.Linear1D(5)
+sep_cm = np.array([[1.,0.],[0.,1.]])
+pix = m.models.Pix2Sky_TAN()
+print('pix is Model?', isinstance(pix, m.Model))
+print('sep_cm is Model?', isinstance(sep_cm, m.Model))
+print('sep_cm shape:', sep_cm.shape)
+print('---')
+# Simulate _cstack(pix, sep_cm)
+noutp = pix.n_outputs + sep_cm.shape[0]
+print('noutp:', noutp)
+cleft = _coord_matrix(pix, 'left', noutp)
+print('cleft shape:', cleft.shape)
+print('cleft:')
+print(cleft)
+cright = np.zeros((noutp, sep_cm.shape[1]))
+print('cright shape before fill:', cright.shape)
+print('cright[-sep_cm.shape[0]:, -sep_cm.shape[1]:] = 1')
+cright[-sep_cm.shape[0]:, -sep_cm.shape[1]:] = 1
+print('cright:')
+print(cright)
+print('---')
+print('np.hstack([cleft, cright]):')
+print(np.hstack([cleft, cright]))
+print('---')
+# Now let's see what _cstack does when right is a Model (should call _coord_matrix)
+print('If right were a Model (cm), _coord_matrix(cm, \"right\", noutp) would be:')
+print(_coord_matrix(cm, 'right', noutp))
+" 2>&1
+2026-06-11 07:13:17,504 INFO STDOUT: Traceback (most recent call last):
+  File "<string>", line 34, in <module>
+  File "/testbed/astropy/modeling/separable.py", line 202, in _coord_matrix
+    if not model.separable:
+  File "/testbed/astropy/modeling/core.py", line 1537, in separable
+    raise NotImplementedError(
+NotImplementedError: T... [truncated]
+2026-06-11 07:13:17,504 INFO Exit code: 1
+2026-06-11 07:13:26,214 INFO Running command: cd /testbed && grep -n "class CompoundModel" astropy/modeling/core.py -A 20 | head -40
+2026-06-11 07:13:26,361 INFO STDOUT: 2894:class CompoundModel(Model):
+2895-    '''
+2896-    Base class for compound models.
+2897-
+2898-    While it can be used directly, the recommended way
+2899-    to combine models is through the model operators.
+2900-    '''
+2901-
+2902-    def __init__(self, op, left, right, name=None):
+2903-       ... [truncated]
+2026-06-11 07:13:26,361 INFO Exit code: 0
+2026-06-11 07:13:40,756 INFO Running command: cd /testbed && python -c "
+import astropy.modeling as m
+from astropy.modeling.separable import _coord_matrix
+import numpy as np
+
+# Let's see what _coord_matrix does for a separable model
+lin = m.models.Linear1D()
+print('Linear1D separable?', lin.separable)
+print('_coord_matrix(lin, \"left\", 1):')
+print(_coord_matrix(lin, 'left', 1))
+print('_coord_matrix(lin, \"right\", 2):')
+print(_coord_matrix(lin, 'right', 2))
+print('---')
+# Now examine the bug: when right is a separable matrix (numpy array) not a Model,
+# _cstack incorrectly fills with ones instead of using the matrix.
+# Let's look at the _cstack function source:
+import inspect
+print(inspect.getsource(m.separable._cstack))
+" 2>&1
+2026-06-11 07:13:41,415 INFO STDOUT: Linear1D separable? True
+_coord_matrix(lin, "left", 1):
+[[1.]]
+_coord_matrix(lin, "right", 2):
+[[0.]
+ [1.]]
+---
+def _cstack(left, right):
+    """
+    Function corresponding to '&' operation.
+
+    Parameters
+    ----------
+    left, right : `astropy.modeling.Model` or ndarray
+        If input is of a... [truncated]
+2026-06-11 07:13:41,415 INFO Exit code: 0
+2026-06-11 07:13:47,762 INFO Running command: cd /testbed && python -c "
+import inspect
+import astropy.modeling.separable as sep
+print(inspect.getsource(sep._cstack))
+print()
+print('---')
+print(inspect.getsource(sep._compute_n_outputs))
+" 2>&1
+2026-06-11 07:13:48,393 INFO STDOUT: def _cstack(left, right):
+    """
+    Function corresponding to '&' operation.
+
+    Parameters
+    ----------
+    left, right : `astropy.modeling.Model` or ndarray
+        If input is of an array, it is the output of `coord_matrix`.
+
+    Returns
+    -------
+    result : ndarray
+        Result from t... [truncated]
+2026-06-11 07:13:48,393 INFO Exit code: 0
+2026-06-11 07:14:03,664 INFO Running command: cd /testbed && python -c "
+import astropy.modeling as m
+from astropy.modeling.separable import separability_matrix, _separable
+import numpy as np
+
+# Let's trace the exact bug: when right is a separable matrix (numpy array) not a Model,
+# _cstack incorrectly fills with ones instead of using the matrix.
+# The bug is in _cstack: for an array right, it does cright[-right.shape[0]:, -right.shape[1]:] = 1
+# but it should copy the right matrix values, not set to 1.
+# Let's verify by looking at the actual call chain:
+cm = m.models.Linear1D(10) & m.models.Linear1D(5)
+print('cm separability matrix (should be diagonal):')
+print(separability_matrix(cm))
+print()
+# Now compute _separable(cm) manually:
+sep_cm = _separable(cm)
+print('_separable(cm) (should be diagonal):')
+print(sep_cm)
+print()
+# Now compute _separable for Pix2Sky_TAN() & cm
+pix = m.models.Pix2Sky_TAN()
+print('pix separability matrix:')
+print(separability_matrix(pix))
+sep_pix = _separable(pix)
+print('_separable(pix):')
+print(sep_pix)
+print()
+# Now simulate _cstack(pix, sep_cm) as it currently does:
+from astropy.modeling.separable import _cstack, _coord_matrix
+print('_cstack(pix, sep_cm) (current buggy result):')
+print(_cstack(pix, sep_cm))
+print()
+# What should it be? The correct matrix should be block diagonal:
+# top-left 2x2 from pix (all True), bottom-right 2x2 from sep_cm (diagonal).
+# Let's compute manually:
+expected = np.zeros((4,4), dtype=bool)
+expected[:2,:2] = True
+expected[2:,2:] = sep_cm
+print('Expected:')
+print(expected)
+" 2>&1
+2026-06-11 07:14:04,291 INFO STDOUT: cm separability matrix (should be diagonal):
+[[ True False]
+ [False  True]]
+
+_separable(cm) (should be diagonal):
+[[1. 0.]
+ [0. 1.]]
+
+pix separability matrix:
+[[ True  True]
+ [ True  True]]
+_separable(pix):
+[[1. 1.]
+ [1. 1.]]
+
+_cstack(pix, sep_cm) (current buggy result):
+[[1. 1. 0. 0.]
+ [1. 1. 0. 0.... [truncated]
+2026-06-11 07:14:04,292 INFO Exit code: 0
+2026-06-11 07:14:14,126 INFO Running command: cd /testbed && python - <<'PY'
+import astropy.modeling.separable as sep
+import numpy as np
+from astropy.modeling.core import Model
+
+# Let's examine the exact bug: in _cstack, when right is an array,
+# it sets cright[-right.shape[0]:, -right.shape[1]:] = 1
+# but should copy the right matrix values.
+# Let's look at the source again and fix it.
+print("Current _cstack source:")
+import inspect
+print(inspect.getsource(sep._cstack))
+print()
+print("Current _cstack for left array case:")
+print("cleft[: left.shape[0], : left.shape[1]] = left")
+print("But for right array case:")
+print("cright[-right.shape[0]:, -right.shape[1]:] = 1")
+print("Should be:")
+print("cright[-right.shape[0]:, -right.shape[1]:] = right")
+PY
+2026-06-11 07:14:14,765 INFO STDOUT: Current _cstack source:
+def _cstack(left, right):
+    """
+    Function corresponding to '&' operation.
+
+    Parameters
+    ----------
+    left, right : `astropy.modeling.Model` or ndarray
+        If input is of an array, it is the output of `coord_matrix`.
+
+    Returns
+    -------
+    result : ndarr... [truncated]
+2026-06-11 07:14:14,765 INFO Exit code: 0
+2026-06-11 07:14:20,506 INFO Running command: cd /testbed && python - <<'PY'
+import astropy.modeling.separable as sep
+import numpy as np
+from astropy.modeling.core import Model
+
+# Let's examine the _cstack function and see if there are similar issues elsewhere.
+# Also check _cdot, _arith_oper.
+print("_cdot source:")
+import inspect
+print(inspect.getsource(sep._cdot))
+print()
+print("_arith_oper source:")
+print(inspect.getsource(sep._arith_oper))
+PY
+2026-06-11 07:14:21,145 INFO STDOUT: _cdot source:
+def _cdot(left, right):
+    """
+    Function corresponding to "|" operation.
+
+    Parameters
+    ----------
+    left, right : `astropy.modeling.Model` or ndarray
+        If input is of an array, it is the output of `coord_matrix`.
+
+    Returns
+    -------
+    result : ndarray
+        R... [truncated]
+2026-06-11 07:14:21,145 INFO Exit code: 0
+2026-06-11 07:14:29,722 INFO Running command: cd /testbed && python - <<'PY'
+import astropy.modeling.separable as sep
+import numpy as np
+from astropy.modeling.core import Model
+
+# Let's fix the bug in _cstack: when right is an array, we should copy the array values,
+# not set to 1. Also ensure the same fix for left? Actually left already copies left array.
+# Let's edit the file directly.
+import pathlib
+p = pathlib.Path("astropy/modeling/separable.py")
+text = p.read_text()
+# Find the line with cright[-right.shape[0]:, -right.shape[1]:] = 1
+# Replace with cright[-right.shape[0]:, -right.shape[1]:] = right
+lines = text.splitlines()
+for i, line in enumerate(lines):
+    if "cright[-right.shape[0]:, -right.shape[1]:] = 1" in line:
+        lines[i] = "        cright[-right.shape[0]:, -right.shape[1]:] = right"
+        break
+new_text = "\n".join(lines)
+p.write_text(new_text)
+print("Fixed _cstack line.")
+PY
+2026-06-11 07:14:30,374 INFO STDOUT: Fixed _cstack line.
+
+2026-06-11 07:14:30,374 INFO Exit code: 0
+2026-06-11 07:14:44,862 INFO Running command: cd /testbed && python -c "
+import astropy.modeling as m
+from astropy.modeling.separable import separability_matrix
+import numpy as np
+
+# Test the bug case
+cm = m.models.Linear1D(10) & m.models.Linear1D(5)
+print('cm separability matrix:')
+print(separability_matrix(cm))
+print()
+pix = m.models.Pix2Sky_TAN()
+result = separability_matrix(pix & cm)
+print('pix & cm separability matrix (should have diagonal bottom-right):')
+print(result)
+print()
+# Expected: top-left 2x2 all True, bottom-right 2x2 diagonal
+expected = np.zeros((4,4), dtype=bool)
+expected[:2,:2] = True
+expected[2:,2:] = np.eye(2, dtype=bool)
+print('Expected:')
+print(expected)
+print('Matches?', np.array_equal(result, expected))
+" 2>&1
+2026-06-11 07:14:45,485 INFO STDOUT: cm separability matrix:
+[[ True False]
+ [False  True]]
+
+pix & cm separability matrix (should have diagonal bottom-right):
+[[ True  True False False]
+ [ True  True False False]
+ [False False  True False]
+ [False False False  True]]
+
+Expected:
+[[ True  True False False]
+ [ True  True False False]
+ [Fa... [truncated]
+2026-06-11 07:14:45,485 INFO Exit code: 0
+2026-06-11 07:14:49,055 INFO Running command: cd /testbed && python -m pytest astropy/modeling/tests/test_separable.py::test_separable -xvs
+2026-06-11 07:14:50,166 INFO STDOUT: Internet access disabled
+============================= test session starts ==============================
+platform linux -- Python 3.9.20, pytest-7.4.0, pluggy-1.3.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .pytest_cache
+
+Running tests with Astropy version 5.1.dev623+gd16bfe05a.d20250910... [truncated]
+2026-06-11 07:14:50,166 INFO STDERR: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+
+2026-06-11 07:14:50,166 INFO Exit code: 0
+2026-06-11 07:14:53,655 INFO Running command: cd /testbed && python -m pytest astropy/modeling/tests/test_separable.py -xvs
+2026-06-11 07:14:54,829 INFO STDOUT: Internet access disabled
+============================= test session starts ==============================
+platform linux -- Python 3.9.20, pytest-7.4.0, pluggy-1.3.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .pytest_cache
+
+Running tests with Astropy version 5.1.dev623+gd16bfe05a.d20250910... [truncated]
+2026-06-11 07:14:54,829 INFO STDERR: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+
+2026-06-11 07:14:54,829 INFO Exit code: 0
+2026-06-11 07:14:57,671 INFO Running command: cd /testbed && python -m pytest astropy/modeling/tests/test_separable.py::test_separable[compound_model6-result6] -xvs
+2026-06-11 07:14:58,792 INFO STDOUT: Internet access disabled
+============================= test session starts ==============================
+platform linux -- Python 3.9.20, pytest-7.4.0, pluggy-1.3.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .pytest_cache
+
+Running tests with Astropy version 5.1.dev623+gd16bfe05a.d20250910... [truncated]
+2026-06-11 07:14:58,792 INFO STDERR: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+ERROR: not found: /testbed/astropy/modeling/tests/test_separable.py::test_separable[compound_model6-result6]
+(no name '/testbed/astropy/... [truncated]
+2026-06-11 07:14:58,792 INFO Exit code: 4
+2026-06-11 07:15:06,940 INFO Running command: cd /testbed && python - <<'PY'
+import astropy.modeling as m
+from astropy.modeling.separable import separability_matrix
+import numpy as np
+
+# Test case from the issue: nested compound models
+cm = m.Linear1D(10) & m.Linear1D(5)
+pix = m.Pix2Sky_TAN()
+
+# This is the bug case: pix & cm where cm is already a compound model
+result = separability_matrix(pix & cm)
+print("pix & cm separability matrix:")
+print(result)
+print()
+
+# Expected: top-left 2x2 all True, bottom-right 2x2 diagonal
+expected = np.zeros((4,4), dtype=bool)
+expected[:2,:2] = True
+expected[2:,2:] = np.eye(2, dtype=bool)
+print("Expected:")
+print(expected)
+print("Matches?", np.array_equal(result, expected))
+print()
+
+# Also test the reverse: cm & pix
+result2 = separability_matrix(cm & pix)
+print("cm & pix separability matrix:")
+print(result2)
+expected2 = np.zeros((4,4), dtype=bool)
+expected2[:2,:2] = np.eye(2, dtype=bool)
+expected2[2:,2:] = True
+print("Expected:")
+print(expected2)
+print("Matches?", np.array_equal(result2, expected2))
+print()
+
+# Test deeper nesting
+cm2 = m.Linear1D(1) & m.Linear1D(2) & m.Linear1D(3)
+result3 = separability_matrix(pix & cm2)
+print("pix & (lin1 & lin2 & lin3) separability matrix:")
+print(result3)
+expected3 = np.zeros((5,5), dtype=bool)
+expected3[:2,:2] = True
+expected3[2:,2:] = np.eye(3, dtype=bool)
+print("Expected:")
+print(expected3)
+print("Matches?", np.array_equal(result3, expected3))
+PY
+2026-06-11 07:15:07,577 INFO STDERR: Traceback (most recent call last):
+  File "<stdin>", line 6, in <module>
+AttributeError: module 'astropy.modeling' has no attribute 'Linear1D'
+
+2026-06-11 07:15:07,577 INFO Exit code: 1
+2026-06-11 07:15:23,390 INFO Running command: cd /testbed && python - <<'PY'
+import astropy.modeling.models as m
+from astropy.modeling.separable import separability_matrix
+import numpy as np
+
+# Test case from the issue: nested compound models
+cm = m.Linear1D(10) & m.Linear1D(5)
+pix = m.Pix2Sky_TAN()
+
+# This is the bug case: pix & cm where cm is already a compound model
+result = separability_matrix(pix & cm)
+print("pix & cm separability matrix:")
+print(result)
+print()
+
+# Expected: top-left 2x2 all True, bottom-right 2x2 diagonal
+expected = np.zeros((4,4), dtype=bool)
+expected[:2,:2] = True
+expected[2:,2:] = np.eye(2, dtype=bool)
+print("Expected:")
+print(expected)
+print("Matches?", np.array_equal(result, expected))
+print()
+
+# Also test the reverse: cm & pix
+result2 = separability_matrix(cm & pix)
+print("cm & pix separability matrix:")
+print(result2)
+expected2 = np.zeros((4,4), dtype=bool)
+expected2[:2,:2] = np.eye(2, dtype=bool)
+expected2[2:,2:] = True
+print("Expected:")
+print(expected2)
+print("Matches?", np.array_equal(result2, expected2))
+print()
+
+# Test deeper nesting
+cm2 = m.Linear1D(1) & m.Linear1D(2) & m.Linear1D(3)
+result3 = separability_matrix(pix & cm2)
+print("pix & (lin1 & lin2 & lin3) separability matrix:")
+print(result3)
+expected3 = np.zeros((5,5), dtype=bool)
+expected3[:2,:2] = True
+expected3[2:,2:] = np.eye(3, dtype=bool)
+print("Expected:")
+print(expected3)
+print("Matches?", np.array_equal(result3, expected3))
+PY
+2026-06-11 07:15:24,018 INFO STDOUT: pix & cm separability matrix:
+[[ True  True False False]
+ [ True  True False False]
+ [False False  True False]
+ [False False False  True]]
+
+Expected:
+[[ True  True False False]
+ [ True  True False False]
+ [False False  True False]
+ [False False False  True]]
+Matches? True
+
+cm & pix separability matr... [truncated]
+2026-06-11 07:15:24,019 INFO Exit code: 0
+2026-06-11 07:15:27,240 INFO Running command: cd /testbed && git diff --no-ext-diff
+2026-06-11 07:15:31,527 INFO STDOUT: diff --git a/astropy/modeling/separable.py b/astropy/modeling/separable.py
+index a308e2729..6099f6346 100644
+--- a/astropy/modeling/separable.py
++++ b/astropy/modeling/separable.py
+@@ -242,7 +242,7 @@ def _cstack(left, right):
+         cright = _coord_matrix(right, 'right', noutp)
+     else:
+       ... [truncated]
+2026-06-11 07:15:31,527 INFO Exit code: 0
+2026-06-11 07:15:33,961 INFO Running command: cd /testbed && python -m pytest astropy/modeling/tests/test_separable.py::test_separable -x
+2026-06-11 07:15:35,081 INFO STDOUT: ============================= test session starts ==============================
+platform linux -- Python 3.9.20, pytest-7.4.0, pluggy-1.3.0
+
+Running tests with Astropy version 5.1.dev623+gd16bfe05a.d20250910.
+Running tests in astropy/modeling/tests/test_separable.py::test_separable.
+
+Date: 2026-06-... [truncated]
+2026-06-11 07:15:35,081 INFO STDERR: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+
+2026-06-11 07:15:35,081 INFO Exit code: 0
+2026-06-11 07:15:38,666 INFO Running command: git diff --no-ext-diff
+2026-06-11 07:15:38,818 INFO STDOUT: diff --git a/astropy/modeling/separable.py b/astropy/modeling/separable.py
+index a308e2729..6099f6346 100644
+--- a/astropy/modeling/separable.py
++++ b/astropy/modeling/separable.py
+@@ -242,7 +242,7 @@ def _cstack(left, right):
+         cright = _coord_matrix(right, 'right', noutp)
+     else:
+       ... [truncated]
+2026-06-11 07:15:38,818 INFO Exit code: 0
+2026-06-11 07:15:38,819 INFO Stopping container pensive_hellman
+2026-06-11 07:15:43,939 INFO Removing container pensive_hellman

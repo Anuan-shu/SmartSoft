@@ -1,0 +1,70 @@
+2026-06-11 07:17:49,339 INFO Preparing Docker environment for astropy__astropy-14365
+2026-06-11 07:17:49,371 INFO Image already exists locally, skipping pull: swebench/sweb.eval.x86_64.astropy_1776_astropy-14365
+2026-06-11 07:17:49,548 INFO Running command: pwd
+2026-06-11 07:17:49,734 INFO STDOUT: /testbed
+
+2026-06-11 07:17:49,734 INFO Exit code: 0
+2026-06-11 07:17:52,523 INFO Running command: cd /testbed && grep -rn "Unrecognized QDP line" --include="*.py"
+2026-06-11 07:17:55,689 INFO STDOUT: astropy/io/ascii/qdp.py:56:    ValueError: Unrecognized QDP line...
+astropy/io/ascii/qdp.py:60:    ValueError: Unrecognized QDP line...
+astropy/io/ascii/qdp.py:78:        raise ValueError(f"Unrecognized QDP line: {line}")
+
+2026-06-11 07:17:55,689 INFO Exit code: 0
+2026-06-11 07:18:02,612 INFO Running command: cd /testbed && sed -n '50,85p' astropy/io/ascii/qdp.py
+2026-06-11 07:18:02,757 INFO STDOUT:     'new'
+    >>> _line_type("NO,NO,NO,NO,NO", delimiter=',')
+    'new'
+    >>> _line_type("N O N NOON OON O")
+    Traceback (most recent call last):
+        ...
+    ValueError: Unrecognized QDP line...
+    >>> _line_type(" some non-comment gibberish")
+    Traceback (most recent call last):
+        ... [truncated]
+2026-06-11 07:18:02,757 INFO Exit code: 0
+2026-06-11 07:18:06,260 INFO Running command: cd /testbed && python -c "
+import pathlib
+p = pathlib.Path('astropy/io/ascii/qdp.py')
+text = p.read_text()
+# Change the regex compilation to be case-insensitive
+text = text.replace(
+    '_line_type_re = re.compile(_type_re)',
+    '_line_type_re = re.compile(_type_re, re.IGNORECASE)'
+)
+p.write_text(text)
+print('Done')
+"
+2026-06-11 07:18:06,440 INFO STDOUT: Done
+
+2026-06-11 07:18:06,440 INFO Exit code: 0
+2026-06-11 07:18:08,863 INFO Running command: cd /testbed && python -m pytest astropy/io/ascii/tests/test_qdp.py::test_roundtrip -xvs
+2026-06-11 07:18:11,044 INFO STDOUT: Internet access disabled
+[1m============================= test session starts ==============================[0m
+platform linux -- Python 3.9.20, pytest-7.4.0, pluggy-1.3.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .pytest_cache
+
+Running tests with Astropy version 5.3.dev882+g7269fa3e3.d... [truncated]
+2026-06-11 07:18:11,044 INFO STDERR: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+
+2026-06-11 07:18:11,044 INFO Exit code: 0
+2026-06-11 07:18:13,760 INFO Running command: cd /testbed && python -m pytest astropy/io/ascii/tests/test_qdp.py -xvs
+2026-06-11 07:18:14,791 INFO STDOUT: Internet access disabled
+[1m============================= test session starts ==============================[0m
+platform linux -- Python 3.9.20, pytest-7.4.0, pluggy-1.3.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .pytest_cache
+
+Running tests with Astropy version 5.3.dev882+g7269fa3e3.d... [truncated]
+2026-06-11 07:18:14,791 INFO STDERR: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+
+2026-06-11 07:18:14,791 INFO Exit code: 0
+2026-06-11 07:18:25,619 INFO Running command: git diff --no-ext-diff
+2026-06-11 07:18:29,353 INFO STDOUT: diff --git a/astropy/io/ascii/qdp.py b/astropy/io/ascii/qdp.py
+index 83a4f004a..768beb0de 100644
+--- a/astropy/io/ascii/qdp.py
++++ b/astropy/io/ascii/qdp.py
+@@ -68,7 +68,7 @@ def _line_type(line, delimiter=None):
+     _new_re = rf"NO({sep}NO)+"
+     _data_re = rf"({_decimal_re}|NO|[-+]?nan)({sep}({_... [truncated]
+2026-06-11 07:18:29,354 INFO Exit code: 0
+2026-06-11 07:18:29,354 INFO Stopping container lucid_mendeleev
+2026-06-11 07:18:34,494 INFO Removing container lucid_mendeleev
