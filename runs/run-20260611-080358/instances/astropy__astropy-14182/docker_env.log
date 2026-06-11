@@ -1,0 +1,322 @@
+2026-06-11 08:09:40,512 INFO Preparing Docker environment for astropy__astropy-14182
+2026-06-11 08:09:40,544 INFO Image already exists locally, skipping pull: swebench/sweb.eval.x86_64.astropy_1776_astropy-14182
+2026-06-11 08:09:40,730 INFO Running command: pwd
+2026-06-11 08:09:40,904 INFO STDOUT: /testbed
+
+2026-06-11 08:09:40,905 INFO Exit code: 0
+2026-06-11 08:09:44,157 INFO Running command: cd /testbed && python -m pytest astropy/io/ascii/tests/test_rst.py::test_rst_with_header_rows -xvs 2>&1 | head -50
+2026-06-11 08:09:46,112 INFO STDOUT: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+Internet access disabled
+[1m============================= test session starts ==============================[0m
+platform linux -- Pyth... [truncated]
+2026-06-11 08:09:46,112 INFO Exit code: 0
+2026-06-11 08:09:48,117 INFO Running command: cd /testbed && grep -r "class RST" --include="*.py"
+2026-06-11 08:09:48,328 INFO STDOUT: astropy/io/ascii/rst.py:class RST(FixedWidth):
+
+2026-06-11 08:09:48,328 INFO Exit code: 0
+2026-06-11 08:09:54,011 INFO Running command: cd /testbed && sed -n '/^class RST/,/^class [A-Z]/p' astropy/io/ascii/rst.py | head -30
+2026-06-11 08:09:54,171 INFO STDOUT: class RST(FixedWidth):
+    """reStructuredText simple format table.
+
+    See: https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.html#simple-tables
+
+    Example::
+
+        ==== ===== ======
+        Col1  Col2  Col3
+        ==== ===== ======
+          1    2.3  Hello
+          2    4.5  Wo... [truncated]
+2026-06-11 08:09:54,171 INFO Exit code: 0
+2026-06-11 08:09:58,754 INFO Running command: cd /testbed && grep -r "header_rows" astropy/io/ascii/ --include="*.py"
+2026-06-11 08:09:58,915 INFO STDOUT: astropy/io/ascii/fixedwidth.py:        header_rows = getattr(self, "header_rows", ["name"])
+astropy/io/ascii/fixedwidth.py:            line = self.get_line(lines, start_line + header_rows.index("name"))
+astropy/io/ascii/fixedwidth.py:        for ii, attr in enumerate(header_rows):
+astropy/io/ascii/f... [truncated]
+2026-06-11 08:09:58,915 INFO Exit code: 0
+2026-06-11 08:10:07,086 INFO Running command: cd /testbed && python - <<'PY'
+import pathlib
+p = pathlib.Path("astropy/io/ascii/rst.py")
+text = p.read_text()
+# Find the __init__ method of RST class
+lines = text.splitlines()
+new_lines = []
+in_class = False
+in_init = False
+for line in lines:
+    if line.startswith('class RST'):
+        in_class = True
+    if in_class and line.strip() == 'def __init__(self):':
+        new_lines.append('    def __init__(self, header_rows=None):')
+        new_lines.append('        super().__init__(delimiter_pad=None, bookend=False, header_rows=header_rows)')
+        in_init = True
+        continue
+    if in_init:
+        if line.strip().startswith('def ') or line.strip() == '' and new_lines[-1].strip() == '':
+            in_init = False
+        else:
+            continue
+    new_lines.append(line)
+p.write_text('\n'.join(new_lines))
+PY
+2026-06-11 08:10:07,333 INFO Exit code: 0
+2026-06-11 08:10:07,333 INFO Running command: git diff --no-ext-diff --name-only -- '*.py'
+2026-06-11 08:10:07,801 INFO STDOUT: astropy/io/ascii/rst.py
+
+2026-06-11 08:10:07,801 INFO Exit code: 0
+2026-06-11 08:10:07,801 INFO Running command: python -m py_compile astropy/io/ascii/rst.py
+2026-06-11 08:10:08,006 INFO Exit code: 0
+2026-06-11 08:10:15,961 INFO Running command: cd /testbed && python -c "from astropy.table import QTable; import astropy.units as u; import sys; tbl = QTable({'wave': [350,950]*u.nm, 'response': [0.7, 1.2]*u.count}); tbl.write(sys.stdout, format='ascii.rst', header_rows=['name', 'unit'])" 2>&1
+2026-06-11 08:10:16,567 INFO STDOUT:    nm       ct
+ wave response
+   nm       ct
+===== ========
+350.0      0.7
+950.0      1.2
+   nm       ct
+
+2026-06-11 08:10:16,567 INFO Exit code: 0
+2026-06-11 08:10:22,667 INFO Running command: cd /testbed && python - <<'PY'
+import sys
+from astropy.table import QTable
+import astropy.units as u
+tbl = QTable({'wave': [350,950]*u.nm, 'response': [0.7, 1.2]*u.count})
+tbl.write(sys.stdout, format='ascii.rst', header_rows=['name', 'unit'])
+PY
+2026-06-11 08:10:23,211 INFO STDOUT:    nm       ct
+ wave response
+   nm       ct
+===== ========
+350.0      0.7
+950.0      1.2
+   nm       ct
+
+2026-06-11 08:10:23,211 INFO Exit code: 0
+2026-06-11 08:10:23,211 INFO Running command: git diff --no-ext-diff --name-only -- '*.py'
+2026-06-11 08:10:23,363 INFO STDOUT: astropy/io/ascii/rst.py
+
+2026-06-11 08:10:23,363 INFO Exit code: 0
+2026-06-11 08:10:23,363 INFO Running command: python -m py_compile astropy/io/ascii/rst.py
+2026-06-11 08:10:23,559 INFO Exit code: 0
+2026-06-11 08:10:26,639 INFO Running command: cd /testbed && python -c "import astropy.io.ascii.rst; import inspect; print(inspect.getsource(astropy.io.ascii.rst.RST.__init__))"
+2026-06-11 08:10:27,340 INFO STDOUT:     def __init__(self, header_rows=None):
+        super().__init__(delimiter_pad=None, bookend=False, header_rows=header_rows)
+
+
+2026-06-11 08:10:27,340 INFO Exit code: 0
+2026-06-11 08:10:46,098 INFO Running command: cd /testbed && python -m pytest astropy/io/ascii/tests/test_rst.py::test_write_normal -xvs 2>&1 | tail -20
+2026-06-11 08:10:47,337 INFO STDOUT: Cython: not available
+Scikit-image: not available
+asdf: not available
+pyarrow: not available
+
+Using Astropy options: remote_data: none.
+
+hypothesis profile 'ci' -> database=None, deadline=None, print_blob=True, derandomize=True
+CI: undefined
+ARCH_ON_CI: undefined
+IS_CRON: undefined
+
+rootdir: /testbe... [truncated]
+2026-06-11 08:10:47,337 INFO Exit code: 0
+2026-06-11 08:10:52,677 INFO Running command: cd /testbed && python -m pytest astropy/io/ascii/tests/test_rst.py -x 2>&1 | tail -30
+2026-06-11 08:10:53,749 INFO STDOUT: encodings: sys: utf-8, locale: UTF-8, filesystem: utf-8
+byteorder: little
+float info: dig: 15, mant_dig: 15
+
+Package versions: 
+Numpy: 1.25.2
+Scipy: not available
+Matplotlib: not available
+h5py: not available
+Pandas: not available
+PyERFA: 2.0.0.3
+Cython: not available
+Scikit-image: not available
+asd... [truncated]
+2026-06-11 08:10:53,749 INFO Exit code: 0
+2026-06-11 08:11:04,152 INFO Running command: cd /testbed && git diff --no-ext-diff
+2026-06-11 08:11:04,328 INFO STDOUT: diff --git a/astropy/io/ascii/rst.py b/astropy/io/ascii/rst.py
+index abdeba8ef..52f5b9256 100644
+--- a/astropy/io/ascii/rst.py
++++ b/astropy/io/ascii/rst.py
+@@ -57,10 +57,9 @@ class RST(FixedWidth):
+     data_class = SimpleRSTData
+     header_class = SimpleRSTHeader
+ 
+-    def __init__(self):
+-     ... [truncated]
+2026-06-11 08:11:04,329 INFO Exit code: 0
+2026-06-11 08:11:07,040 INFO Running command: cd /testbed && python -m pytest astropy/io/ascii/tests/test_rst.py::test_rst_with_header_rows -xvs 2>&1 | tail -30
+2026-06-11 08:11:08,379 INFO STDOUT: float info: dig: 15, mant_dig: 15
+
+Package versions: 
+Numpy: 1.25.2
+Scipy: not available
+Matplotlib: not available
+h5py: not available
+Pandas: not available
+PyERFA: 2.0.0.3
+Cython: not available
+Scikit-image: not available
+asdf: not available
+pyarrow: not available
+
+Using Astropy options: remote_dat... [truncated]
+2026-06-11 08:11:08,379 INFO Exit code: 0
+2026-06-11 08:11:11,489 INFO Running command: cd /testbed && grep -n "test_rst_with_header_rows" astropy/io/ascii/tests/test_rst.py
+2026-06-11 08:11:11,659 INFO Exit code: 1
+2026-06-11 08:11:14,400 INFO Running command: cd /testbed && find . -name "*.py" -type f -exec grep -l "test_rst_with_header_rows" {} \;
+2026-06-11 08:11:16,913 INFO Exit code: 0
+2026-06-11 08:11:19,656 INFO Running command: cd /testbed && python -m pytest astropy/io/ascii/tests/test_rst.py -x 2>&1 | grep -A 20 "FAILED\|ERROR\|PASSED"
+2026-06-11 08:11:20,753 INFO Exit code: 1
+2026-06-11 08:11:27,064 INFO Running command: cd /testbed && python -m pytest astropy/io/ascii/tests/test_rst.py -v 2>&1 | head -50
+2026-06-11 08:11:28,247 INFO STDOUT: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+Internet access disabled
+[1m============================= test session starts ==============================[0m
+platform linux -- Pyth... [truncated]
+2026-06-11 08:11:28,247 INFO Exit code: 0
+2026-06-11 08:11:30,887 INFO Running command: cd /testbed && python -m pytest astropy/io/ascii/tests/test_rst.py -x 2>&1 | tail -10
+2026-06-11 08:11:31,989 INFO STDOUT: IS_CRON: undefined
+
+rootdir: /testbed
+configfile: setup.cfg
+plugins: cov-4.1.0, astropy-header-0.2.2, arraydiff-0.5.0, doctestplus-1.0.0, remotedata-0.4.0, openfiles-0.5.0, hypothesis-6.82.6, xdist-3.3.1, filter-subpackage-0.1.2, mock-3.11.1, astropy-0.10.0
+collected 9 items
+
+astropy/io/ascii/tests/... [truncated]
+2026-06-11 08:11:31,989 INFO Exit code: 0
+2026-06-11 08:11:40,523 INFO Running command: cd /testbed && python -c "
+import sys
+from astropy.table import QTable
+import astropy.units as u
+tbl = QTable({'wave': [350,950]*u.nm, 'response': [0.7, 1.2]*u.count})
+try:
+    tbl.write(sys.stdout, format='ascii.rst', header_rows=['name', 'unit'])
+except Exception as e:
+    print('Error:', e)
+    import traceback
+    traceback.print_exc()
+"
+2026-06-11 08:11:41,087 INFO STDOUT:    nm       ct
+ wave response
+   nm       ct
+===== ========
+350.0      0.7
+950.0      1.2
+   nm       ct
+
+2026-06-11 08:11:41,087 INFO Exit code: 0
+2026-06-11 08:11:43,766 INFO Running command: cd /testbed && python -c "
+import sys
+from astropy.table import QTable
+import astropy.units as u
+tbl = QTable({'wave': [350,950]*u.nm, 'response': [0.7, 1.2]*u.count})
+print('--- Without header_rows ---')
+tbl.write(sys.stdout, format='ascii.rst')
+print()
+print('--- With header_rows ---')
+tbl.write(sys.stdout, format='ascii.rst', header_rows=['name', 'unit'])
+"
+2026-06-11 08:11:44,348 INFO STDOUT: --- Without header_rows ---
+===== ========
+ wave response
+===== ========
+350.0      0.7
+950.0      1.2
+===== ========
+
+--- With header_rows ---
+   nm       ct
+ wave response
+   nm       ct
+===== ========
+350.0      0.7
+950.0      1.2
+   nm       ct
+
+2026-06-11 08:11:44,348 INFO Exit code: 0
+2026-06-11 08:11:50,651 INFO Running command: cd /testbed && python -c "
+import sys
+from astropy.io.ascii import RST
+from astropy.table import Table
+import io
+tbl = Table({'wave': [350,950], 'response': [0.7, 1.2]})
+out = io.StringIO()
+writer = RST(header_rows=['name', 'unit'])
+writer.write(tbl, out)
+print(out.getvalue())
+"
+2026-06-11 08:11:51,328 INFO STDERR: Traceback (most recent call last):
+  File "<string>", line 9, in <module>
+TypeError: write() takes 2 positional arguments but 3 were given
+
+2026-06-11 08:11:51,329 INFO Exit code: 1
+2026-06-11 08:11:55,275 INFO Running command: cd /testbed && python -c "
+import sys
+from astropy.io.ascii import RST
+from astropy.table import Table
+import io
+tbl = Table({'wave': [350,950], 'response': [0.7, 1.2]})
+out = io.StringIO()
+writer = RST(header_rows=['name', 'unit'])
+writer.write(tbl, out)
+print(out.getvalue())
+" 2>&1
+2026-06-11 08:11:55,909 INFO STDOUT: Traceback (most recent call last):
+  File "<string>", line 9, in <module>
+TypeError: write() takes 2 positional arguments but 3 were given
+
+2026-06-11 08:11:55,909 INFO Exit code: 1
+2026-06-11 08:11:58,485 INFO Running command: cd /testbed && python -c "
+import sys
+sys.path.insert(0, '.')
+from astropy.io.ascii import RST
+print('RST.__init__ signature:', RST.__init__)
+import inspect
+print(inspect.signature(RST.__init__))
+"
+2026-06-11 08:11:59,111 INFO STDOUT: RST.__init__ signature: <function RST.__init__ at 0x74e6ca99bee0>
+(self, header_rows=None)
+
+2026-06-11 08:11:59,111 INFO Exit code: 0
+2026-06-11 08:12:02,783 INFO Running command: cd /testbed && grep -n "class RST" astropy/io/ascii/rst.py
+2026-06-11 08:12:02,932 INFO STDOUT: 35:class RST(FixedWidth):
+
+2026-06-11 08:12:02,932 INFO Exit code: 0
+2026-06-11 08:12:05,195 INFO Running command: cd /testbed && grep -n "header_rows" astropy/io/ascii/rst.py
+2026-06-11 08:12:05,347 INFO STDOUT: 60:    def __init__(self, header_rows=None):
+61:        super().__init__(delimiter_pad=None, bookend=False, header_rows=header_rows)
+
+2026-06-11 08:12:05,347 INFO Exit code: 0
+2026-06-11 08:12:09,952 INFO Running command: cd /testbed && python -c "
+import sys
+sys.path.insert(0, '.')
+from astropy.io.ascii import RST
+from astropy.table import Table
+import io
+tbl = Table({'wave': [350,950], 'response': [0.7, 1.2]})
+out = io.StringIO()
+writer = RST(header_rows=['name', 'unit'])
+writer.write(tbl, out)
+print(out.getvalue())
+"
+2026-06-11 08:12:10,571 INFO STDERR: Traceback (most recent call last):
+  File "<string>", line 10, in <module>
+TypeError: write() takes 2 positional arguments but 3 were given
+
+2026-06-11 08:12:10,571 INFO Exit code: 1
+2026-06-11 08:12:10,571 INFO Running command: git diff --no-ext-diff
+2026-06-11 08:12:10,737 INFO STDOUT: diff --git a/astropy/io/ascii/rst.py b/astropy/io/ascii/rst.py
+index abdeba8ef..52f5b9256 100644
+--- a/astropy/io/ascii/rst.py
++++ b/astropy/io/ascii/rst.py
+@@ -57,10 +57,9 @@ class RST(FixedWidth):
+     data_class = SimpleRSTData
+     header_class = SimpleRSTHeader
+ 
+-    def __init__(self):
+-     ... [truncated]
+2026-06-11 08:12:10,737 INFO Exit code: 0
+2026-06-11 08:12:10,737 INFO Stopping container loving_villani
+2026-06-11 08:12:15,863 INFO Removing container loving_villani
