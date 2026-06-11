@@ -1,0 +1,338 @@
+2026-06-11 07:40:12,664 INFO Preparing Docker environment for astropy__astropy-14365
+2026-06-11 07:40:12,712 INFO Image already exists locally, skipping pull: swebench/sweb.eval.x86_64.astropy_1776_astropy-14365
+2026-06-11 07:40:12,904 INFO Running command: pwd
+2026-06-11 07:40:13,097 INFO STDOUT: /testbed
+
+2026-06-11 07:40:13,098 INFO Exit code: 0
+2026-06-11 07:40:15,357 INFO Running command: cd /testbed && python -m pytest astropy/io/ascii/tests/test_qdp.py::test_roundtrip -xvs
+2026-06-11 07:40:17,293 INFO STDOUT: Internet access disabled
+[1m============================= test session starts ==============================[0m
+platform linux -- Python 3.9.20, pytest-7.4.0, pluggy-1.3.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .pytest_cache
+
+Running tests with Astropy version 5.3.dev882+g7269fa3e3.d... [truncated]
+2026-06-11 07:40:17,293 INFO STDERR: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+
+2026-06-11 07:40:17,293 INFO Exit code: 0
+2026-06-11 07:40:21,814 INFO Running command: cd /testbed && python -m pytest astropy/io/ascii/tests/test_qdp.py::test_roundtrip -xvs -k "True"
+2026-06-11 07:40:22,848 INFO STDOUT: Internet access disabled
+[1m============================= test session starts ==============================[0m
+platform linux -- Python 3.9.20, pytest-7.4.0, pluggy-1.3.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .pytest_cache
+
+Running tests with Astropy version 5.3.dev882+g7269fa3e3.d... [truncated]
+2026-06-11 07:40:22,848 INFO STDERR: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+
+2026-06-11 07:40:22,848 INFO Exit code: 5
+2026-06-11 07:40:27,266 INFO Running command: cd /testbed && python -m pytest astropy/io/ascii/tests/test_qdp.py::test_roundtrip\[True\] -xvs
+2026-06-11 07:40:28,290 INFO STDOUT: Internet access disabled
+[1m============================= test session starts ==============================[0m
+platform linux -- Python 3.9.20, pytest-7.4.0, pluggy-1.3.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .pytest_cache
+
+Running tests with Astropy version 5.3.dev882+g7269fa3e3.d... [truncated]
+2026-06-11 07:40:28,290 INFO STDERR: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+ERROR: not found: /testbed/astropy/io/ascii/tests/test_qdp.py::test_roundtrip[True]
+(no name '/testbed/astropy/io/ascii/tests/test_qdp.p... [truncated]
+2026-06-11 07:40:28,290 INFO Exit code: 4
+2026-06-11 07:40:30,967 INFO Running command: find /testbed -type f -name "*.py" -exec grep -l "QDP\|qdp" {} \; | head -20
+2026-06-11 07:40:32,862 INFO STDOUT: /testbed/astropy/io/ascii/__init__.py
+/testbed/astropy/io/ascii/tests/test_qdp.py
+/testbed/astropy/io/ascii/tests/test_write.py
+/testbed/astropy/io/ascii/qdp.py
+
+2026-06-11 07:40:32,862 INFO Exit code: 0
+2026-06-11 07:40:35,765 INFO Running command: grep -n "READ SERR\|read serr" /testbed/astropy/io/ascii/qdp.py
+2026-06-11 07:40:35,915 INFO STDOUT: 35:    >>> _line_type("READ SERR 3")
+150:    """Give list of column names from the READ SERR and TERR commands.
+460:        print(f"READ SERR {col_string}", file=fobj)
+531:        READ SERR 3
+551:        READ SERR 3
+572:    a symmetric error (just like the ``READ SERR`` and ``READ TERR`` commands
+60... [truncated]
+2026-06-11 07:40:35,915 INFO Exit code: 0
+2026-06-11 07:40:38,361 INFO Running command: grep -n "Unrecognized QDP line" /testbed/astropy/io/ascii/qdp.py
+2026-06-11 07:40:38,511 INFO STDOUT: 56:    ValueError: Unrecognized QDP line...
+60:    ValueError: Unrecognized QDP line...
+78:        raise ValueError(f"Unrecognized QDP line: {line}")
+
+2026-06-11 07:40:38,511 INFO Exit code: 0
+2026-06-11 07:40:41,050 INFO Running command: sed -n '70,85p' /testbed/astropy/io/ascii/qdp.py
+2026-06-11 07:40:41,202 INFO STDOUT:     _type_re = rf"^\s*((?P<command>{_command_re})|(?P<new>{_new_re})|(?P<data>{_data_re})?\s*(\!(?P<comment>.*))?\s*$"
+    _line_type_re = re.compile(_type_re)
+    line = line.strip()
+    if not line:
+        return "comment"
+    match = _line_type_re.match(line)
+
+    if match is None:
+        raise... [truncated]
+2026-06-11 07:40:41,203 INFO Exit code: 0
+2026-06-11 07:40:45,830 INFO Running command: grep -n "_command_re\|_new_re\|_data_re" /testbed/astropy/io/ascii/qdp.py | head -20
+2026-06-11 07:40:45,999 INFO STDOUT: 63:    _command_re = r"READ [TS]ERR(\s+[0-9]+)+"
+68:    _new_re = rf"NO({sep}NO)+"
+69:    _data_re = rf"({_decimal_re}|NO|[-+]?nan)({sep}({_decimal_re}|NO|[-+]?nan))*)"
+70:    _type_re = rf"^\s*((?P<command>{_command_re})|(?P<new>{_new_re})|(?P<data>{_data_re})?\s*(\!(?P<comment>.*))?\s*$"
+
+2026-06-11 07:40:45,999 INFO Exit code: 0
+2026-06-11 07:40:50,063 INFO Running command: cd /testbed && python -c "import re; from astropy.io.ascii.qdp import _line_type; print(_line_type('READ SERR 1 2'))"
+2026-06-11 07:40:50,702 INFO STDOUT: command
+
+2026-06-11 07:40:50,702 INFO Exit code: 0
+2026-06-11 07:40:53,457 INFO Running command: cd /testbed && python -c "import re; from astropy.io.ascii.qdp import _line_type; print(_line_type('read serr 1 2'))"
+2026-06-11 07:40:54,085 INFO STDERR: Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/testbed/astropy/io/ascii/qdp.py", line 78, in _line_type
+    raise ValueError(f"Unrecognized QDP line: {line}")
+ValueError: Unrecognized QDP line: read serr 1 2
+
+2026-06-11 07:40:54,085 INFO Exit code: 1
+2026-06-11 07:41:02,024 INFO Running command: python - <<'PY'
+import re
+import pathlib
+p = pathlib.Path("/testbed/astropy/io/ascii/qdp.py")
+text = p.read_text()
+# The regex for command currently is r"READ [TS]ERR(\s+[0-9]+)+"
+# Need to make it case-insensitive. Could use re.IGNORECASE flag,
+# but the regex is compiled later with _line_type_re = re.compile(_type_re)
+# So we can either add (?i) prefix or pass re.IGNORECASE.
+# Let's change _command_re to be case-insensitive via (?i)
+# Also note there might be other commands like "READ TERR", "READ SYMBOL", etc.
+# Actually looking at the regex, it only matches READ [TS]ERR.
+# But QDP also supports other commands like READ SYMBOL, READ FS, READ COLOR, etc.
+# Let's examine the full file to see what commands are recognized.
+PY
+2026-06-11 07:41:02,203 INFO Exit code: 0
+2026-06-11 07:41:02,204 INFO Running command: git diff --no-ext-diff --name-only -- '*.py'
+2026-06-11 07:41:02,621 INFO Exit code: 0
+2026-06-11 07:41:05,078 INFO Running command: grep -n "READ\|_command_re" /testbed/astropy/io/ascii/qdp.py | head -30
+2026-06-11 07:41:05,228 INFO STDOUT: 35:    >>> _line_type("READ SERR 3")
+63:    _command_re = r"READ [TS]ERR(\s+[0-9]+)+"
+70:    _type_re = rf"^\s*((?P<command>{_command_re})|(?P<new>{_new_re})|(?P<data>{_data_re})?\s*(\!(?P<comment>.*))?\s*$"
+150:    """Give list of column names from the READ SERR and TERR commands.
+460:        print... [truncated]
+2026-06-11 07:41:05,229 INFO Exit code: 0
+2026-06-11 07:41:09,975 INFO Running command: grep -B5 -A5 "_command_re\|_line_type_re" /testbed/astropy/io/ascii/qdp.py
+2026-06-11 07:41:10,131 INFO STDOUT:     Traceback (most recent call last):
+        ...
+    ValueError: Unrecognized QDP line...
+    """
+    _decimal_re = r"[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?"
+    _command_re = r"READ [TS]ERR(\s+[0-9]+)+"
+
+    sep = delimiter
+    if delimiter is None:
+        sep = r"\s+"
+    _new_re = rf"NO({sep}... [truncated]
+2026-06-11 07:41:10,131 INFO Exit code: 0
+2026-06-11 07:41:17,470 INFO Running command: python - <<'PY'
+import re
+import pathlib
+p = pathlib.Path("/testbed/astropy/io/ascii/qdp.py")
+text = p.read_text()
+# Make the command regex case-insensitive by adding (?i) at the start
+# Since _command_re is used inside _type_re, we need to ensure (?i) applies to the whole pattern
+# However, Python's re.IGNORECASE flag is set when compiling _line_type_re.
+# Actually, we can add (?i) inside _command_re, but better to pass re.IGNORECASE flag to compile.
+# Let's check if there are other uses of _command_re elsewhere.
+# It seems only used in _type_re. So we can change the compile line.
+# Let's find the line where _line_type_re is compiled.
+lines = text.splitlines()
+for i, line in enumerate(lines):
+    if '_line_type_re = re.compile' in line:
+        print(i, line)
+PY
+2026-06-11 07:41:17,651 INFO STDOUT: 70     _line_type_re = re.compile(_type_re)
+
+2026-06-11 07:41:17,651 INFO Exit code: 0
+2026-06-11 07:41:17,651 INFO Running command: git diff --no-ext-diff --name-only -- '*.py'
+2026-06-11 07:41:17,806 INFO Exit code: 0
+2026-06-11 07:41:26,870 INFO Running command: python - <<'PY'
+import re
+import pathlib
+p = pathlib.Path("/testbed/astropy/io/ascii/qdp.py")
+text = p.read_text()
+# Change the regex compilation to be case-insensitive
+# Replace line 70 with adding re.IGNORECASE flag
+lines = text.splitlines()
+for i, line in enumerate(lines):
+    if '_line_type_re = re.compile' in line:
+        lines[i] = '_line_type_re = re.compile(_type_re, re.IGNORECASE)'
+        break
+new_text = '\n'.join(lines)
+p.write_text(new_text)
+PY
+2026-06-11 07:41:27,068 INFO Exit code: 0
+2026-06-11 07:41:27,068 INFO Running command: git diff --no-ext-diff --name-only -- '*.py'
+2026-06-11 07:41:27,229 INFO STDOUT: astropy/io/ascii/qdp.py
+
+2026-06-11 07:41:27,229 INFO Exit code: 0
+2026-06-11 07:41:27,229 INFO Running command: python -m py_compile astropy/io/ascii/qdp.py
+2026-06-11 07:41:27,408 INFO STDERR: Sorry: IndentationError: unexpected indent (qdp.py, line 72)
+
+2026-06-11 07:41:27,408 INFO Exit code: 1
+2026-06-11 07:41:32,456 INFO Running command: python - <<'PY'
+import re
+import pathlib
+p = pathlib.Path("/testbed/astropy/io/ascii/qdp.py")
+text = p.read_text()
+# Find the line with _line_type_re = re.compile(_type_re)
+# It's inside the _line_type function, indented.
+lines = text.splitlines()
+for i, line in enumerate(lines):
+    if '_line_type_re = re.compile' in line:
+        # Ensure we keep the same indentation
+        indent = len(line) - len(line.lstrip())
+        lines[i] = ' ' * indent + '_line_type_re = re.compile(_type_re, re.IGNORECASE)'
+        break
+new_text = '\n'.join(lines)
+p.write_text(new_text)
+PY
+2026-06-11 07:41:32,630 INFO Exit code: 0
+2026-06-11 07:41:32,630 INFO Running command: git diff --no-ext-diff --name-only -- '*.py'
+2026-06-11 07:41:32,791 INFO STDOUT: astropy/io/ascii/qdp.py
+
+2026-06-11 07:41:32,791 INFO Exit code: 0
+2026-06-11 07:41:32,791 INFO Running command: python -m py_compile astropy/io/ascii/qdp.py
+2026-06-11 07:41:32,974 INFO STDERR: Sorry: IndentationError: unexpected indent (qdp.py, line 72)
+
+2026-06-11 07:41:32,974 INFO Exit code: 1
+2026-06-11 07:41:37,267 INFO Running command: python - <<'PY'
+import re
+import pathlib
+p = pathlib.Path("/testbed/astropy/io/ascii/qdp.py")
+text = p.read_text()
+# Let's view the exact lines around the compile
+lines = text.splitlines()
+for i, line in enumerate(lines):
+    if '_line_type_re = re.compile' in line:
+        print(f"Line {i}: {line}")
+        # Show surrounding lines
+        for j in range(i-2, i+3):
+            if 0 <= j < len(lines):
+                print(f"{j}: {lines[j]}")
+        break
+PY
+2026-06-11 07:41:37,453 INFO STDOUT: Line 70: _line_type_re = re.compile(_type_re, re.IGNORECASE)
+68:     _data_re = rf"({_decimal_re}|NO|[-+]?nan)({sep}({_decimal_re}|NO|[-+]?nan))*)"
+69:     _type_re = rf"^\s*((?P<command>{_command_re})|(?P<new>{_new_re})|(?P<data>{_data_re})?\s*(\!(?P<comment>.*))?\s*$"
+70: _line_type_re = re.compil... [truncated]
+2026-06-11 07:41:37,453 INFO Exit code: 0
+2026-06-11 07:41:37,453 INFO Running command: git diff --no-ext-diff --name-only -- '*.py'
+2026-06-11 07:41:37,607 INFO STDOUT: astropy/io/ascii/qdp.py
+
+2026-06-11 07:41:37,607 INFO Exit code: 0
+2026-06-11 07:41:37,607 INFO Running command: python -m py_compile astropy/io/ascii/qdp.py
+2026-06-11 07:41:37,784 INFO STDERR: Sorry: IndentationError: unexpected indent (qdp.py, line 72)
+
+2026-06-11 07:41:37,784 INFO Exit code: 1
+2026-06-11 07:41:44,512 INFO Running command: python - <<'PY'
+import re
+import pathlib
+p = pathlib.Path("/testbed/astropy/io/ascii/qdp.py")
+text = p.read_text()
+# Restore original indentation: the compile line should be inside the function.
+# Let's find the function definition and fix.
+lines = text.splitlines()
+# Find the start of _line_type function
+for i, line in enumerate(lines):
+    if line.strip().startswith('def _line_type'):
+        # Find the next non-empty line after def
+        for j in range(i+1, len(lines)):
+            if lines[j].strip():
+                indent = len(lines[j]) - len(lines[j].lstrip())
+                break
+        break
+# Now find the compile line again
+for k in range(len(lines)):
+    if '_line_type_re = re.compile' in lines[k]:
+        # Set correct indentation
+        lines[k] = ' ' * indent + '_line_type_re = re.compile(_type_re, re.IGNORECASE)'
+        break
+new_text = '\n'.join(lines)
+p.write_text(new_text)
+PY
+2026-06-11 07:41:44,688 INFO Exit code: 0
+2026-06-11 07:41:44,688 INFO Running command: git diff --no-ext-diff --name-only -- '*.py'
+2026-06-11 07:41:44,842 INFO STDOUT: astropy/io/ascii/qdp.py
+
+2026-06-11 07:41:44,843 INFO Exit code: 0
+2026-06-11 07:41:44,843 INFO Running command: python -m py_compile astropy/io/ascii/qdp.py
+2026-06-11 07:41:45,022 INFO Exit code: 0
+2026-06-11 07:41:49,185 INFO Running command: cd /testbed && python -c "import astropy.io.ascii.qdp; print(astropy.io.ascii.qdp._line_type.__code__.co_constants)" 2>&1 | head -20
+2026-06-11 07:41:49,829 INFO STDOUT: Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+AttributeError: 'code' object has no attribute 'co_constants'
+
+2026-06-11 07:41:49,829 INFO Exit code: 0
+2026-06-11 07:41:55,097 INFO Running command: cd /testbed && python -m pytest astropy/io/ascii/tests/test_qdp.py::test_roundtrip -xvs 2>&1 | head -30
+2026-06-11 07:41:56,202 INFO STDOUT: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+Internet access disabled
+[1m============================= test session starts ==============================[0m
+platform linux -- Pyth... [truncated]
+2026-06-11 07:41:56,202 INFO Exit code: 0
+2026-06-11 07:41:59,718 INFO Running command: cd /testbed && python -m pytest astropy/io/ascii/tests/test_qdp.py::test_roundtrip -xvs 2>&1 | tail -30
+2026-06-11 07:42:00,753 INFO STDOUT: byteorder: little
+float info: dig: 15, mant_dig: 15
+
+Package versions: 
+Numpy: 1.25.2
+Scipy: not available
+Matplotlib: not available
+h5py: not available
+Pandas: not available
+PyERFA: 2.0.0.3
+Cython: not available
+Scikit-image: not available
+asdf: not available
+pyarrow: not available
+
+Using Astropy o... [truncated]
+2026-06-11 07:42:00,753 INFO Exit code: 0
+2026-06-11 07:42:07,305 INFO Running command: cd /testbed && python -c "
+import tempfile, os
+from astropy.table import Table
+with tempfile.NamedTemporaryFile(mode='w', suffix='.qdp', delete=False) as f:
+    f.write('read serr 1 2\\n1 0.5 1 0.5')
+    fname = f.name
+try:
+    t = Table.read(fname, format='ascii.qdp')
+    print('SUCCESS:', t)
+except Exception as e:
+    print('FAILURE:', e)
+finally:
+    os.unlink(fname)
+"
+2026-06-11 07:42:07,873 INFO STDOUT: SUCCESS: col1 col1_err col2 col2_err
+---- -------- ---- --------
+   1      0.5    1      0.5
+
+2026-06-11 07:42:07,874 INFO STDERR: WARNING: table_id not specified. Reading the first available table [astropy.io.ascii.qdp]
+
+2026-06-11 07:42:07,874 INFO Exit code: 0
+2026-06-11 07:42:10,746 INFO Running command: cd /testbed && git diff --no-ext-diff
+2026-06-11 07:42:10,904 INFO STDOUT: diff --git a/astropy/io/ascii/qdp.py b/astropy/io/ascii/qdp.py
+index 83a4f004a..f73b6f378 100644
+--- a/astropy/io/ascii/qdp.py
++++ b/astropy/io/ascii/qdp.py
+@@ -68,7 +68,7 @@ def _line_type(line, delimiter=None):
+     _new_re = rf"NO({sep}NO)+"
+     _data_re = rf"({_decimal_re}|NO|[-+]?nan)({sep}({_... [truncated]
+2026-06-11 07:42:10,904 INFO Exit code: 0
+2026-06-11 07:42:19,625 INFO Running command: git diff --no-ext-diff
+2026-06-11 07:42:19,784 INFO STDOUT: diff --git a/astropy/io/ascii/qdp.py b/astropy/io/ascii/qdp.py
+index 83a4f004a..f73b6f378 100644
+--- a/astropy/io/ascii/qdp.py
++++ b/astropy/io/ascii/qdp.py
+@@ -68,7 +68,7 @@ def _line_type(line, delimiter=None):
+     _new_re = rf"NO({sep}NO)+"
+     _data_re = rf"({_decimal_re}|NO|[-+]?nan)({sep}({_... [truncated]
+2026-06-11 07:42:19,784 INFO Exit code: 0
+2026-06-11 07:42:19,784 INFO Running command: git diff --no-ext-diff --name-only -- '*.py'
+2026-06-11 07:42:19,939 INFO STDOUT: astropy/io/ascii/qdp.py
+
+2026-06-11 07:42:19,939 INFO Exit code: 0
+2026-06-11 07:42:19,940 INFO Running command: python -m py_compile astropy/io/ascii/qdp.py
+2026-06-11 07:42:20,122 INFO Exit code: 0
+2026-06-11 07:42:20,122 INFO Stopping container affectionate_bell
+2026-06-11 07:42:25,244 INFO Removing container affectionate_bell

@@ -1,0 +1,519 @@
+2026-06-11 07:37:23,262 INFO Preparing Docker environment for astropy__astropy-14182
+2026-06-11 07:37:23,294 INFO Image already exists locally, skipping pull: swebench/sweb.eval.x86_64.astropy_1776_astropy-14182
+2026-06-11 07:37:23,478 INFO Running command: pwd
+2026-06-11 07:37:23,656 INFO STDOUT: /testbed
+
+2026-06-11 07:37:23,656 INFO Exit code: 0
+2026-06-11 07:37:25,975 INFO Running command: cd /testbed && python -m pytest astropy/io/ascii/tests/test_rst.py::test_rst_with_header_rows -xvs 2>&1 | head -30
+2026-06-11 07:37:27,885 INFO STDOUT: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+Internet access disabled
+[1m============================= test session starts ==============================[0m
+platform linux -- Pyth... [truncated]
+2026-06-11 07:37:27,885 INFO Exit code: 0
+2026-06-11 07:37:30,309 INFO Running command: cd /testbed && python -m pytest astropy/io/ascii/tests/test_rst.py::test_rst_with_header_rows -xvs 2>&1 | tail -30
+2026-06-11 07:37:31,374 INFO STDOUT: float info: dig: 15, mant_dig: 15
+
+Package versions: 
+Numpy: 1.25.2
+Scipy: not available
+Matplotlib: not available
+h5py: not available
+Pandas: not available
+PyERFA: 2.0.0.3
+Cython: not available
+Scikit-image: not available
+asdf: not available
+pyarrow: not available
+
+Using Astropy options: remote_dat... [truncated]
+2026-06-11 07:37:31,374 INFO Exit code: 0
+2026-06-11 07:37:33,815 INFO Running command: cd /testbed && grep -rn "class RST" astropy/io/ascii/
+2026-06-11 07:37:33,984 INFO STDOUT: astropy/io/ascii/rst.py:35:class RST(FixedWidth):
+
+2026-06-11 07:37:33,984 INFO Exit code: 0
+2026-06-11 07:37:37,647 INFO Running command: cd /testbed && grep -rn "header_rows" astropy/io/ascii/
+2026-06-11 07:37:37,808 INFO STDOUT: astropy/io/ascii/fixedwidth.py:97:        header_rows = getattr(self, "header_rows", ["name"])
+astropy/io/ascii/fixedwidth.py:163:            line = self.get_line(lines, start_line + header_rows.index("name"))
+astropy/io/ascii/fixedwidth.py:168:        for ii, attr in enumerate(header_rows):
+astropy... [truncated]
+2026-06-11 07:37:37,808 INFO STDERR: grep: astropy/io/ascii/__pycache__/fixedwidth.cpython-39.pyc: binary file matches
+
+2026-06-11 07:37:37,808 INFO Exit code: 0
+2026-06-11 07:37:41,004 INFO Running command: cd /testbed && python -c "import astropy.io.ascii.rst; import inspect; print(inspect.signature(astropy.io.ascii.rst.RST.__init__))"
+2026-06-11 07:37:41,670 INFO STDOUT: (self)
+
+2026-06-11 07:37:41,670 INFO Exit code: 0
+2026-06-11 07:37:44,161 INFO Running command: cd /testbed && python -c "import astropy.io.ascii.fixedwidth; import inspect; print(inspect.signature(astropy.io.ascii.fixedwidth.FixedWidth.__init__))"
+2026-06-11 07:37:44,783 INFO STDOUT: (self, col_starts=None, col_ends=None, delimiter_pad=' ', bookend=True, header_rows=None)
+
+2026-06-11 07:37:44,784 INFO Exit code: 0
+2026-06-11 07:37:50,559 INFO Running command: cd /testbed && python - <<'PY'
+import astropy.io.ascii.rst
+import inspect
+print("RST.__init__ signature:", inspect.signature(astropy.io.ascii.rst.RST.__init__))
+print("RST.__bases__:", astropy.io.ascii.rst.RST.__bases__)
+print("FixedWidth.__init__ signature:", inspect.signature(astropy.io.ascii.rst.FixedWidth.__init__))
+PY
+2026-06-11 07:37:51,201 INFO STDOUT: RST.__init__ signature: (self)
+RST.__bases__: (<class 'astropy.io.ascii.fixedwidth.FixedWidth'>,)
+FixedWidth.__init__ signature: (self, col_starts=None, col_ends=None, delimiter_pad=' ', bookend=True, header_rows=None)
+
+2026-06-11 07:37:51,201 INFO Exit code: 0
+2026-06-11 07:37:51,201 INFO Running command: git diff --no-ext-diff --name-only -- '*.py'
+2026-06-11 07:37:51,634 INFO Exit code: 0
+2026-06-11 07:37:55,369 INFO Running command: cd /testbed && grep -n "class RST" astropy/io/ascii/rst.py -A 20
+2026-06-11 07:37:55,517 INFO STDOUT: 35:class RST(FixedWidth):
+36-    """reStructuredText simple format table.
+37-
+38-    See: https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.html#simple-tables
+39-
+40-    Example::
+41-
+42-        ==== ===== ======
+43-        Col1  Col2  Col3
+44-        ==== ===== ======
+45-          1    ... [truncated]
+2026-06-11 07:37:55,517 INFO Exit code: 0
+2026-06-11 07:38:04,482 INFO Running command: cd /testbed && python - <<'PY'
+import pathlib
+p = pathlib.Path("astropy/io/ascii/rst.py")
+text = p.read_text()
+# Find class RST definition and add __init__ method that passes header_rows
+lines = text.splitlines()
+new_lines = []
+for i, line in enumerate(lines):
+    new_lines.append(line)
+    if line.strip() == 'class RST(FixedWidth):':
+        # Insert __init__ method after the docstring
+        # Find next line after docstring
+        j = i + 1
+        while j < len(lines) and (lines[j].startswith('    """') or lines[j].startswith('    ') or lines[j].startswith('    """')):
+            j += 1
+        # Insert at j
+        indent = '    '
+        init_method = [
+            '',
+            indent + 'def __init__(self, col_starts=None, col_ends=None, delimiter_pad=" ", bookend=True, header_rows=None):',
+            indent + '    super().__init__(col_starts=col_starts, col_ends=col_ends, delimiter_pad=delimiter_pad,',
+            indent + '                     bookend=bookend, header_rows=header_rows)',
+        ]
+        # Insert in reverse order
+        for insert_line in reversed(init_method):
+            lines.insert(j, insert_line)
+        break
+p.write_text('\n'.join(lines))
+PY
+2026-06-11 07:38:04,673 INFO Exit code: 0
+2026-06-11 07:38:04,674 INFO Running command: git diff --no-ext-diff --name-only -- '*.py'
+2026-06-11 07:38:04,826 INFO STDOUT: astropy/io/ascii/rst.py
+
+2026-06-11 07:38:04,827 INFO Exit code: 0
+2026-06-11 07:38:04,827 INFO Running command: python -m py_compile astropy/io/ascii/rst.py
+2026-06-11 07:38:05,009 INFO Exit code: 0
+2026-06-11 07:38:12,334 INFO Running command: cd /testbed && python -c "
+import sys
+from astropy.table import QTable
+import astropy.units as u
+tbl = QTable({'wave': [350,950]*u.nm, 'response': [0.7, 1.2]*u.count})
+try:
+    tbl.write(sys.stdout, format='ascii.rst', header_rows=['name', 'unit'])
+except Exception as e:
+    print('Error:', e)
+    import traceback
+    traceback.print_exc()
+"
+2026-06-11 07:38:12,899 INFO STDOUT: Error: __init__() got an unexpected keyword argument 'header_rows'
+
+2026-06-11 07:38:12,899 INFO STDERR: Traceback (most recent call last):
+  File "<string>", line 7, in <module>
+  File "/testbed/astropy/table/connect.py", line 130, in __call__
+    self.registry.write(instance, *args, **kwargs)
+  File "/testbed/astropy/io/registry/core.py", line 385, in write
+    return writer(data, *args, **kwargs)
+  ... [truncated]
+2026-06-11 07:38:12,899 INFO Exit code: 0
+2026-06-11 07:38:16,785 INFO Running command: cd /testbed && python -c "
+import sys
+sys.path.insert(0, '.')
+from astropy.io.ascii.rst import RST
+import inspect
+print('RST.__init__ signature:', inspect.signature(RST.__init__))
+print('RST.__init__.__module__:', RST.__init__.__module__)
+print('RST.__init__.__qualname__:', RST.__init__.__qualname__)
+"
+2026-06-11 07:38:17,411 INFO STDOUT: RST.__init__ signature: (self)
+RST.__init__.__module__: astropy.io.ascii.rst
+RST.__init__.__qualname__: RST.__init__
+
+2026-06-11 07:38:17,411 INFO Exit code: 0
+2026-06-11 07:38:21,181 INFO Running command: cd /testbed && python -c "
+import astropy.io.ascii.rst
+import inspect
+print('RST.__init__ before:', inspect.signature(astropy.io.ascii.rst.RST.__init__))
+print('RST.__init__ source:', astropy.io.ascii.rst.RST.__init__.__code__.co_filename)
+print('RST.__init__ line:', astropy.io.ascii.rst.RST.__init__.__code__.co_firstlineno)
+"
+2026-06-11 07:38:21,796 INFO STDOUT: RST.__init__ before: (self)
+RST.__init__ source: /testbed/astropy/io/ascii/rst.py
+RST.__init__ line: 64
+
+2026-06-11 07:38:21,796 INFO Exit code: 0
+2026-06-11 07:38:35,348 INFO Running command: cd /testbed && python - <<'PY'
+import pathlib
+p = pathlib.Path("astropy/io/ascii/rst.py")
+text = p.read_text()
+# Find the class RST definition and replace the entire __init__ method
+lines = text.splitlines()
+new_lines = []
+i = 0
+while i < len(lines):
+    line = lines[i]
+    new_lines.append(line)
+    if line.strip() == 'class RST(FixedWidth):':
+        # Skip the docstring lines
+        i += 1
+        while i < len(lines) and (lines[i].startswith('    """') or lines[i].startswith('    ') or lines[i].startswith('    """')):
+            new_lines.append(lines[i])
+            i += 1
+        # Now we are after the docstring, insert __init__ before any other methods
+        indent = '    '
+        init_method = [
+            '',
+            indent + 'def __init__(self, col_starts=None, col_ends=None, delimiter_pad=" ", bookend=True, header_rows=None):',
+            indent + '    super().__init__(col_starts=col_starts, col_ends=col_ends, delimiter_pad=delimiter_pad,',
+            indent + '                     bookend=bookend, header_rows=header_rows)',
+        ]
+        new_lines.extend(init_method)
+        # Continue adding the rest of the lines
+        while i < len(lines):
+            new_lines.append(lines[i])
+            i += 1
+        break
+    i += 1
+p.write_text('\n'.join(new_lines))
+PY
+2026-06-11 07:38:35,522 INFO Exit code: 0
+2026-06-11 07:38:35,522 INFO Running command: git diff --no-ext-diff --name-only -- '*.py'
+2026-06-11 07:38:35,681 INFO STDOUT: astropy/io/ascii/rst.py
+
+2026-06-11 07:38:35,681 INFO Exit code: 0
+2026-06-11 07:38:35,681 INFO Running command: python -m py_compile astropy/io/ascii/rst.py
+2026-06-11 07:38:35,859 INFO Exit code: 0
+2026-06-11 07:38:40,153 INFO Running command: cd /testbed && python -c "
+import sys
+from astropy.table import QTable
+import astropy.units as u
+tbl = QTable({'wave': [350,950]*u.nm, 'response': [0.7, 1.2]*u.count})
+try:
+    tbl.write(sys.stdout, format='ascii.rst', header_rows=['name', 'unit'])
+except Exception as e:
+    print('Error:', e)
+    import traceback
+    traceback.print_exc()
+"
+2026-06-11 07:38:40,697 INFO STDOUT: Error: __init__() got an unexpected keyword argument 'header_rows'
+
+2026-06-11 07:38:40,698 INFO STDERR: Traceback (most recent call last):
+  File "<string>", line 7, in <module>
+  File "/testbed/astropy/table/connect.py", line 130, in __call__
+    self.registry.write(instance, *args, **kwargs)
+  File "/testbed/astropy/io/registry/core.py", line 385, in write
+    return writer(data, *args, **kwargs)
+  ... [truncated]
+2026-06-11 07:38:40,698 INFO Exit code: 0
+2026-06-11 07:38:42,823 INFO Running command: cd /testbed && python -m pytest astropy/io/ascii/tests/test_rst.py::test_rst_with_header_rows -xvs
+2026-06-11 07:38:43,823 INFO STDOUT: Internet access disabled
+[1m============================= test session starts ==============================[0m
+platform linux -- Python 3.9.20, pytest-7.4.0, pluggy-1.3.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .pytest_cache
+
+Running tests with Astropy version 5.3.dev133+ga5917978b.d... [truncated]
+2026-06-11 07:38:43,824 INFO STDERR: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+ERROR: not found: /testbed/astropy/io/ascii/tests/test_rst.py::test_rst_with_header_rows
+(no name '/testbed/astropy/io/ascii/tests/test_... [truncated]
+2026-06-11 07:38:43,824 INFO Exit code: 4
+2026-06-11 07:38:47,990 INFO Running command: cd /testbed && python -m pytest astropy/io/ascii/tests/test_rst.py -k header_rows -xvs
+2026-06-11 07:38:49,048 INFO STDOUT: Internet access disabled
+[1m============================= test session starts ==============================[0m
+platform linux -- Python 3.9.20, pytest-7.4.0, pluggy-1.3.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .pytest_cache
+
+Running tests with Astropy version 5.3.dev133+ga5917978b.d... [truncated]
+2026-06-11 07:38:49,048 INFO STDERR: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+
+2026-06-11 07:38:49,048 INFO Exit code: 5
+2026-06-11 07:38:56,331 INFO Running command: cd /testbed && python -c "
+import sys
+sys.path.insert(0, '.')
+from astropy.io.ascii.rst import RST
+import inspect
+print('RST.__init__ signature:', inspect.signature(RST.__init__))
+print('FixedWidth.__init__ signature:', inspect.signature(RST.__bases__[0].__init__))
+print('RST.__init__ source:')
+import ast
+with open('astropy/io/ascii/rst.py') as f:
+    tree = ast.parse(f.read())
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ClassDef) and node.name == 'RST':
+            for subnode in node.body:
+                if isinstance(subnode, ast.FunctionDef) and subnode.name == '__init__':
+                    print(ast.get_source_segment(f.read(), subnode))
+                    break
+            break
+"
+2026-06-11 07:38:57,165 INFO STDOUT: RST.__init__ signature: (self)
+FixedWidth.__init__ signature: (self, col_starts=None, col_ends=None, delimiter_pad=' ', bookend=True, header_rows=None)
+RST.__init__ source:
+
+2026-06-11 07:38:57,165 INFO STDERR: Traceback (most recent call last):
+  File "<string>", line 16, in <module>
+  File "/opt/miniconda3/envs/testbed/lib/python3.9/ast.py", line 360, in get_source_segment
+    first = padding + lines[lineno].encode()[col_offset:].decode()
+IndexError: list index out of range
+
+2026-06-11 07:38:57,165 INFO Exit code: 1
+2026-06-11 07:39:14,238 INFO Running command: cd /testbed && python - <<'PY'
+import pathlib
+p = pathlib.Path("astropy/io/ascii/rst.py")
+text = p.read_text()
+# Replace the __init__ method to accept header_rows
+lines = text.splitlines()
+new_lines = []
+i = 0
+while i < len(lines):
+    line = lines[i]
+    new_lines.append(line)
+    if line.strip() == 'class RST(FixedWidth):':
+        # Skip the docstring lines
+        i += 1
+        while i < len(lines) and (lines[i].startswith('    """') or lines[i].startswith('    ') or lines[i].startswith('    """')):
+            new_lines.append(lines[i])
+            i += 1
+        # Now we are at the first method after docstring
+        # Check if there is already an __init__ method
+        # We'll replace the whole __init__ block if exists, else insert
+        # For simplicity, we'll just replace the whole file from class definition onward
+        # Let's just write a new version
+        break
+    i += 1
+else:
+    # class not found? fallback
+    pass
+
+# Rewrite the file with a proper __init__ that passes header_rows
+new_text = '''class RST(FixedWidth):
+    """reStructuredText simple format table.
+
+    See: https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.html#simple-tables
+
+    Example::
+
+        ==== ===== ======
+        Col1  Col2  Col3
+        ==== ===== ======
+          1    2.3  Hello
+          2    4.5  Worlds
+        ==== ===== ======
+
+    Currently there is no support for reading tables which utilize continuation lines,
+    or for reading tables which have blank lines in the table body.
+    """
+
+    def __init__(self, col_starts=None, col_ends=None, delimiter_pad=' ', bookend=True,
+                 header_rows=None):
+        super().__init__(col_starts=col_starts, col_ends=col_ends,
+                         delimiter_pad=delimiter_pad, bookend=bookend,
+                         header_rows=header_rows)'''
+
+# Find the rest of the file after the class definition (excluding the class definition lines)
+# We'll keep everything after the class definition (methods, etc.)
+# Let's just replace the whole class definition block
+import re
+pattern = r'class RST\(FixedWidth\):.*?(?=\nclass|\Z)'
+rest = re.search(pattern, text, re.DOTALL)
+if rest:
+    # Replace the matched part with new_text
+    new_full = re.sub(pattern, new_text, text, flags=re.DOTALL)
+    p.write_text(new_full)
+else:
+    # fallback: replace the whole file after the class line
+    lines = text.splitlines()
+    out = []
+    in_class = False
+    for line in lines:
+        if line.strip().startswith('class RST(FixedWidth):'):
+            out.append(new_text)
+            in_class = True
+            # skip until we exit class body (indentation level)
+            continue
+        if in_class and line.startswith('class ') and not line.startswith('    '):
+            in_class = False
+        if not in_class:
+            out.append(line)
+    p.write_text('\n'.join(out))
+PY
+2026-06-11 07:39:14,430 INFO Exit code: 0
+2026-06-11 07:39:14,430 INFO Running command: git diff --no-ext-diff --name-only -- '*.py'
+2026-06-11 07:39:14,590 INFO STDOUT: astropy/io/ascii/rst.py
+
+2026-06-11 07:39:14,590 INFO Exit code: 0
+2026-06-11 07:39:14,590 INFO Running command: python -m py_compile astropy/io/ascii/rst.py
+2026-06-11 07:39:14,775 INFO Exit code: 0
+2026-06-11 07:39:18,781 INFO Running command: cd /testbed && python -c "
+import sys
+from astropy.table import QTable
+import astropy.units as u
+tbl = QTable({'wave': [350,950]*u.nm, 'response': [0.7, 1.2]*u.count})
+try:
+    tbl.write(sys.stdout, format='ascii.rst', header_rows=['name', 'unit'])
+except Exception as e:
+    print('Error:', e)
+    import traceback
+    traceback.print_exc()
+"
+2026-06-11 07:39:19,349 INFO STDOUT: Error: No writer defined for format 'ascii.rst' and class 'QTable'.
+
+The available formats are:
+
+           Format           Read Write Auto-identify Deprecated
+--------------------------- ---- ----- ------------- ----------
+                      ascii  Yes   Yes            No           
+           ... [truncated]
+2026-06-11 07:39:19,349 INFO STDERR: Traceback (most recent call last):
+  File "<string>", line 7, in <module>
+  File "/testbed/astropy/table/connect.py", line 130, in __call__
+    self.registry.write(instance, *args, **kwargs)
+  File "/testbed/astropy/io/registry/core.py", line 384, in write
+    writer = self.get_writer(format, data._... [truncated]
+2026-06-11 07:39:19,349 INFO Exit code: 0
+2026-06-11 07:39:24,004 INFO Running command: cd /testbed && python -m pytest astropy/io/ascii/tests/test_rst.py::test_write_normal -xvs
+2026-06-11 07:39:25,030 INFO STDOUT: Internet access disabled
+[1m============================= test session starts ==============================[0m
+platform linux -- Python 3.9.20, pytest-7.4.0, pluggy-1.3.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .pytest_cache
+
+Running tests with Astropy version 5.3.dev133+ga5917978b.d... [truncated]
+2026-06-11 07:39:25,030 INFO STDERR: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+
+2026-06-11 07:39:25,030 INFO Exit code: 1
+2026-06-11 07:39:31,197 INFO Running command: cd /testbed && python -c "
+import sys
+sys.path.insert(0, '.')
+from astropy.io.ascii import write
+from astropy.table import Table
+dat = Table({'Col1': [1.2, 2.4], 'Col2': ['hello', 's worlds'], 'Col3': [1, 2], 'Col4': ['a', 2]})
+out = sys.stdout
+write(dat, out, format='ascii.rst')
+"
+2026-06-11 07:39:31,859 INFO STDERR: Traceback (most recent call last):
+  File "<string>", line 8, in <module>
+  File "/testbed/./astropy/io/ascii/ui.py", line 974, in write
+    Writer = _get_format_class(format, Writer, "Writer")
+  File "/testbed/./astropy/io/ascii/ui.py", line 195, in _get_format_class
+    raise ValueError(
+ValueErro... [truncated]
+2026-06-11 07:39:31,859 INFO Exit code: 1
+2026-06-11 07:39:37,580 INFO Running command: cd /testbed && python -c "
+import sys
+sys.path.insert(0, '.')
+from astropy.io.ascii import get_writer
+from astropy.io.ascii.rst import RST
+print('RST class:', RST)
+print('RST.__init__ signature:', RST.__init__.__doc__)
+print('RST.__init__ default args:', RST.__init__.__defaults__)
+print('RST.__init__ kwdefaults:', RST.__init__.__kwdefaults__)
+"
+2026-06-11 07:39:38,208 INFO STDOUT: RST class: <class 'astropy.io.ascii.rst.RST'>
+RST.__init__ signature: None
+RST.__init__ default args: (None, None, ' ', True, None)
+RST.__init__ kwdefaults: None
+
+2026-06-11 07:39:38,208 INFO Exit code: 0
+2026-06-11 07:39:53,523 INFO Running command: cd /testbed && python - <<'PY'
+import pathlib
+p = pathlib.Path("astropy/io/ascii/rst.py")
+text = p.read_text()
+# First, ensure RST class accepts header_rows by modifying __init__ signature
+# Find the class definition and its __init__ method
+lines = text.splitlines()
+new_lines = []
+i = 0
+while i < len(lines):
+    line = lines[i]
+    new_lines.append(line)
+    if line.strip() == 'class RST(FixedWidth):':
+        # Keep scanning until we find __init__
+        i += 1
+        while i < len(lines):
+            new_lines.append(lines[i])
+            if lines[i].strip().startswith('def __init__'):
+                # Replace the __init__ method with one that passes header_rows to super
+                # We'll replace from this line until the end of the method (indentation level)
+                indent = len(lines[i]) - len(lines[i].lstrip())
+                j = i
+                i += 1
+                # Skip the rest of the method
+                while i < len(lines) and (len(lines[i]) - len(lines[i].lstrip()) > indent or lines[i].strip() == ''):
+                    i += 1
+                # Now insert new __init__
+                new_lines.pop()  # remove the old __init__ line
+                new_lines.append('    def __init__(self, header_rows=None, **kwargs):')
+                new_lines.append('        super().__init__(header_rows=header_rows, **kwargs)')
+                break
+            else:
+                i += 1
+    else:
+        i += 1
+p.write_text('\n'.join(new_lines))
+PY
+2026-06-11 07:39:53,722 INFO Exit code: 0
+2026-06-11 07:39:53,722 INFO Running command: git diff --no-ext-diff --name-only -- '*.py'
+2026-06-11 07:39:53,881 INFO STDOUT: astropy/io/ascii/rst.py
+
+2026-06-11 07:39:53,881 INFO Exit code: 0
+2026-06-11 07:39:53,881 INFO Running command: python -m py_compile astropy/io/ascii/rst.py
+2026-06-11 07:39:54,064 INFO Exit code: 0
+2026-06-11 07:40:01,678 INFO Running command: cd /testbed && python -c "
+import sys
+sys.path.insert(0, '.')
+from astropy.io.ascii import write
+from astropy.table import Table
+dat = Table({'Col1': [1.2, 2.4], 'Col2': ['hello', 's worlds'], 'Col3': [1, 2], 'Col4': ['a', 2]})
+out = sys.stdout
+write(dat, out, Writer='rst')
+"
+2026-06-11 07:40:02,294 INFO STDERR: Traceback (most recent call last):
+  File "<string>", line 8, in <module>
+  File "/testbed/./astropy/io/ascii/ui.py", line 975, in write
+    writer = get_writer(Writer=Writer, fast_writer=fast_writer, **kwargs)
+  File "/testbed/./astropy/io/ascii/ui.py", line 901, in get_writer
+    writer = core._ge... [truncated]
+2026-06-11 07:40:02,294 INFO Exit code: 1
+2026-06-11 07:40:06,679 INFO Running command: cd /testbed && python -c "
+import sys
+sys.path.insert(0, '.')
+from astropy.io.ascii import write
+from astropy.table import Table
+dat = Table({'Col1': [1.2, 2.4], 'Col2': ['hello', 's worlds'], 'Col3': [1, 2], 'Col4': ['a', 2]})
+out = sys.stdout
+write(dat, out, Writer='rst')
+" 2>&1
+2026-06-11 07:40:07,333 INFO STDOUT: Traceback (most recent call last):
+  File "<string>", line 8, in <module>
+  File "/testbed/./astropy/io/ascii/ui.py", line 975, in write
+    writer = get_writer(Writer=Writer, fast_writer=fast_writer, **kwargs)
+  File "/testbed/./astropy/io/ascii/ui.py", line 901, in get_writer
+    writer = core._ge... [truncated]
+2026-06-11 07:40:07,333 INFO Exit code: 1
+2026-06-11 07:40:07,333 INFO Running command: git diff --no-ext-diff
+2026-06-11 07:40:07,488 INFO STDOUT: diff --git a/astropy/io/ascii/rst.py b/astropy/io/ascii/rst.py
+index abdeba8ef..f804bf701 100644
+--- a/astropy/io/ascii/rst.py
++++ b/astropy/io/ascii/rst.py
+@@ -47,20 +47,8 @@ class RST(FixedWidth):
+         ==== ===== ======
+ 
+     Currently there is no support for reading tables which utilize cont... [truncated]
+2026-06-11 07:40:07,488 INFO Exit code: 0
+2026-06-11 07:40:07,488 INFO Stopping container recursing_leakey
+2026-06-11 07:40:12,613 INFO Removing container recursing_leakey

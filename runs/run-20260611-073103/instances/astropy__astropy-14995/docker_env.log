@@ -1,0 +1,475 @@
+2026-06-11 07:42:25,282 INFO Preparing Docker environment for astropy__astropy-14995
+2026-06-11 07:42:25,311 INFO Image already exists locally, skipping pull: swebench/sweb.eval.x86_64.astropy_1776_astropy-14995
+2026-06-11 07:42:25,490 INFO Running command: pwd
+2026-06-11 07:42:25,657 INFO STDOUT: /testbed
+
+2026-06-11 07:42:25,657 INFO Exit code: 0
+2026-06-11 07:42:29,432 INFO Running command: cd /testbed && python -m pytest astropy/nddata/mixins/tests/test_ndarithmetic.py::test_nddata_bitmask_arithmetic -xvs 2>&1 | head -50
+2026-06-11 07:42:31,744 INFO STDOUT: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+Internet access disabled
+[1m============================= test session starts ==============================[0m
+platform linux -- Pyth... [truncated]
+2026-06-11 07:42:31,744 INFO Exit code: 0
+2026-06-11 07:42:37,306 INFO Running command: cd /testbed && find . -type f -name "*.py" -exec grep -l "operand is None" {} \; 2>/dev/null | head -20
+2026-06-11 07:42:39,080 INFO STDOUT: ./astropy/nddata/mixins/ndarithmetic.py
+
+2026-06-11 07:42:39,081 INFO Exit code: 0
+2026-06-11 07:42:42,376 INFO Running command: cd /testbed && grep -n "operand is None" astropy/nddata/mixins/ndarithmetic.py
+2026-06-11 07:42:42,551 INFO STDOUT: 265:        use_masked_arith = operand is None and self.mask is not None
+523:        elif operand is None:
+
+2026-06-11 07:42:42,551 INFO Exit code: 0
+2026-06-11 07:42:48,261 INFO Running command: cd /testbed && sed -n '520,530p' astropy/nddata/mixins/ndarithmetic.py
+2026-06-11 07:42:48,418 INFO STDOUT:         elif self.mask is None and operand is not None:
+            # Make a copy so there is no reference in the result.
+            return deepcopy(operand.mask)
+        elif operand is None:
+            return deepcopy(self.mask)
+        else:
+            # Now lets calculate the resulting mask (... [truncated]
+2026-06-11 07:42:48,418 INFO Exit code: 0
+2026-06-11 07:42:54,340 INFO Running command: cd /testbed && python - <<'PY'
+import numpy as np
+from astropy.nddata import NDDataRef
+array = np.array([[0, 1, 0], [1, 0, 1], [0, 1, -0]])
+mask = np.array([[0, 1, 64], [8, 0, 1], [2, 1, 0]])
+nref_nomask = NDDataRef(array)
+nref_mask = NDDataRef(array, mask=mask)
+try:
+    result = nref_mask.multiply(1., handle_mask=np.bitwise_or).mask
+    print("SUCCESS:", result)
+except Exception as e:
+    print("ERROR:", e)
+PY
+2026-06-11 07:42:54,941 INFO STDOUT: ERROR: unsupported operand type(s) for |: 'int' and 'NoneType'
+
+2026-06-11 07:42:54,941 INFO Exit code: 0
+2026-06-11 07:42:54,941 INFO Running command: git diff --no-ext-diff --name-only -- '*.py'
+2026-06-11 07:42:55,403 INFO Exit code: 0
+2026-06-11 07:43:02,918 INFO Running command: cd /testbed && python - <<'PY'
+import astropy.nddata.mixins.ndarithmetic as ndarithmetic
+import inspect
+print(inspect.getsource(ndarithmetic.NDArithmeticMixin._arithmetic_mask))
+PY
+2026-06-11 07:43:03,530 INFO STDOUT:     def _arithmetic_mask(self, operation, operand, handle_mask, axis=None, **kwds):
+        """
+        Calculate the resulting mask.
+
+        This is implemented as the piecewise ``or`` operation if both have a
+        mask.
+
+        Parameters
+        ----------
+        operation : callable
+      ... [truncated]
+2026-06-11 07:43:03,530 INFO Exit code: 0
+2026-06-11 07:43:03,530 INFO Running command: git diff --no-ext-diff --name-only -- '*.py'
+2026-06-11 07:43:03,684 INFO Exit code: 0
+2026-06-11 07:43:14,294 INFO Running command: cd /testbed && python - <<'PY'
+import astropy.nddata.mixins.ndarithmetic as ndarithmetic
+import inspect
+lines = inspect.getsource(ndarithmetic.NDArithmeticMixin._arithmetic_mask).split('\n')
+for i, line in enumerate(lines):
+    if 'elif operand is None:' in line:
+        print(i, line)
+        print('Context:')
+        for j in range(max(0, i-5), min(len(lines), i+5)):
+            print(f'{j}: {lines[j]}')
+PY
+2026-06-11 07:43:14,889 INFO STDOUT: 38         elif operand is None:
+Context:
+33:         ) or handle_mask is None:
+34:             return None
+35:         elif self.mask is None and operand is not None:
+36:             # Make a copy so there is no reference in the result.
+37:             return deepcopy(operand.mask)
+38:         elif... [truncated]
+2026-06-11 07:43:14,889 INFO Exit code: 0
+2026-06-11 07:43:14,889 INFO Running command: git diff --no-ext-diff --name-only -- '*.py'
+2026-06-11 07:43:15,046 INFO Exit code: 0
+2026-06-11 07:43:21,395 INFO Running command: cd /testbed && python - <<'PY'
+import pathlib
+import re
+p = pathlib.Path("astropy/nddata/mixins/ndarithmetic.py")
+text = p.read_text()
+# Replace "elif operand is None:" with "elif operand is not None and operand.mask is None:"
+# but we need to be careful: the line appears twice? Actually only once in the function.
+# Let's replace exactly that line.
+new_text = re.sub(r'^\s*elif operand is None:\s*$', '        elif operand is not None and operand.mask is None:', text, flags=re.MULTILINE)
+p.write_text(new_text)
+PY
+2026-06-11 07:43:21,568 INFO Exit code: 0
+2026-06-11 07:43:21,568 INFO Running command: git diff --no-ext-diff --name-only -- '*.py'
+2026-06-11 07:43:21,722 INFO STDOUT: astropy/nddata/mixins/ndarithmetic.py
+
+2026-06-11 07:43:21,722 INFO Exit code: 0
+2026-06-11 07:43:21,722 INFO Running command: python -m py_compile astropy/nddata/mixins/ndarithmetic.py
+2026-06-11 07:43:21,916 INFO Exit code: 0
+2026-06-11 07:43:26,742 INFO Running command: cd /testbed && python - <<'PY'
+import numpy as np
+from astropy.nddata import NDDataRef
+array = np.array([[0, 1, 0], [1, 0, 1], [0, 1, 0]])
+mask = np.array([[0, 1, 64], [8, 0, 1], [2, 1, 0]])
+nref_nomask = NDDataRef(array)
+nref_mask = NDDataRef(array, mask=mask)
+try:
+    result = nref_mask.multiply(1., handle_mask=np.bitwise_or).mask
+    print("SUCCESS:", result)
+except Exception as e:
+    print("ERROR:", e)
+PY
+2026-06-11 07:43:27,393 INFO STDOUT: SUCCESS: [[ 0  1 64]
+ [ 8  0  1]
+ [ 2  1  0]]
+
+2026-06-11 07:43:27,393 INFO Exit code: 0
+2026-06-11 07:43:27,393 INFO Running command: git diff --no-ext-diff --name-only -- '*.py'
+2026-06-11 07:43:27,569 INFO STDOUT: astropy/nddata/mixins/ndarithmetic.py
+
+2026-06-11 07:43:27,569 INFO Exit code: 0
+2026-06-11 07:43:27,569 INFO Running command: python -m py_compile astropy/nddata/mixins/ndarithmetic.py
+2026-06-11 07:43:27,764 INFO Exit code: 0
+2026-06-11 07:43:35,840 INFO Running command: cd /testbed && python - <<'PY'
+import numpy as np
+from astropy.nddata import NDDataRef
+array = np.array([[0, 1, 0], [1, 0, 1], [0, 1, 0]])
+mask = np.array([[0, 1, 64], [8, 0, 1], [2, 1, 0]])
+nref_nomask = NDDataRef(array)
+nref_mask = NDDataRef(array, mask=mask)
+# multiply mask by constant (mask * no mask)
+print("mask * constant:", nref_mask.multiply(1., handle_mask=np.bitwise_or).mask)
+# multiply mask by no mask (mask * no mask)
+print("mask * no mask:", nref_mask.multiply(nref_nomask, handle_mask=np.bitwise_or).mask)
+# multiply no mask by mask (no mask * mask)
+print("no mask * mask:", nref_nomask.multiply(nref_mask, handle_mask=np.bitwise_or).mask)
+# multiply no mask by constant (no mask * no mask)
+print("no mask * constant:", nref_nomask.multiply(1., handle_mask=np.bitwise_or).mask)
+# multiply mask by itself (mask * mask)
+print("mask * mask:", nref_mask.multiply(nref_mask, handle_mask=np.bitwise_or).mask)
+PY
+2026-06-11 07:43:36,466 INFO STDOUT: mask * constant: [[ 0  1 64]
+ [ 8  0  1]
+ [ 2  1  0]]
+mask * no mask: [[ 0  1 64]
+ [ 8  0  1]
+ [ 2  1  0]]
+no mask * mask: [[ 0  1 64]
+ [ 8  0  1]
+ [ 2  1  0]]
+no mask * constant: None
+mask * mask: [[ 0  1 64]
+ [ 8  0  1]
+ [ 2  1  0]]
+
+2026-06-11 07:43:36,466 INFO Exit code: 0
+2026-06-11 07:43:36,466 INFO Running command: git diff --no-ext-diff --name-only -- '*.py'
+2026-06-11 07:43:36,621 INFO STDOUT: astropy/nddata/mixins/ndarithmetic.py
+
+2026-06-11 07:43:36,621 INFO Exit code: 0
+2026-06-11 07:43:36,621 INFO Running command: python -m py_compile astropy/nddata/mixins/ndarithmetic.py
+2026-06-11 07:43:36,803 INFO Exit code: 0
+2026-06-11 07:43:40,015 INFO Running command: cd /testbed && python -m pytest astropy/nddata/mixins/tests/test_ndarithmetic.py -xvs -k "test_arithmetics_data_masks" 2>&1 | head -100
+2026-06-11 07:43:41,150 INFO STDOUT: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+Internet access disabled
+[1m============================= test session starts ==============================[0m
+platform linux -- Pyth... [truncated]
+2026-06-11 07:43:41,150 INFO Exit code: 0
+2026-06-11 07:43:49,234 INFO Running command: cd /testbed && python -m pytest astropy/nddata/mixins/tests/test_ndarithmetic.py::test_nddata_bitmask_arithmetic -xvs 2>&1 | head -150
+2026-06-11 07:43:50,364 INFO STDOUT: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+Internet access disabled
+[1m============================= test session starts ==============================[0m
+platform linux -- Pyth... [truncated]
+2026-06-11 07:43:50,364 INFO Exit code: 0
+2026-06-11 07:43:56,114 INFO Running command: cd /testbed && grep -r "test_nddata_bitmask_arithmetic" astropy/nddata/
+2026-06-11 07:43:56,286 INFO Exit code: 1
+2026-06-11 07:44:04,451 INFO Running command: cd /testbed && python - <<'PY'
+import numpy as np
+from astropy.nddata import NDDataRef
+# Reproduce the exact issue from the problem statement
+array = np.array([[0, 1, 0], [1, 0, 1], [0, 1, 0]])
+mask = np.array([[0, 1, 64], [8, 0, 1], [2, 1, -0]])
+nref_nomask = NDDataRef(array)
+nref_mask = NDDataRef(array, mask=mask)
+print("Testing all cases from issue:")
+print("1. no mask * constant:", nref_nomask.multiply(1., handle_mask=np.bitwise_or).mask)
+print("2. no mask * no mask:", nref_nomask.multiply(nref_nomask, handle_mask=np.bitwise_or).mask)
+try:
+    print("3. mask * constant:", nref_mask.multiply(1., handle_mask=np.bitwise_or).mask)
+except Exception as e:
+    print("3. ERROR:", e)
+print("4. mask * mask:", nref_mask.multiply(nref_mask, handle_mask=np.bitwise_or).mask)
+try:
+    print("5. mask * no mask:", nref_mask.multiply(nref_nomask, handle_mask=np.bitwise_or).mask)
+except Exception as e:
+    print("5. ERROR:", e)
+PY
+2026-06-11 07:44:05,081 INFO STDOUT: Testing all cases from issue:
+1. no mask * constant: None
+2. no mask * no mask: None
+3. mask * constant: [[ 0  1 64]
+ [ 8  0  1]
+ [ 2  1  0]]
+4. mask * mask: [[ 0  1 64]
+ [ 8  0  1]
+ [ 2  1  0]]
+5. mask * no mask: [[ 0  1 64]
+ [ 8  0  1]
+ [ 2  1  0]]
+
+2026-06-11 07:44:05,082 INFO Exit code: 0
+2026-06-11 07:44:05,082 INFO Running command: git diff --no-ext-diff --name-only -- '*.py'
+2026-06-11 07:44:05,232 INFO STDOUT: astropy/nddata/mixins/ndarithmetic.py
+
+2026-06-11 07:44:05,232 INFO Exit code: 0
+2026-06-11 07:44:05,232 INFO Running command: python -m py_compile astropy/nddata/mixins/ndarithmetic.py
+2026-06-11 07:44:05,414 INFO Exit code: 0
+2026-06-11 07:44:08,144 INFO Running command: cd /testbed && git diff --no-ext-diff
+2026-06-11 07:44:08,305 INFO STDOUT: diff --git a/astropy/nddata/mixins/ndarithmetic.py b/astropy/nddata/mixins/ndarithmetic.py
+index 4153dfccb..65241018f 100644
+--- a/astropy/nddata/mixins/ndarithmetic.py
++++ b/astropy/nddata/mixins/ndarithmetic.py
+@@ -520,7 +520,7 @@ class NDArithmeticMixin:
+         elif self.mask is None and operan... [truncated]
+2026-06-11 07:44:08,305 INFO Exit code: 0
+2026-06-11 07:44:11,660 INFO Running command: cd /testbed && python -m pytest astropy/nddata/mixins/tests/test_ndarithmetic.py -x 2>&1 | tail -30
+2026-06-11 07:44:13,406 INFO STDOUT: 
+Package versions: 
+Numpy: 1.25.2
+Scipy: not available
+Matplotlib: not available
+h5py: not available
+Pandas: not available
+PyERFA: 2.0.0.3
+Cython: not available
+Scikit-image: not available
+asdf-astropy: not available
+pyarrow: not available
+
+Using Astropy options: remote_data: none.
+
+CI: undefined
+AR... [truncated]
+2026-06-11 07:44:13,406 INFO Exit code: 0
+2026-06-11 07:44:44,585 INFO Running command: cd /testbed && python - <<'PY'
+import numpy as np
+from astropy.nddata import NDDataRef
+# Additional test for boolean mask case with None's
+data = np.arange(4).reshape(2,2)
+bool_mask = np.array([[True, False], [False, True]])
+nd1 = NDDataRef(data, mask=bool_mask)
+nd2 = NDDataRef(data, mask=None)
+print("nd2 * nd1 (no mask * mask):", nd2.multiply(nd1).mask)
+print("nd1 * nd2 (mask * no mask):", nd1.multiply(nd2).mask)
+# Check that mask is boolean array, not object with None
+result = nd1.multiply(nd2).mask
+print("Type:", type(result))
+if result is not None:
+    print("Dtype:", result.dtype)
+    print("Values:", result)
+PY
+2026-06-11 07:44:45,190 INFO STDOUT: nd2 * nd1 (no mask * mask): [[ True False]
+ [False  True]]
+nd1 * nd2 (mask * no mask): [[ True False]
+ [False  True]]
+Type: <class 'numpy.ndarray'>
+Dtype: bool
+Values: [[ True False]
+ [False  True]]
+
+2026-06-11 07:44:45,191 INFO Exit code: 0
+2026-06-11 07:44:45,191 INFO Running command: git diff --no-ext-diff --name-only -- '*.py'
+2026-06-11 07:44:45,343 INFO STDOUT: astropy/nddata/mixins/ndarithmetic.py
+
+2026-06-11 07:44:45,343 INFO Exit code: 0
+2026-06-11 07:44:45,343 INFO Running command: python -m py_compile astropy/nddata/mixins/ndarithmetic.py
+2026-06-11 07:44:45,522 INFO Exit code: 0
+2026-06-11 07:44:49,423 INFO Running command: cd /testbed && git diff --no-ext-diff
+2026-06-11 07:44:49,580 INFO STDOUT: diff --git a/astropy/nddata/mixins/ndarithmetic.py b/astropy/nddata/mixins/ndarithmetic.py
+index 4153dfccb..65241018f 100644
+--- a/astropy/nddata/mixins/ndarithmetic.py
++++ b/astropy/nddata/mixins/ndarithmetic.py
+@@ -520,7 +520,7 @@ class NDArithmeticMixin:
+         elif self.mask is None and operan... [truncated]
+2026-06-11 07:44:49,580 INFO Exit code: 0
+2026-06-11 07:44:58,610 INFO Running command: cd /testbed && python - <<'PY'
+import pathlib
+p = pathlib.Path("astropy/nddata/mixins/ndarithmetic.py")
+text = p.read_text()
+# The bug is that line 520 incorrectly checks "elif operand is None:" instead of "elif operand.mask is None:"
+# However, note the earlier condition "elif self.mask is None and operand is not None:" already handles the case where self.mask is None and operand.mask exists.
+# The problematic line should be "elif operand.mask is None:" (without extra operand is not None check because operand is already not None due to earlier condition).
+# Actually, the logic flow:
+# 1. if operand is None: return None
+# 2. elif self.mask is None and operand is not None: return operand.mask copy
+# 3. elif operand.mask is None: return self.mask copy
+# 4. else: combine masks
+# The current line 520 is "elif operand is None:" which is impossible because operand is not None (already caught by condition 1).
+# So we need to change it to "elif operand.mask is None:"
+text = text.replace("        elif operand is None:", "        elif operand.mask is None:")
+p.write_text(text)
+PY
+2026-06-11 07:44:58,796 INFO Exit code: 0
+2026-06-11 07:44:58,796 INFO Running command: git diff --no-ext-diff --name-only -- '*.py'
+2026-06-11 07:44:58,952 INFO STDOUT: astropy/nddata/mixins/ndarithmetic.py
+
+2026-06-11 07:44:58,952 INFO Exit code: 0
+2026-06-11 07:44:58,952 INFO Running command: python -m py_compile astropy/nddata/mixins/ndarithmetic.py
+2026-06-11 07:44:59,137 INFO Exit code: 0
+2026-06-11 07:45:02,607 INFO Running command: cd /testbed && python -m pytest astropy/nddata/mixins/tests/test_ndarithmetic.py::test_nddata_bitmask_arithmetic -xvs 2>&1 | head -150
+2026-06-11 07:45:03,778 INFO STDOUT: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+Internet access disabled
+[1m============================= test session starts ==============================[0m
+platform linux -- Pyth... [truncated]
+2026-06-11 07:45:03,778 INFO Exit code: 0
+2026-06-11 07:45:12,492 INFO Running command: cd /testbed && python - <<'PY'
+import numpy as np
+from astropy.nddata import NDDataRef
+array = np.array([[0, 1, 0], [1, 0, 1], [0, 1, 0]])
+mask = np.array([[0, 1, 64], [8, 0, 1], [2, 1, 0]])
+nref_nomask = NDDataRef(array)
+nref_mask = NDDataRef(array, mask=mask)
+print("Testing all cases from issue:")
+print("1. no mask * constant:", nref_nomask.multiply(1., handle_mask=np.bitwise_or).mask)
+print("2. no mask * no mask:", nref_nomask.multiply(nref_nomask, handle_mask=np.bitwise_or).mask)
+try:
+    print("3. mask * constant:", nref_mask.multiply(1., handle_mask=np.bitwise_or).mask)
+except Exception as e:
+    print("3. mask * constant ERROR:", e)
+try:
+    print("4. mask * mask:", nref_mask.multiply(nref_mask, handle_mask=np.bitwise_or).mask)
+except Exception as e:
+    print("4. mask * mask ERROR:", e)
+try:
+    print("5. mask * no mask:", nref_mask.multiply(nref_nomask, handle_mask=np.bitwise_or).mask)
+except Exception as e:
+    print("5. mask * no mask ERROR:", e)
+PY
+2026-06-11 07:45:13,468 INFO STDOUT: Testing all cases from issue:
+1. no mask * constant: None
+2. no mask * no mask: None
+3. mask * constant: [[ 0  1 64]
+ [ 8  0  1]
+ [ 2  1  0]]
+4. mask * mask: [[ 0  1 64]
+ [ 8  0  1]
+ [ 2  1  0]]
+5. mask * no mask: [[ 0  1 64]
+ [ 8  0  1]
+ [ 2  1  0]]
+
+2026-06-11 07:45:13,468 INFO Exit code: 0
+2026-06-11 07:45:13,468 INFO Running command: git diff --no-ext-diff --name-only -- '*.py'
+2026-06-11 07:45:13,627 INFO STDOUT: astropy/nddata/mixins/ndarithmetic.py
+
+2026-06-11 07:45:13,627 INFO Exit code: 0
+2026-06-11 07:45:13,627 INFO Running command: python -m py_compile astropy/nddata/mixins/ndarithmetic.py
+2026-06-11 07:45:13,808 INFO Exit code: 0
+2026-06-11 07:45:18,632 INFO Running command: cd /testbed && python -m pytest astropy/nddata/mixins/tests/test_ndarithmetic.py -x 2>&1 | tail -50
+2026-06-11 07:45:20,223 INFO STDOUT: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+[1m============================= test session starts ==============================[0m
+platform linux -- Python 3.9.20, pytest-7.4.0, ... [truncated]
+2026-06-11 07:45:20,223 INFO Exit code: 0
+2026-06-11 07:45:22,699 INFO Running command: cd /testbed && git diff --no-ext-diff
+2026-06-11 07:45:22,862 INFO STDOUT: diff --git a/astropy/nddata/mixins/ndarithmetic.py b/astropy/nddata/mixins/ndarithmetic.py
+index 4153dfccb..65241018f 100644
+--- a/astropy/nddata/mixins/ndarithmetic.py
++++ b/astropy/nddata/mixins/ndarithmetic.py
+@@ -520,7 +520,7 @@ class NDArithmeticMixin:
+         elif self.mask is None and operan... [truncated]
+2026-06-11 07:45:22,862 INFO Exit code: 0
+2026-06-11 07:45:39,164 INFO Running command: cd /testbed && python - <<'PY'
+import pathlib
+p = pathlib.Path("astropy/nddata/mixins/ndarithmetic.py")
+text = p.read_text()
+# The bug is that line 520 incorrectly checks "elif operand is None:" instead of "elif operand.mask is None:"
+# However, note the earlier condition "elif self.mask is None and operand is not None:" already handles the case where self.mask is None and operand.mask exists.
+# The problematic line should be "elif operand.mask is None:" (without extra operand is not None check because operand is already not None due to earlier condition).
+# Actually, the logic in the function is:
+# 1. if operand is None: return deepcopy(self.mask)   # This is for scalar operand (non-NDData)
+# 2. elif self.mask is None and operand is not None: return deepcopy(operand.mask)
+# 3. elif operand is None: ...   # This is wrong; should be elif operand.mask is None:
+# 4. else: compute via handle_mask
+# The condition "operand is None" is already caught in step 1, so step 3 should be "elif operand.mask is None:"
+# Let's examine the surrounding lines to be sure.
+lines = text.splitlines()
+for i, line in enumerate(lines[510:530], start=510):
+    print(f"{i}: {line}")
+PY
+2026-06-11 07:45:39,353 INFO STDOUT: 510:             If only one mask was present this mask is returned.
+511:             If neither had a mask ``None`` is returned. Otherwise
+512:             ``handle_mask`` must create (and copy) the returned mask.
+513:         """
+514:         # If only one mask is present we need not bother about ... [truncated]
+2026-06-11 07:45:39,354 INFO Exit code: 0
+2026-06-11 07:45:39,354 INFO Running command: git diff --no-ext-diff --name-only -- '*.py'
+2026-06-11 07:45:39,516 INFO STDOUT: astropy/nddata/mixins/ndarithmetic.py
+
+2026-06-11 07:45:39,516 INFO Exit code: 0
+2026-06-11 07:45:39,516 INFO Running command: python -m py_compile astropy/nddata/mixins/ndarithmetic.py
+2026-06-11 07:45:39,702 INFO Exit code: 0
+2026-06-11 07:46:03,468 INFO Running command: cd /testbed && python - <<'PY'
+import pathlib
+p = pathlib.Path("astropy/nddata/mixins/ndarithmetic.py")
+text = p.read_text()
+# The current line 522 is "elif operand is not None and operand.mask is None:"
+# This is correct for the case where operand is not None but its mask is None.
+# However, note that the condition "operand is None" is already caught earlier? Actually line 515-518 handles the case where both masks are None OR handle_mask is None.
+# The bug described in the issue is that when operand.mask is None (but operand is not None), the function should return deepcopy(self.mask). That's exactly what line 522 does.
+# Wait, but the diff shows we already changed line 522 from "elif operand is None:" to "elif operand is not None and operand.mask is None:".
+# However, the diff also shows that line 522 is still "elif operand is not None and operand.mask is None:" (the change we made earlier). Let's verify the actual file content.
+print("Current line 522:", text.splitlines()[522])
+# Let's revert to the original version (as of base commit) to see what the bug was.
+# According to the issue, the bug is that line 522 incorrectly checked "elif operand is None:" instead of "elif operand.mask is None:".
+# The fix is to change "elif operand is None:" to "elif operand.mask is None:".
+# However, note that operand could be None (scalar) or an NDData instance. The earlier condition "if operand is None" is not present; actually line 515-518 checks for both masks None.
+# Let's examine the original file from git.
+import subprocess
+result = subprocess.run(["git", "show", "b16c7d12ccbc7b2d20364b89fb44285bcbfede54:astropy/nddata/mixins/ndarithmetic.py"], capture_output=True, text=True)
+original = result.stdout
+orig_lines = original.splitlines()
+for i, line in enumerate(orig_lines[510:530], start=510):
+    print(f"orig {i}: {line}")
+# Now we see the bug: original line 522 is "elif operand is None:".
+# Let's apply the fix: replace "elif operand is None:" with "elif operand.mask is None:".
+# But we must ensure operand is not None (since operand.mask would raise AttributeError).
+# Actually, operand can be None (scalar) or an NDDataRef. The condition "operand is None" is already caught in line 515-518? Let's see:
+# The condition "self.mask is None and operand is not None and operand.mask is None" includes operand is not None.
+# So if operand is None, then operand.mask is None? No, operand is None, so operand.mask is invalid.
+# Wait, the function _arithmetic_mask is called with operand being either None (scalar) or an NDData instance.
+# If operand is None (scalar), then operand.mask is invalid. So we must check operand is None first.
+# The original logic in v5.2 (working) likely had:
+# if operand is None:
+#     return deepcopy(self.mask)
+# elif self.mask is None and operand is not None:
+#     return deepcopy(operand.mask)
+# elif operand.mask is None:
+#     return deepcopy(self.mask)
+# else: ...
+# However, the current code after our change has an extra "operand is not None" check, which is redundant because if operand.mask is None, operand must be not None (otherwise AttributeError).
+# Let's write the correct fix: replace line 522 with "elif operand.mask is None:".
+lines = text.splitlines()
+lines[522] = "        elif operand.mask is None:"
+p.write_text("\n".join(lines))
+print("Fixed line 522 to:", lines[522])
+PY
+2026-06-11 07:46:03,649 INFO STDOUT: Current line 522:         elif operand is not None and operand.mask is None:
+orig 510:             If only one mask was present this mask is returned.
+orig 511:             If neither had a mask ``None`` is returned. Otherwise
+orig 512:             ``handle_mask`` must create (and copy) the returned... [truncated]
+2026-06-11 07:46:03,650 INFO Exit code: 0
+2026-06-11 07:46:03,650 INFO Running command: git diff --no-ext-diff --name-only -- '*.py'
+2026-06-11 07:46:03,817 INFO STDOUT: astropy/nddata/mixins/ndarithmetic.py
+
+2026-06-11 07:46:03,817 INFO Exit code: 0
+2026-06-11 07:46:03,817 INFO Running command: python -m py_compile astropy/nddata/mixins/ndarithmetic.py
+2026-06-11 07:46:04,027 INFO Exit code: 0
+2026-06-11 07:46:04,027 INFO Running command: git diff --no-ext-diff
+2026-06-11 07:46:04,195 INFO STDOUT: diff --git a/astropy/nddata/mixins/ndarithmetic.py b/astropy/nddata/mixins/ndarithmetic.py
+index 4153dfccb..5a9a38fd7 100644
+--- a/astropy/nddata/mixins/ndarithmetic.py
++++ b/astropy/nddata/mixins/ndarithmetic.py
+@@ -520,7 +520,7 @@ class NDArithmeticMixin:
+         elif self.mask is None and operan... [truncated]
+2026-06-11 07:46:04,195 INFO Exit code: 0
+2026-06-11 07:46:04,195 INFO Stopping container elated_shockley
+2026-06-11 07:46:09,319 INFO Removing container elated_shockley
