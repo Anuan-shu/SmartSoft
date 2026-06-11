@@ -1,0 +1,37 @@
+diff --git a/astropy/modeling/separable.py b/astropy/modeling/separable.py
+index a308e2729..566f8025c 100644
+--- a/astropy/modeling/separable.py
++++ b/astropy/modeling/separable.py
+@@ -199,6 +199,16 @@ def _coord_matrix(model, pos, noutp):
+         else:
+             mat[-model.n_outputs:, -model.n_inputs:] = m
+         return mat
++    if isinstance(model, core.CompoundModel):
++        # Get the separability matrix of the compound model
++        from .separable import _separable
++        submat = _separable(model)  # shape (model.n_outputs, model.n_inputs)
++        mat = np.zeros((noutp, model.n_inputs))
++        if pos == 'left':
++            mat[:model.n_outputs, :model.n_inputs] = submat
++        else:
++            mat[-model.n_outputs:, -model.n_inputs:] = submat
++        return mat
+     if not model.separable:
+         # this does not work for more than 2 coordinates
+         mat = np.zeros((noutp, model.n_inputs))
+@@ -214,8 +224,6 @@ def _coord_matrix(model, pos, noutp):
+         if pos == 'right':
+             mat = np.roll(mat, (noutp - model.n_outputs))
+     return mat
+-
+-
+ def _cstack(left, right):
+     """
+     Function corresponding to '&' operation.
+@@ -314,4 +322,4 @@ def _separable(transform):
+ # Maps modeling operators to a function computing and represents the
+ # relationship of axes as an array of 0-es and 1-s
+ _operators = {'&': _cstack, '|': _cdot, '+': _arith_oper, '-': _arith_oper,
+-              '*': _arith_oper, '/': _arith_oper, '**': _arith_oper}
++              '*': _arith_oper, '/': _arith_oper, '**': _arith_oper}
+\ No newline at end of file

@@ -1,0 +1,93 @@
+2026-06-11 07:51:27,987 - INFO - Creating container for astropy__astropy-12907...
+2026-06-11 07:51:28,034 - INFO - Container for astropy__astropy-12907 created: 9eb8b903473118c41f436140dfd08612b9d94cbb703cd4994291487fb69df5dc
+2026-06-11 07:51:28,188 - INFO - Container for astropy__astropy-12907 started: 9eb8b903473118c41f436140dfd08612b9d94cbb703cd4994291487fb69df5dc
+2026-06-11 07:51:28,189 - INFO - Intermediate patch for astropy__astropy-12907 written to logs/run_evaluation/demo-run-8/deepseek-v3.2/astropy__astropy-12907/patch.diff, now applying to container...
+2026-06-11 07:51:28,307 - INFO - >>>>> Applied Patch:
+Checking patch astropy/modeling/separable.py...
+Applied patch astropy/modeling/separable.py cleanly.
+
+2026-06-11 07:51:28,791 - INFO - Git diff before:
+diff --git a/astropy/modeling/separable.py b/astropy/modeling/separable.py
+index a308e2729..566f8025c 100644
+--- a/astropy/modeling/separable.py
++++ b/astropy/modeling/separable.py
+@@ -199,6 +199,16 @@ def _coord_matrix(model, pos, noutp):
+         else:
+             mat[-model.n_outputs:, -model.n_inputs:] = m
+         return mat
++    if isinstance(model, core.CompoundModel):
++        # Get the separability matrix of the compound model
++        from .separable import _separable
++        submat = _separable(model)  # shape (model.n_outputs, model.n_inputs)
++        mat = np.zeros((noutp, model.n_inputs))
++        if pos == 'left':
++            mat[:model.n_outputs, :model.n_inputs] = submat
++        else:
++            mat[-model.n_outputs:, -model.n_inputs:] = submat
++        return mat
+     if not model.separable:
+         # this does not work for more than 2 coordinates
+         mat = np.zeros((noutp, model.n_inputs))
+@@ -214,8 +224,6 @@ def _coord_matrix(model, pos, noutp):
+         if pos == 'right':
+             mat = np.roll(mat, (noutp - model.n_outputs))
+     return mat
+-
+-
+ def _cstack(left, right):
+     """
+     Function corresponding to '&' operation.
+@@ -314,4 +322,4 @@ def _separable(transform):
+ # Maps modeling operators to a function computing and represents the
+ # relationship of axes as an array of 0-es and 1-s
+ _operators = {'&': _cstack, '|': _cdot, '+': _arith_oper, '-': _arith_oper,
+-              '*': _arith_oper, '/': _arith_oper, '**': _arith_oper}
++              '*': _arith_oper, '/': _arith_oper, '**': _arith_oper}
+\ No newline at end of file
+2026-06-11 07:51:28,791 - INFO - Eval script for astropy__astropy-12907 written to logs/run_evaluation/demo-run-8/deepseek-v3.2/astropy__astropy-12907/eval.sh; copying to container...
+2026-06-11 07:52:36,293 - INFO - Test runtime: 67.45 seconds
+2026-06-11 07:52:36,294 - INFO - Test output for astropy__astropy-12907 written to logs/run_evaluation/demo-run-8/deepseek-v3.2/astropy__astropy-12907/test_output.txt
+2026-06-11 07:52:36,338 - INFO - Git diff after:
+diff --git a/astropy/modeling/separable.py b/astropy/modeling/separable.py
+index a308e2729..566f8025c 100644
+--- a/astropy/modeling/separable.py
++++ b/astropy/modeling/separable.py
+@@ -199,6 +199,16 @@ def _coord_matrix(model, pos, noutp):
+         else:
+             mat[-model.n_outputs:, -model.n_inputs:] = m
+         return mat
++    if isinstance(model, core.CompoundModel):
++        # Get the separability matrix of the compound model
++        from .separable import _separable
++        submat = _separable(model)  # shape (model.n_outputs, model.n_inputs)
++        mat = np.zeros((noutp, model.n_inputs))
++        if pos == 'left':
++            mat[:model.n_outputs, :model.n_inputs] = submat
++        else:
++            mat[-model.n_outputs:, -model.n_inputs:] = submat
++        return mat
+     if not model.separable:
+         # this does not work for more than 2 coordinates
+         mat = np.zeros((noutp, model.n_inputs))
+@@ -214,8 +224,6 @@ def _coord_matrix(model, pos, noutp):
+         if pos == 'right':
+             mat = np.roll(mat, (noutp - model.n_outputs))
+     return mat
+-
+-
+ def _cstack(left, right):
+     """
+     Function corresponding to '&' operation.
+@@ -314,4 +322,4 @@ def _separable(transform):
+ # Maps modeling operators to a function computing and represents the
+ # relationship of axes as an array of 0-es and 1-s
+ _operators = {'&': _cstack, '|': _cdot, '+': _arith_oper, '-': _arith_oper,
+-              '*': _arith_oper, '/': _arith_oper, '**': _arith_oper}
++              '*': _arith_oper, '/': _arith_oper, '**': _arith_oper}
+\ No newline at end of file
+2026-06-11 07:52:36,339 - INFO - Grading answer for astropy__astropy-12907...
+2026-06-11 07:52:36,347 - INFO - report: {'astropy__astropy-12907': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['astropy/modeling/tests/test_separable.py::test_separable[compound_model6-result6]', 'astropy/modeling/tests/test_separable.py::test_separable[compound_model9-result9]']}, 'PASS_TO_PASS': {'success': ['astropy/modeling/tests/test_separable.py::test_arith_oper', 'astropy/modeling/tests/test_separable.py::test_separable[compound_model4-result4]'], 'failure': ['astropy/modeling/tests/test_separable.py::test_coord_matrix', 'astropy/modeling/tests/test_separable.py::test_cdot', 'astropy/modeling/tests/test_separable.py::test_cstack', 'astropy/modeling/tests/test_separable.py::test_separable[compound_model0-result0]', 'astropy/modeling/tests/test_separable.py::test_separable[compound_model1-result1]', 'astropy/modeling/tests/test_separable.py::test_separable[compound_model2-result2]', 'astropy/modeling/tests/test_separable.py::test_separable[compound_model3-result3]', 'astropy/modeling/tests/test_separable.py::test_separable[compound_model5-result5]', 'astropy/modeling/tests/test_separable.py::test_separable[compound_model7-result7]', 'astropy/modeling/tests/test_separable.py::test_separable[compound_model8-result8]', 'astropy/modeling/tests/test_separable.py::test_custom_model_separable']}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for astropy__astropy-12907: resolved: False
+2026-06-11 07:52:36,347 - INFO - Attempting to stop container sweb.eval.astropy__astropy-12907.demo-run-8...
+2026-06-11 07:52:51,652 - INFO - Attempting to remove container sweb.eval.astropy__astropy-12907.demo-run-8...
+2026-06-11 07:52:51,691 - INFO - Container sweb.eval.astropy__astropy-12907.demo-run-8 removed.

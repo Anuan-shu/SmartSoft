@@ -1,0 +1,77 @@
+2026-06-11 07:52:51,724 - INFO - Creating container for astropy__astropy-14182...
+2026-06-11 07:52:51,774 - INFO - Container for astropy__astropy-14182 created: 1b24035f70d6f80aa594d32259e84a1a288213f78f86bf7bd7ba82c2bb2601f9
+2026-06-11 07:52:51,909 - INFO - Container for astropy__astropy-14182 started: 1b24035f70d6f80aa594d32259e84a1a288213f78f86bf7bd7ba82c2bb2601f9
+2026-06-11 07:52:51,909 - INFO - Intermediate patch for astropy__astropy-14182 written to logs/run_evaluation/demo-run-8/deepseek-v3.2/astropy__astropy-14182/patch.diff, now applying to container...
+2026-06-11 07:52:52,017 - INFO - >>>>> Applied Patch:
+Checking patch astropy/io/ascii/rst.py...
+Applied patch astropy/io/ascii/rst.py cleanly.
+
+2026-06-11 07:52:52,740 - INFO - Git diff before:
+diff --git a/astropy/io/ascii/rst.py b/astropy/io/ascii/rst.py
+index abdeba8ef..f804bf701 100644
+--- a/astropy/io/ascii/rst.py
++++ b/astropy/io/ascii/rst.py
+@@ -47,20 +47,8 @@ class RST(FixedWidth):
+         ==== ===== ======
+ 
+     Currently there is no support for reading tables which utilize continuation lines,
+-    or for ones which define column spans through the use of an additional
+-    line of dashes in the header.
+-
++    or for reading tables which have blank lines in the table body.
+     """
+ 
+-    _format_name = "rst"
+-    _description = "reStructuredText simple table"
+-    data_class = SimpleRSTData
+-    header_class = SimpleRSTHeader
+-
+-    def __init__(self):
+-        super().__init__(delimiter_pad=None, bookend=False)
+-
+-    def write(self, lines):
+-        lines = super().write(lines)
+-        lines = [lines[1]] + lines + [lines[1]]
+-        return lines
++    def __init__(self, header_rows=None, **kwargs):
++        super().__init__(header_rows=header_rows, **kwargs)
+\ No newline at end of file
+2026-06-11 07:52:52,741 - INFO - Eval script for astropy__astropy-14182 written to logs/run_evaluation/demo-run-8/deepseek-v3.2/astropy__astropy-14182/eval.sh; copying to container...
+2026-06-11 07:53:58,634 - INFO - Test runtime: 65.85 seconds
+2026-06-11 07:53:58,635 - INFO - Test output for astropy__astropy-14182 written to logs/run_evaluation/demo-run-8/deepseek-v3.2/astropy__astropy-14182/test_output.txt
+2026-06-11 07:53:58,687 - INFO - Git diff after:
+diff --git a/astropy/io/ascii/rst.py b/astropy/io/ascii/rst.py
+index abdeba8ef..f804bf701 100644
+--- a/astropy/io/ascii/rst.py
++++ b/astropy/io/ascii/rst.py
+@@ -47,20 +47,8 @@ class RST(FixedWidth):
+         ==== ===== ======
+ 
+     Currently there is no support for reading tables which utilize continuation lines,
+-    or for ones which define column spans through the use of an additional
+-    line of dashes in the header.
+-
++    or for reading tables which have blank lines in the table body.
+     """
+ 
+-    _format_name = "rst"
+-    _description = "reStructuredText simple table"
+-    data_class = SimpleRSTData
+-    header_class = SimpleRSTHeader
+-
+-    def __init__(self):
+-        super().__init__(delimiter_pad=None, bookend=False)
+-
+-    def write(self, lines):
+-        lines = super().write(lines)
+-        lines = [lines[1]] + lines + [lines[1]]
+-        return lines
++    def __init__(self, header_rows=None, **kwargs):
++        super().__init__(header_rows=header_rows, **kwargs)
+\ No newline at end of file
+2026-06-11 07:53:58,687 - INFO - Grading answer for astropy__astropy-14182...
+2026-06-11 07:53:58,693 - INFO - report: {'astropy__astropy-14182': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['astropy/io/ascii/tests/test_rst.py::test_rst_with_header_rows']}, 'PASS_TO_PASS': {'success': [], 'failure': ['astropy/io/ascii/tests/test_rst.py::test_read_normal', 'astropy/io/ascii/tests/test_rst.py::test_read_normal_names', 'astropy/io/ascii/tests/test_rst.py::test_read_normal_names_include', 'astropy/io/ascii/tests/test_rst.py::test_read_normal_exclude', 'astropy/io/ascii/tests/test_rst.py::test_read_unbounded_right_column', 'astropy/io/ascii/tests/test_rst.py::test_read_unbounded_right_column_header', 'astropy/io/ascii/tests/test_rst.py::test_read_right_indented_table', 'astropy/io/ascii/tests/test_rst.py::test_trailing_spaces_in_row_definition', 'astropy/io/ascii/tests/test_rst.py::test_write_normal']}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for astropy__astropy-14182: resolved: False
+2026-06-11 07:53:58,693 - INFO - Attempting to stop container sweb.eval.astropy__astropy-14182.demo-run-8...
+2026-06-11 07:54:13,946 - INFO - Attempting to remove container sweb.eval.astropy__astropy-14182.demo-run-8...
+2026-06-11 07:54:13,981 - INFO - Container sweb.eval.astropy__astropy-14182.demo-run-8 removed.
