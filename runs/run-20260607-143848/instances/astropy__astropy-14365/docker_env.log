@@ -1,0 +1,45 @@
+2026-06-07 14:41:01,463 INFO Preparing Docker environment for astropy__astropy-14365
+2026-06-07 14:41:01,498 INFO Image already exists locally, skipping pull: swebench/sweb.eval.x86_64.astropy_1776_astropy-14365
+2026-06-07 14:41:01,708 INFO Running command: pwd
+2026-06-07 14:41:01,893 INFO STDOUT: /testbed
+
+2026-06-07 14:41:01,893 INFO Exit code: 0
+2026-06-07 14:41:03,229 INFO Running command: find /testbed -type f -name "*.py" | xargs grep -l "ascii.qdp" | head -20
+2026-06-07 14:41:03,419 INFO STDOUT: /testbed/astropy/io/ascii/tests/test_qdp.py
+/testbed/astropy/io/ascii/qdp.py
+
+2026-06-07 14:41:03,419 INFO Exit code: 0
+2026-06-07 14:41:04,464 INFO Running command: grep -n "Unrecognized QDP line" /testbed/astropy/io/ascii/qdp.py
+2026-06-07 14:41:04,621 INFO STDOUT: 56:    ValueError: Unrecognized QDP line...
+60:    ValueError: Unrecognized QDP line...
+78:        raise ValueError(f"Unrecognized QDP line: {line}")
+
+2026-06-07 14:41:04,621 INFO Exit code: 0
+2026-06-07 14:41:05,679 INFO Running command: cat /testbed/astropy/io/ascii/qdp.py | head -100
+2026-06-07 14:41:05,831 INFO STDOUT: # Licensed under a 3-clause BSD style license - see LICENSE.rst
+"""
+This package contains functions for reading and writing QDP tables that are
+not meant to be used directly, but instead are available as readers/writers in
+`astropy.table`. See :ref:`astropy:table_io` for more details.
+"""
+import cop... [truncated]
+2026-06-07 14:41:05,831 INFO Exit code: 0
+2026-06-07 14:41:07,237 INFO Running command: grep -n "_command_re" /testbed/astropy/io/ascii/qdp.py
+2026-06-07 14:41:07,395 INFO STDOUT: 63:    _command_re = r"READ [TS]ERR(\s+[0-9]+)+"
+70:    _type_re = rf"^\s*((?P<command>{_command_re})|(?P<new>{_new_re})|(?P<data>{_data_re})?\s*(\!(?P<comment>.*))?\s*$"
+
+2026-06-07 14:41:07,395 INFO Exit code: 0
+2026-06-07 14:41:08,812 INFO Running command: grep -n -A5 -B5 "_command_re" /testbed/astropy/io/ascii/qdp.py
+2026-06-07 14:41:08,958 INFO STDOUT: 58-    Traceback (most recent call last):
+59-        ...
+60-    ValueError: Unrecognized QDP line...
+61-    """
+62-    _decimal_re = r"[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?"
+63:    _command_re = r"READ [TS]ERR(\s+[0-9]+)+"
+64-
+65-    sep = delimiter
+66-    if delimiter is None:
+67-        sep = r"... [truncated]
+2026-06-07 14:41:08,958 INFO Exit code: 0
+2026-06-07 14:41:09,245 INFO Stopping container focused_roentgen
+2026-06-07 14:41:14,356 INFO Removing container focused_roentgen

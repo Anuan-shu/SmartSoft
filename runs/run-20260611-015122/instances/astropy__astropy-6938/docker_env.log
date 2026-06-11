@@ -1,0 +1,155 @@
+2026-06-11 01:59:02,547 INFO Preparing Docker environment for astropy__astropy-6938
+2026-06-11 01:59:02,572 INFO Image already exists locally, skipping pull: swebench/sweb.eval.x86_64.astropy_1776_astropy-6938
+2026-06-11 01:59:02,910 INFO Running command: pwd
+2026-06-11 01:59:07,170 INFO STDOUT: /testbed
+
+2026-06-11 01:59:07,170 INFO Exit code: 0
+2026-06-11 01:59:08,602 INFO Running command: cd /testbed && python -m pytest astropy/io/fits/tests/test_checksum.py::TestChecksumFunctions::test_ascii_table_data -xvs
+2026-06-11 01:59:17,403 INFO STDOUT: Internet access disabled
+============================= test session starts ==============================
+platform linux -- Python 3.6.13, pytest-3.3.1, py-1.11.0, pluggy-0.6.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .
+
+Running tests with Astropy version 3.0.dev20979.
+Running tests in a... [truncated]
+2026-06-11 01:59:17,403 INFO Exit code: 0
+2026-06-11 01:59:18,971 INFO Running command: cd /testbed && python -m pytest astropy/io/fits/tests/test_table.py::TestTableFunctions::test_ascii_table -xvs
+2026-06-11 01:59:19,959 INFO STDOUT: Internet access disabled
+============================= test session starts ==============================
+platform linux -- Python 3.6.13, pytest-3.3.1, py-1.11.0, pluggy-0.6.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .
+
+Running tests with Astropy version 3.0.dev20979.
+Running tests in a... [truncated]
+2026-06-11 01:59:19,959 INFO Exit code: 0
+2026-06-11 01:59:21,462 INFO Running command: cd /testbed && grep -n "output_field.replace" astropy/io/fits/fitsrec.py
+2026-06-11 01:59:21,605 INFO STDOUT: 1264:            output_field.replace(encode_ascii('E'), encode_ascii('D'))
+
+2026-06-11 01:59:21,606 INFO Exit code: 0
+2026-06-11 01:59:23,460 INFO Running command: cd /testbed && sed -n '1250,1280p' astropy/io/fits/fitsrec.py
+2026-06-11 01:59:23,605 INFO STDOUT:             if len(value) > starts[col_idx + 1] - starts[col_idx]:
+                raise ValueError(
+                    "Value {!r} does not fit into the output's itemsize of "
+                    "{}.".format(value, spans[col_idx]))
+
+            if trailing_decimal and value[0] == ' ':
+           ... [truncated]
+2026-06-11 01:59:23,605 INFO Exit code: 0
+2026-06-11 01:59:28,868 INFO Running command: cd /testbed && python -c "
+import numpy as np
+from numpy import chararray
+from astropy.io.fits.fitsrec import encode_ascii
+# Simulate the situation
+arr = chararray.chararray((3,), itemsize=5)
+arr[:] = '1.23E4'
+print('Before replace:', arr)
+result = arr.replace(encode_ascii('E'), encode_ascii('D'))
+print('After replace (original):', arr)
+print('Returned result:', result)
+print('Is result same object?', result is arr)
+"
+2026-06-11 01:59:29,524 INFO STDERR: Traceback (most recent call last):
+  File "<string>", line 6, in <module>
+AttributeError: type object 'chararray' has no attribute 'chararray'
+
+2026-06-11 01:59:29,524 INFO Exit code: 1
+2026-06-11 01:59:31,737 INFO Running command: cd /testbed && python -c "
+import numpy as np
+from numpy import chararray
+# Simulate the situation
+arr = np.chararray((3,), itemsize=5)
+arr[:] = '1.23E4'
+print('Before replace:', arr)
+result = arr.replace('E', 'D')
+print('After replace (original):', arr)
+print('Returned result:', result)
+print('Is result same object?', result is arr)
+"
+2026-06-11 01:59:32,013 INFO STDOUT: Before replace: [b'1.23E' b'1.23E' b'1.23E']
+
+2026-06-11 01:59:32,013 INFO STDERR: Traceback (most recent call last):
+  File "<string>", line 8, in <module>
+  File "/opt/miniconda3/envs/testbed/lib/python3.6/site-packages/numpy/core/defchararray.py", line 2425, in replace
+    return asarray(replace(self, old, new, count))
+  File "/opt/miniconda3/envs/testbed/lib/python3.6/site-pac... [truncated]
+2026-06-11 01:59:32,013 INFO Exit code: 1
+2026-06-11 01:59:34,141 INFO Running command: cd /testbed && python -c "
+import numpy as np
+arr = np.chararray((3,), itemsize=6)
+arr[:] = b'1.23E4'
+print('Before replace:', arr)
+result = arr.replace(b'E', b'D')
+print('After replace (original):', arr)
+print('Returned result:', result)
+print('Is result same object?', result is arr)
+"
+2026-06-11 01:59:34,411 INFO STDOUT: Before replace: [b'1.23E4' b'1.23E4' b'1.23E4']
+After replace (original): [b'1.23E4' b'1.23E4' b'1.23E4']
+Returned result: [b'1.23D4' b'1.23D4' b'1.23D4']
+Is result same object? False
+
+2026-06-11 01:59:34,411 INFO Exit code: 0
+2026-06-11 01:59:37,152 INFO Running command: cd /testbed && python - <<'PY'
+import pathlib
+p = pathlib.Path("astropy/io/fits/fitsrec.py")
+text = p.read_text()
+# The line is at 1264. We need to assign the result back to output_field.
+old = "            output_field.replace(encode_ascii('E'), encode_ascii('D'))"
+new = "            output_field = output_field.replace(encode_ascii('E'), encode_ascii('D'))"
+if old in text:
+    text = text.replace(old, new)
+    p.write_text(text)
+    print("Replaced")
+else:
+    print("Line not found")
+PY
+2026-06-11 01:59:37,332 INFO STDOUT: Replaced
+
+2026-06-11 01:59:37,332 INFO Exit code: 0
+2026-06-11 01:59:39,647 INFO Running command: cd /testbed && python -m pytest astropy/io/fits/tests/test_checksum.py::TestChecksumFunctions::test_ascii_table_data -xvs
+2026-06-11 01:59:40,651 INFO STDOUT: Internet access disabled
+============================= test session starts ==============================
+platform linux -- Python 3.6.13, pytest-3.3.1, py-1.11.0, pluggy-0.6.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .
+
+Running tests with Astropy version 3.0.dev20979.
+Running tests in a... [truncated]
+2026-06-11 01:59:40,652 INFO Exit code: 0
+2026-06-11 01:59:42,069 INFO Running command: cd /testbed && python -m pytest astropy/io/fits/tests/test_table.py::TestTableFunctions::test_ascii_table -xvs
+2026-06-11 01:59:43,071 INFO STDOUT: Internet access disabled
+============================= test session starts ==============================
+platform linux -- Python 3.6.13, pytest-3.3.1, py-1.11.0, pluggy-0.6.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .
+
+Running tests with Astropy version 3.0.dev20979.
+Running tests in a... [truncated]
+2026-06-11 01:59:43,071 INFO Exit code: 0
+2026-06-11 01:59:44,835 INFO Running command: cd /testbed && git diff --no-ext-diff
+2026-06-11 01:59:50,821 INFO STDOUT: diff --git a/astropy/io/fits/fitsrec.py b/astropy/io/fits/fitsrec.py
+index 574b4073b1..cb79142dce 100644
+--- a/astropy/io/fits/fitsrec.py
++++ b/astropy/io/fits/fitsrec.py
+@@ -1261,7 +1261,7 @@ class FITS_rec(np.recarray):
+ 
+         # Replace exponent separator in floating point numbers
+         if ... [truncated]
+2026-06-11 01:59:50,821 INFO Exit code: 0
+2026-06-11 01:59:54,045 INFO Running command: cd /testbed && python -m pytest astropy/io/fits/tests/test_checksum.py::TestChecksumFunctions::test_sample_file astropy/io/fits/tests/test_checksum.py::TestChecksumFunctions::test_image_create astropy/io/fits/tests/test_checksum.py::TestChecksumFunctions::test_scaled_data astropy/io/fits/tests/test_checksum.py::TestChecksumFunctions::test_scaled_data_auto_rescale astropy/io/fits/tests/test_checksum.py::TestChecksumFunctions::test_uint16_data astropy/io/fits/tests/test_checksum.py::TestChecksumFunctions::test_groups_hdu_data astropy/io/fits/tests/test_checksum.py::TestChecksumFunctions::test_open_with_no_keywords astropy/io/fits/tests/test_checksum.py::TestChecksumFunctions::test_writeto_convenience astropy/io/fits/tests/test_checksum.py::TestChecksumFunctions::test_hdu_writeto astropy/io/fits/tests/test_checksum.py::TestChecksumFunctions::test_datasum_only astropy/io/fits/tests/test_table.py::test_regression_scalar_indexing -x
+2026-06-11 01:59:55,175 INFO STDOUT: ============================= test session starts ==============================
+platform linux -- Python 3.6.13, pytest-3.3.1, py-1.11.0, pluggy-0.6.0
+
+Running tests with Astropy version 3.0.dev20979.
+Running tests in astropy/io/fits/tests/test_checksum.py::TestChecksumFunctions::test_sample_file a... [truncated]
+2026-06-11 01:59:55,176 INFO Exit code: 0
+2026-06-11 01:59:57,537 INFO Running command: git diff --no-ext-diff
+2026-06-11 01:59:57,687 INFO STDOUT: diff --git a/astropy/io/fits/fitsrec.py b/astropy/io/fits/fitsrec.py
+index 574b4073b1..cb79142dce 100644
+--- a/astropy/io/fits/fitsrec.py
++++ b/astropy/io/fits/fitsrec.py
+@@ -1261,7 +1261,7 @@ class FITS_rec(np.recarray):
+ 
+         # Replace exponent separator in floating point numbers
+         if ... [truncated]
+2026-06-11 01:59:57,688 INFO Exit code: 0
+2026-06-11 01:59:57,688 INFO Stopping container gifted_fermat
+2026-06-11 02:00:02,805 INFO Removing container gifted_fermat

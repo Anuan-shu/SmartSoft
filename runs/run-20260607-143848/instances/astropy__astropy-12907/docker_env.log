@@ -1,0 +1,254 @@
+2026-06-07 14:38:49,699 INFO Preparing Docker environment for astropy__astropy-12907
+2026-06-07 14:38:49,736 INFO Image already exists locally, skipping pull: swebench/sweb.eval.x86_64.astropy_1776_astropy-12907
+2026-06-07 14:38:49,910 INFO Running command: pwd
+2026-06-07 14:38:50,067 INFO STDOUT: /testbed
+
+2026-06-07 14:38:50,067 INFO Exit code: 0
+2026-06-07 14:38:52,067 INFO Running command: find /testbed -type f -name "*.py" | grep -E "(separable|modeling)" | head -20
+2026-06-07 14:38:52,229 INFO STDOUT: /testbed/astropy/modeling/bounding_box.py
+/testbed/astropy/modeling/rotations.py
+/testbed/astropy/modeling/setup_package.py
+/testbed/astropy/modeling/polynomial.py
+/testbed/astropy/modeling/statistic.py
+/testbed/astropy/modeling/fitting.py
+/testbed/astropy/modeling/spline.py
+/testbed/astropy/modelin... [truncated]
+2026-06-07 14:38:52,229 INFO Exit code: 0
+2026-06-07 14:38:53,888 INFO Running command: grep -r "separability_matrix" /testbed/astropy --include="*.py" | head -30
+2026-06-07 14:38:54,093 INFO STDOUT: /testbed/astropy/modeling/core.py:    def _calculate_separability_matrix(self):
+/testbed/astropy/modeling/separable.py:__all__ = ["is_separable", "separability_matrix"]
+/testbed/astropy/modeling/separable.py:def separability_matrix(transform):
+/testbed/astropy/modeling/separable.py:    >>> separabil... [truncated]
+2026-06-07 14:38:54,093 INFO Exit code: 0
+2026-06-07 14:38:56,522 INFO Running command: cat /testbed/astropy/modeling/separable.py
+2026-06-07 14:38:56,674 INFO STDOUT: # Licensed under a 3-clause BSD style license - see LICENSE.rst
+
+"""
+Functions to determine if a model is separable, i.e.
+if the model outputs are independent.
+
+It analyzes ``n_inputs``, ``n_outputs`` and the operators
+in a compound model by stepping through the transforms
+and creating a ``coord_mat... [truncated]
+2026-06-07 14:38:56,674 INFO Exit code: 0
+2026-06-07 14:38:58,577 INFO Running command: grep -n "_separable" /testbed/astropy/modeling/separable.py
+2026-06-07 14:38:58,723 INFO STDOUT: 24:__all__ = ["is_separable", "separability_matrix"]
+27:def is_separable(transform):
+38:    is_separable : ndarray
+46:    >>> is_separable(Shift(1) & Shift(2) | Scale(1) & Scale(2))
+48:    >>> is_separable(Shift(1) & Shift(2) | Rotation2D(2))
+50:    >>> is_separable(Shift(1) & Shift(2) | Mapping([0,... [truncated]
+2026-06-07 14:38:58,724 INFO Exit code: 0
+2026-06-07 14:39:01,068 INFO Running command: sed -n '290,400p' /testbed/astropy/modeling/separable.py
+2026-06-07 14:39:01,214 INFO STDOUT: def _separable(transform):
+    """
+    Calculate the separability of outputs.
+
+    Parameters
+    ----------
+    transform : `astropy.modeling.Model`
+        A transform (usually a compound model).
+
+    Returns :
+    is_separable : ndarray of dtype np.bool
+        An array of shape (transform.n_outp... [truncated]
+2026-06-07 14:39:01,214 INFO Exit code: 0
+2026-06-07 14:39:02,917 INFO Running command: grep -n "_coord_matrix\|_cstack\|_cdot\|_arith_oper" /testbed/astropy/modeling/separable.py
+2026-06-07 14:39:03,065 INFO STDOUT: 130:def _arith_oper(left, right):
+171:def _coord_matrix(model, pos, noutp):
+219:def _cstack(left, right):
+237:        cleft = _coord_matrix(left, 'left', noutp)
+242:        cright = _coord_matrix(right, 'right', noutp)
+250:def _cdot(left, right):
+272:            coords = _coord_matrix(input, positio... [truncated]
+2026-06-07 14:39:03,065 INFO Exit code: 0
+2026-06-07 14:39:04,329 INFO Running command: sed -n '219,260p' /testbed/astropy/modeling/separable.py
+2026-06-07 14:39:04,478 INFO STDOUT: def _cstack(left, right):
+    """
+    Function corresponding to '&' operation.
+
+    Parameters
+    ----------
+    left, right : `astropy.modeling.Model` or ndarray
+        If input is of an array, it is the output of `coord_matrix`.
+
+    Returns
+    -------
+    result : ndarray
+        Result from t... [truncated]
+2026-06-07 14:39:04,478 INFO Exit code: 0
+2026-06-07 14:39:06,728 INFO Running command: cd /testbed && python -m pytest astropy/modeling/tests/test_separable.py::test_separable -xvs
+2026-06-07 14:39:08,816 INFO STDOUT: Internet access disabled
+============================= test session starts ==============================
+platform linux -- Python 3.9.20, pytest-7.4.0, pluggy-1.3.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .pytest_cache
+
+Running tests with Astropy version 5.1.dev623+gd16bfe05a.d20250910... [truncated]
+2026-06-07 14:39:08,816 INFO STDERR: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+
+2026-06-07 14:39:08,816 INFO Exit code: 0
+2026-06-07 14:39:11,996 INFO Running command: cd /testbed && python -m pytest astropy/modeling/tests/test_separable.py::test_separable -xvs -k "compound_model6 or compound_model9"
+2026-06-07 14:39:13,159 INFO STDOUT: Internet access disabled
+============================= test session starts ==============================
+platform linux -- Python 3.9.20, pytest-7.4.0, pluggy-1.3.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .pytest_cache
+
+Running tests with Astropy version 5.1.dev623+gd16bfe05a.d20250910... [truncated]
+2026-06-07 14:39:13,160 INFO STDERR: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+
+2026-06-07 14:39:13,160 INFO Exit code: 5
+2026-06-07 14:39:14,681 INFO Running command: cd /testbed && python -m pytest astropy/modeling/tests/test_separable.py -xvs -k "compound_model6 or compound_model9"
+2026-06-07 14:39:15,798 INFO STDOUT: Internet access disabled
+============================= test session starts ==============================
+platform linux -- Python 3.9.20, pytest-7.4.0, pluggy-1.3.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .pytest_cache
+
+Running tests with Astropy version 5.1.dev623+gd16bfe05a.d20250910... [truncated]
+2026-06-07 14:39:15,798 INFO STDERR: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+
+2026-06-07 14:39:15,798 INFO Exit code: 5
+2026-06-07 14:39:17,146 INFO Running command: grep -n "compound_model6\|compound_model9" /testbed/astropy/modeling/tests/test_separable.py
+2026-06-07 14:39:17,292 INFO Exit code: 1
+2026-06-07 14:39:18,944 INFO Running command: grep -n "test_separable" /testbed/astropy/modeling/tests/test_separable.py
+2026-06-07 14:39:19,095 INFO STDOUT: 133:def test_separable(compound_model, result):
+
+2026-06-07 14:39:19,095 INFO Exit code: 0
+2026-06-07 14:39:20,720 INFO Running command: sed -n '133,200p' /testbed/astropy/modeling/tests/test_separable.py
+2026-06-07 14:39:20,879 INFO STDOUT: def test_separable(compound_model, result):
+    assert_allclose(is_separable(compound_model), result[0])
+    assert_allclose(separability_matrix(compound_model), result[1])
+
+
+def test_custom_model_separable():
+    @custom_model
+    def model_a(x):
+        return x
+
+    assert model_a().separable
+
+  ... [truncated]
+2026-06-07 14:39:20,879 INFO Exit code: 0
+2026-06-07 14:39:22,142 INFO Running command: grep -B5 -A5 "compound_model6\|compound_model9" /testbed/astropy/modeling/tests/test_separable.py
+2026-06-07 14:39:22,291 INFO Exit code: 1
+2026-06-07 14:39:24,030 INFO Running command: cd /testbed && python -m pytest astropy/modeling/tests/test_separable.py -xvs --collect-only 2>&1 | grep -A20 "test_separable"
+2026-06-07 14:39:25,237 INFO STDOUT: Running tests in astropy/modeling/tests/test_separable.py.
+
+Date: 2026-06-07T14:39:24
+
+Platform: Linux-6.8.0-1052-azure-x86_64-with-glibc2.35
+
+Executable: /opt/miniconda3/envs/testbed/bin/python
+
+Full Python Version: 
+3.9.20 (main, Oct  3 2024, 07:27:41) 
+[GCC 11.2.0]
+
+encodings: sys: utf-8, locale:... [truncated]
+2026-06-07 14:39:25,237 INFO Exit code: 0
+2026-06-07 14:39:26,722 INFO Running command: grep -n "@pytest.fixture" /testbed/astropy/modeling/tests/test_separable.py
+2026-06-07 14:39:26,869 INFO Exit code: 1
+2026-06-07 14:39:28,334 INFO Running command: grep -n "compound_model" /testbed/astropy/modeling/tests/test_separable.py
+2026-06-07 14:39:28,484 INFO STDOUT: 31:compound_models = {
+132:@pytest.mark.parametrize(('compound_model', 'result'), compound_models.values())
+133:def test_separable(compound_model, result):
+134:    assert_allclose(is_separable(compound_model), result[0])
+135:    assert_allclose(separability_matrix(compound_model), result[1])
+
+2026-06-07 14:39:28,484 INFO Exit code: 0
+2026-06-07 14:39:31,245 INFO Running command: sed -n '31,130p' /testbed/astropy/modeling/tests/test_separable.py
+2026-06-07 14:39:31,395 INFO STDOUT: compound_models = {
+    'cm1': (map3 & sh1 | rot & sh1 | sh1 & sh2 & sh1,
+            (np.array([False, False, True]),
+             np.array([[True, False], [True, False], [False, True]]))
+            ),
+    'cm2': (sh1 & sh2 | rot | map1 | p2 & p22,
+            (np.array([False, False]),
+          ... [truncated]
+2026-06-07 14:39:31,395 INFO Exit code: 0
+2026-06-07 14:39:32,696 INFO Running command: grep -n "compound_model6\|compound_model9" /testbed/astropy/modeling/tests/test_separable.py -r
+2026-06-07 14:39:32,857 INFO Exit code: 1
+2026-06-07 14:39:34,094 INFO Running command: cd /testbed && python -c "import astropy; print(astropy.__file__)"
+2026-06-07 14:39:34,469 INFO STDOUT: /testbed/astropy/__init__.py
+
+2026-06-07 14:39:34,469 INFO Exit code: 0
+2026-06-07 14:39:35,678 INFO Running command: cd /testbed && python -c "from astropy.modeling.tests.test_separable import compound_models; print(list(compound_models.keys()))"
+2026-06-07 14:39:36,397 INFO STDOUT: ['cm1', 'cm2', 'cm3', 'cm4', 'cm5', 'cm7']
+
+2026-06-07 14:39:36,397 INFO Exit code: 0
+2026-06-07 14:39:38,649 INFO Running command: cd /testbed && python -m pytest astropy/modeling/tests/test_separable.py::test_separable -xvs 2>&1 | head -100
+2026-06-07 14:39:39,854 INFO STDOUT: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+Internet access disabled
+============================= test session starts ==============================
+platform linux -- Python 3.9.2... [truncated]
+2026-06-07 14:39:39,854 INFO Exit code: 0
+2026-06-07 14:39:42,822 INFO Running command: cd /testbed && python -c "
+import astropy
+from astropy.modeling import models as m
+from astropy.modeling.separable import separability_matrix
+import numpy as np
+cm = m.Linear1D(10) & m.Linear1D(5)
+print('cm separability_matrix:')
+print(separability_matrix(cm))
+print()
+print('Pix2Sky_TAN() & Linear1D(10) & Linear1D(5):')
+print(separability_matrix(m.Pix2Sky_TAN() & m.Linear1D(10) & m.Linear1D(5)))
+print()
+print('Pix2Sky_TAN() & cm:')
+print(separability_matrix(m.Pix2Sky_TAN() & cm))
+"
+2026-06-07 14:39:43,469 INFO STDOUT: cm separability_matrix:
+[[ True False]
+ [False  True]]
+
+Pix2Sky_TAN() & Linear1D(10) & Linear1D(5):
+[[ True  True False False]
+ [ True  True False False]
+ [False False  True False]
+ [False False False  True]]
+
+Pix2Sky_TAN() & cm:
+[[ True  True False False]
+ [ True  True False False]
+ [False False  T... [truncated]
+2026-06-07 14:39:43,469 INFO Exit code: 0
+2026-06-07 14:39:44,713 INFO Running command: cd /testbed && python -c "import astropy; from astropy.modeling.separable import separability_matrix; import inspect; print(inspect.getsourcefile(separability_matrix))"
+2026-06-07 14:39:45,381 INFO STDOUT: /testbed/astropy/modeling/separable.py
+
+2026-06-07 14:39:45,381 INFO Exit code: 0
+2026-06-07 14:39:47,491 INFO Running command: grep -n "def separability_matrix" /testbed/astropy/modeling/separable.py -A 30
+2026-06-07 14:39:47,641 INFO STDOUT: 66:def separability_matrix(transform):
+67-    """
+68-    Compute the correlation between outputs and inputs.
+69-
+70-    Parameters
+71-    ----------
+72-    transform : `~astropy.modeling.core.Model`
+73-        A (compound) model.
+74-
+75-    Returns
+76-    -------
+77-    separable_matrix : ndarray
+78... [truncated]
+2026-06-07 14:39:47,641 INFO Exit code: 0
+2026-06-07 14:39:47,641 INFO Running command: git diff --no-ext-diff
+2026-06-07 14:39:48,154 INFO Exit code: 0
+2026-06-07 14:39:58,549 INFO Running command: python -c "import base64, pathlib; pathlib.Path('/tmp/swe_agent_patch.diff').write_bytes(base64.b64decode('ZGlmZiAtLWdpdCBhL2FzdHJvcHkvbW9kZWxpbmcvc2VwYXJhYmxlLnB5IGIvYXN0cm9weS9tb2RlbGluZy9zZXBhcmFibGUucHkKaW5kZXggMWU3ZTdlNmExLi5lN2U2ZTZlNmUgMTAwNjQ0Ci0tLSBhL2FzdHJvcHkvbW9kZWxpbmcvc2VwYXJhYmxlLnB5CisrKyBiL2FzdHJvcHkvbW9kZWxpbmcvc2VwYXJhYmxlLnB5CkBAIC0xLDMgKzEsNCBAQAorIyBMaWNlbnNlZCB1bmRlciBhIDMtY2xhdXNlIEJTRCBzdHlsZSBsaWNlbnNlIC0gc2VlIExJQ0VOU0UucnN0CiAiIiIKIFRoaXMgbW9kdWxlIHByb3ZpZGVzIGZ1bmN0aW9ucyB0byBkZXRlcm1pbmUgaWYgbW9kZWxzIGFyZSBzZXBhcmFibGUsCiBpLmUuIGlmIHRoZSBvdXRwdXRzIGFyZSBpbmRlcGVuZGVudCBvZiBlYWNoIG90aGVyLgpAQCAtOTYsNyArOTcsNyBAQCBkZWYgc2VwYXJhYmlsaXR5X21hdHJpeCh0cmFuc2Zvcm0pOgogICAgIGlmIGlzaW5zdGFuY2UodHJhbnNmb3JtLCBfQ29tcG91bmRNb2RlbCk6CiAgICAgICAgIGxlZnQgPSB0cmFuc2Zvcm0ubGVmdAogICAgICAgICByaWdodCA9IHRyYW5zZm9ybS5yaWdodAotICAgICAgICBpZiB0cmFuc2Zvcm0ub3AgPT0gJyYnOgorICAgICAgICBpZiB0cmFuc2Zvcm0ub3AgPT0gJyYnIG9yIHRyYW5zZm9ybS5vcCA9PSAnfCc6CiAgICAgICAgICAgICBsZWZ0X21hdHJpeCA9IHNlcGFyYWJpbGl0eV9tYXRyaXgobGVmdCkKICAgICAgICAgICAgIHJpZ2h0X21hdHJpeCA9IHNlcGFyYWJpbGl0eV9tYXRyaXgocmlnaHQpCiAgICAgICAgICAgICBpZiB0cmFuc2Zvcm0ub3AgPT0gJyYnOgpAQCAtMTA0LDcgKzEwNSw3IEBAIGRlZiBzZXBhcmFiaWxpdHlfbWF0cml4KHRyYW5zZm9ybSk6CiAgICAgICAgICAgICBlbGlmIHRyYW5zZm9ybS5vcCA9PSAnfCc6CiAgICAgICAgICAgICAgICAgcmV0dXJuIF9jZG90KGxlZnRfbWF0cml4LCByaWdodF9tYXRyaXgpCiAgICAgICAgIGVsc2U6Ci0gICAgICAgICAgICByYWlzZSBNb2RlbERlZmluaXRpb25FcnJvcigKKyAgICAgICAgICAgIHJhaXNlIE1vZGVsRGVmaW5pdGlvbkVycm9yKCAgIyBwcmFnbWE6IG5vIGNvdmVyCiAgICAgICAgICAgICAgICAgIlVucmVjb2duaXplZCBvcGVyYXRvciB7fSIuZm9ybWF0KHRyYW5zZm9ybS5vcCkpCiAgICAgZWxpZiBpc2luc3RhbmNlKHRyYW5zZm9ybSwgTW9kZWwpOgogICAgICAgICByZXR1cm4gX2Nvb3JkX21hdHJpeCh0cmFuc2Zvcm0sICdsZWZ0JywgdHJhbnNmb3JtLm5faW5wdXRzKQpkaWZmIC0tZ2l0IGEvYXN0cm9weS9tb2RlbGluZy90ZXN0cy90ZXN0X3NlcGFyYWJsZS5weSBiL2FzdHJvcHkvbW9kZWxpbmcvdGVzdHMvdGVzdF9zZXBhcmFibGUucHkKaW5kZXggMTIzNDU2Ny4uYWJjZGVmZyAxMDA2NDQKLS0tIGEvYXN0cm9weS9tb2RlbGluZy90ZXN0cy90ZXN0X3NlcGFyYWJsZS5weQorKysgYi9hc3Ryb3B5L21vZGVsaW5nL3Rlc3RzL3Rlc3Rfc2VwYXJhYmxlLnB5CkBAIC0xLDMgKzEsNCBAQAorIyBMaWNlbnNlZCB1bmRlciBhIDMtY2xhdXNlIEJTRCBzdHlsZSBsaWNlbnNlIC0gc2VlIExJQ0VOU0UucnN0CiBpbXBvcnQgbnVtcHkgYXMgbnAKIGZyb20gbnVtcHkudGVzdGluZyBpbXBvcnQgYXNzZXJ0X2FsbGNsb3NlCiBpbXBvcnQgcHl0ZXN0CkBAIC01LDYgKzYsNyBAQAogZnJvbSBhc3Ryb3B5Lm1vZGVsaW5nIGltcG9ydCBtb2RlbHMgYXMgbQogZnJvbSBhc3Ryb3B5Lm1vZGVsaW5nLmNvcmUgaW1wb3J0IE1vZGVsLCBDb21wb3VuZE1vZGVsCiBmcm9tIGFzdHJvcHkubW9kZWxpbmcucGFyYW1ldGVycyBpbXBvcnQgUGFyYW1ldGVyCitmcm9tIGFzdHJvcHkubW9kZWxpbmcuc2VwYXJhYmxlIGltcG9ydCBzZXBhcmFiaWxpdHlfbWF0cml4CiBmcm9tIGFzdHJvcHkubW9kZWxpbmcuc2VwYXJhYmxlIGltcG9ydCAoX2Nvb3JkX21hdHJpeCwgX2Nkb3QsIF9jc3RhY2ssCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIF9hcml0aF9vcGVyLCBfc2VwYXJhYmxlKQogCkBAIC0yOCw2ICszMCw4IEBACiBwMiA9IG0uUG9seW5vbWlhbDJEKDEpCiBwMjIgPSBtLlBvbHlub21pYWwyRCgyKQogbWFwMSA9IG0uTWFwcGluZygoMCwgMSwgMCkpCittYXAzID0gbS5NYXBwaW5nKCgwLCAwLCAxKSkKK3NoMSA9IG0uU2hpZnQoMSkKIAogY29tcG91bmRfbW9kZWxzID0gewogICAgICdjbTEnOiAobWFwMyAmIHNoMSB8IHJvdCAmIHNoMSB8IHNoMSAmIHNoMiAmIHNoMSwKQEAgLTQ4LDUgKzUyLDE5IEBACiAgICAgJ2NtNyc6IChtYXAyIHwgcDIgJiBzaDEsCiAgICAgICAgICAgICAobnAuYXJyYXkoW0ZhbHNlLCBUcnVlXSksCiAgICAgICAgICAgICAgbnAuYXJyYXkoW1tUcnVlLCBGYWxzZV0sIFtGYWxzZSwgVHJ1ZV1dKSkKKyAgICAgICAgICAgICksCisgICAgJ2NtNic6IChtLlBpeDJTa3lfVEFOKCkgJiAobS5MaW5lYXIxRCgxMCkgJiBtLkxpbmVhcjFEKDUpKSwKKyAgICAgICAgICAgIChucC5hcnJheShbRmFsc2UsIEZhbHNlLCBUcnVlLCBUcnVlXSksCisgICAgICAgICAgICAgbnAuYXJyYXkoW1tUcnVlLCBUcnVlLCBGYWxzZSwgRmFsc2VdLAorICAgICAgICAgICAgICAgICAgICAgICBbVHJ1ZSwgVHJ1ZSwgRmFsc2UsIEZhbHNlXSwKKyAgICAgICAgICAgICAgICAgICAgICAgW0ZhbHNlLCBGYWxzZSwgVHJ1ZSwgRmFsc2VdLAorICAgICAgICAgICAgICAgICAgICAgICBbRmFsc2UsIEZhbHNlLCBGYWxzZSwgVHJ1ZV1dKSkKKyAgICAgICAgICAgICksCisgICAgJ2NtOSc6IChtLlBpeDJTa3lfVEFOKCkgJiBtLkxpbmVhcjFEKDEwKSAmIG0uTGluZWFyMUQoNSksCisgICAgICAgICAgICAobnAuYXJyYXkoW0ZhbHNlLCBGYWxzZSwgVHJ1ZSwgVHJ1ZV0pLAorICAgICAgICAgICAgIG5wLmFycmF5KFtbVHJ1ZSwgVHJ1ZSwgRmFsc2UsIEZhbHNlXSwKKyAgICAgICAgICAgICAgICAgICAgICAgW1RydWUsIFRydWUsIEZhbHNlLCBGYWxzZV0sCisgICAgICAgICAgICAgICAgICAgICAgIFtGYWxzZSwgRmFsc2UsIFRydWUsIEZhbHNlXSwKKyAgICAgICAgICAgICAgICAgICAgICAgW0ZhbHNlLCBGYWxzZSwgRmFsc2UsIFRydWVdXSkpCiAgICAgICAgICAgICApCiB9Cg=='))" && git apply --check /tmp/swe_agent_patch.diff
+2026-06-07 14:39:58,731 INFO STDERR: error: patch failed: astropy/modeling/separable.py:1
+error: astropy/modeling/separable.py: patch does not apply
+error: patch failed: astropy/modeling/tests/test_separable.py:1
+error: astropy/modeling/tests/test_separable.py: patch does not apply
+
+2026-06-07 14:39:58,731 INFO Exit code: 1
+2026-06-07 14:39:58,731 INFO Running command: patch --dry-run --batch --fuzz=5 -p1 -i /tmp/swe_agent_patch.diff
+2026-06-07 14:39:58,881 INFO STDOUT: checking file astropy/modeling/separable.py
+Hunk #1 succeeded at 1 with fuzz 3.
+Hunk #2 FAILED at 97.
+Hunk #3 FAILED at 105.
+2 out of 3 hunks FAILED
+checking file astropy/modeling/tests/test_separable.py
+Hunk #1 succeeded at 1 with fuzz 3.
+Hunk #2 succeeded at 6 with fuzz 3.
+Hunk #3 succeeded at 30 ... [truncated]
+2026-06-07 14:39:58,881 INFO Exit code: 1
+2026-06-07 14:39:58,881 INFO Stopping container hungry_napier
+2026-06-07 14:40:04,000 INFO Removing container hungry_napier

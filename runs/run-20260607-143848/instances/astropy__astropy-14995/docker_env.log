@@ -1,0 +1,8 @@
+2026-06-07 14:41:14,381 INFO Preparing Docker environment for astropy__astropy-14995
+2026-06-07 14:41:14,408 INFO Image already exists locally, skipping pull: swebench/sweb.eval.x86_64.astropy_1776_astropy-14995
+2026-06-07 14:41:14,573 INFO Running command: pwd
+2026-06-07 14:41:14,755 INFO STDOUT: /testbed
+
+2026-06-07 14:41:14,755 INFO Exit code: 0
+2026-06-07 14:41:15,080 INFO Stopping container zealous_kepler
+2026-06-07 14:41:20,187 INFO Removing container zealous_kepler

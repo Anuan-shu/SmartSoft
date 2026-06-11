@@ -1,0 +1,308 @@
+2026-06-11 01:53:24,271 INFO Preparing Docker environment for astropy__astropy-14182
+2026-06-11 01:53:24,300 INFO Image already exists locally, skipping pull: swebench/sweb.eval.x86_64.astropy_1776_astropy-14182
+2026-06-11 01:53:24,462 INFO Running command: pwd
+2026-06-11 01:53:24,627 INFO STDOUT: /testbed
+
+2026-06-11 01:53:24,627 INFO Exit code: 0
+2026-06-11 01:53:26,140 INFO Running command: cd /testbed && python -m pytest astropy/io/ascii/tests/test_rst.py::test_rst_with_header_rows -x
+2026-06-11 01:53:29,028 INFO STDOUT: [1m============================= test session starts ==============================[0m
+platform linux -- Python 3.9.20, pytest-7.4.0, pluggy-1.3.0
+
+Running tests with Astropy version 5.3.dev133+ga5917978b.d20250910.
+Running tests in astropy/io/ascii/tests/test_rst.py::test_rst_with_header_rows.
+
+D... [truncated]
+2026-06-11 01:53:29,028 INFO STDERR: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+ERROR: not found: /testbed/astropy/io/ascii/tests/test_rst.py::test_rst_with_header_rows
+(no name '/testbed/astropy/io/ascii/tests/test_... [truncated]
+2026-06-11 01:53:29,028 INFO Exit code: 4
+2026-06-11 01:53:30,512 INFO Running command: cd /testbed && python -m pytest astropy/io/ascii/tests/test_rst.py -k "rst_with_header_rows" -x
+2026-06-11 01:53:31,513 INFO STDOUT: [1m============================= test session starts ==============================[0m
+platform linux -- Python 3.9.20, pytest-7.4.0, pluggy-1.3.0
+
+Running tests with Astropy version 5.3.dev133+ga5917978b.d20250910.
+Running tests in astropy/io/ascii/tests/test_rst.py.
+
+Date: 2026-06-11T01:53:31
+
+P... [truncated]
+2026-06-11 01:53:31,513 INFO STDERR: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+
+2026-06-11 01:53:31,513 INFO Exit code: 5
+2026-06-11 01:53:32,986 INFO Running command: grep -r "header_rows" /testbed/astropy/io/ascii/ --include="*.py"
+2026-06-11 01:53:33,135 INFO STDOUT: /testbed/astropy/io/ascii/fixedwidth.py:        header_rows = getattr(self, "header_rows", ["name"])
+/testbed/astropy/io/ascii/fixedwidth.py:            line = self.get_line(lines, start_line + header_rows.index("name"))
+/testbed/astropy/io/ascii/fixedwidth.py:        for ii, attr in enumerate(heade... [truncated]
+2026-06-11 01:53:33,135 INFO Exit code: 0
+2026-06-11 01:53:37,727 INFO Running command: grep -r "class RST" /testbed/astropy/io/ascii/ --include="*.py"
+2026-06-11 01:53:37,872 INFO STDOUT: /testbed/astropy/io/ascii/rst.py:class RST(FixedWidth):
+
+2026-06-11 01:53:37,872 INFO Exit code: 0
+2026-06-11 01:53:41,503 INFO Running command: cd /testbed && python -m pytest astropy/io/ascii/tests/test_rst.py -x
+2026-06-11 01:53:42,482 INFO STDOUT: [1m============================= test session starts ==============================[0m
+platform linux -- Python 3.9.20, pytest-7.4.0, pluggy-1.3.0
+
+Running tests with Astropy version 5.3.dev133+ga5917978b.d20250910.
+Running tests in astropy/io/ascii/tests/test_rst.py.
+
+Date: 2026-06-11T01:53:42
+
+P... [truncated]
+2026-06-11 01:53:42,482 INFO STDERR: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+
+2026-06-11 01:53:42,483 INFO Exit code: 0
+2026-06-11 01:53:46,759 INFO Running command: grep -n "class RST" /testbed/astropy/io/ascii/rst.py -A 20
+2026-06-11 01:53:46,918 INFO STDOUT: 35:class RST(FixedWidth):
+36-    """reStructuredText simple format table.
+37-
+38-    See: https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.html#simple-tables
+39-
+40-    Example::
+41-
+42-        ==== ===== ======
+43-        Col1  Col2  Col3
+44-        ==== ===== ======
+45-          1    ... [truncated]
+2026-06-11 01:53:46,918 INFO Exit code: 0
+2026-06-11 01:53:49,640 INFO Running command: grep -n "def __init__" /testbed/astropy/io/ascii/rst.py -A 10
+2026-06-11 01:53:49,787 INFO STDOUT: 60:    def __init__(self):
+61-        super().__init__(delimiter_pad=None, bookend=False)
+62-
+63-    def write(self, lines):
+64-        lines = super().write(lines)
+65-        lines = [lines[1]] + lines + [lines[1]]
+66-        return lines
+
+2026-06-11 01:53:49,787 INFO Exit code: 0
+2026-06-11 01:53:51,646 INFO Running command: grep -n "class FixedWidth" /testbed/astropy/io/ascii/fixedwidth.py -A 30
+2026-06-11 01:53:51,808 INFO STDOUT: 16:class FixedWidthSplitter(core.BaseSplitter):
+17-    """
+18-    Split line based on fixed start and end positions for each ``col`` in
+19-    ``self.cols``.
+20-
+21-    This class requires that the Header class will have defined ``col.start``
+22-    and ``col.end`` for each column.  The reference to... [truncated]
+2026-06-11 01:53:51,808 INFO Exit code: 0
+2026-06-11 01:53:54,587 INFO Running command: grep -n "def __init__" /testbed/astropy/io/ascii/fixedwidth.py -A 20
+2026-06-11 01:53:54,731 INFO STDOUT: 339:    def __init__(
+340-        self,
+341-        col_starts=None,
+342-        col_ends=None,
+343-        delimiter_pad=" ",
+344-        bookend=True,
+345-        header_rows=None,
+346-    ):
+347-        if header_rows is None:
+348-            header_rows = ["name"]
+349-        super().__init__()
+... [truncated]
+2026-06-11 01:53:54,731 INFO Exit code: 0
+2026-06-11 01:53:58,017 INFO Running command: cd /testbed && python -m pytest astropy/io/ascii/tests/test_rst.py::test_rst_with_header_rows -xvs
+2026-06-11 01:53:58,976 INFO STDOUT: Internet access disabled
+[1m============================= test session starts ==============================[0m
+platform linux -- Python 3.9.20, pytest-7.4.0, pluggy-1.3.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .pytest_cache
+
+Running tests with Astropy version 5.3.dev133+ga5917978b.d... [truncated]
+2026-06-11 01:53:58,976 INFO STDERR: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+ERROR: not found: /testbed/astropy/io/ascii/tests/test_rst.py::test_rst_with_header_rows
+(no name '/testbed/astropy/io/ascii/tests/test_... [truncated]
+2026-06-11 01:53:58,976 INFO Exit code: 4
+2026-06-11 01:54:08,430 INFO Running command: grep -n "test_rst_with_header_rows" /testbed/astropy/io/ascii/tests/test_rst.py -B 2 -A 10
+2026-06-11 01:54:08,574 INFO Exit code: 1
+2026-06-11 01:54:10,422 INFO Running command: grep -r "test_rst_with_header_rows" /testbed/astropy/io/ascii/tests/ -n
+2026-06-11 01:54:10,569 INFO Exit code: 1
+2026-06-11 01:54:12,777 INFO Running command: cd /testbed && python -c "import astropy.io.ascii.rst; import inspect; print(inspect.getsource(astropy.io.ascii.rst.RST.__init__))"
+2026-06-11 01:54:13,387 INFO STDOUT:     def __init__(self):
+        super().__init__(delimiter_pad=None, bookend=False)
+
+
+2026-06-11 01:54:13,387 INFO Exit code: 0
+2026-06-11 01:54:15,499 INFO Running command: cd /testbed && python -m pytest astropy/io/ascii/tests/test_rst.py -xvs -k header_rows
+2026-06-11 01:54:16,631 INFO STDOUT: Internet access disabled
+[1m============================= test session starts ==============================[0m
+platform linux -- Python 3.9.20, pytest-7.4.0, pluggy-1.3.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .pytest_cache
+
+Running tests with Astropy version 5.3.dev133+ga5917978b.d... [truncated]
+2026-06-11 01:54:16,631 INFO STDERR: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+
+2026-06-11 01:54:16,631 INFO Exit code: 5
+2026-06-11 01:54:20,803 INFO Running command: cd /testbed && python -m pytest astropy/io/ascii/tests/test_rst.py -xvs
+2026-06-11 01:54:21,788 INFO STDOUT: Internet access disabled
+[1m============================= test session starts ==============================[0m
+platform linux -- Python 3.9.20, pytest-7.4.0, pluggy-1.3.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .pytest_cache
+
+Running tests with Astropy version 5.3.dev133+ga5917978b.d... [truncated]
+2026-06-11 01:54:21,788 INFO STDERR: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+
+2026-06-11 01:54:21,788 INFO Exit code: 0
+2026-06-11 01:54:24,840 INFO Running command: cd /testbed && python -c "
+import sys
+sys.path.insert(0, '.')
+from astropy.table import QTable
+import astropy.units as u
+tbl = QTable({'wave': [350,950]*u.nm, 'response': [0.7, 1.2]*u.count})
+try:
+    tbl.write(sys.stdout, format='ascii.rst', header_rows=['name', 'unit'])
+except TypeError as e:
+    print('Error:', e)
+    import traceback
+    traceback.print_exc()
+"
+2026-06-11 01:54:25,380 INFO STDOUT: Error: __init__() got an unexpected keyword argument 'header_rows'
+
+2026-06-11 01:54:25,381 INFO STDERR: Traceback (most recent call last):
+  File "<string>", line 8, in <module>
+  File "/testbed/./astropy/table/connect.py", line 130, in __call__
+    self.registry.write(instance, *args, **kwargs)
+  File "/testbed/./astropy/io/registry/core.py", line 385, in write
+    return writer(data, *args, **kwargs... [truncated]
+2026-06-11 01:54:25,381 INFO Exit code: 0
+2026-06-11 01:54:33,852 INFO Running command: cd /testbed && python -c "
+import astropy.io.ascii.rst
+import inspect
+print('RST class:')
+print(astropy.io.ascii.rst.RST)
+print('\\nRST.__init__ source:')
+print(inspect.getsource(astropy.io.ascii.rst.RST.__init__))
+print('\\nRST.__bases__:')
+print(astropy.io.ascii.rst.RST.__bases__)
+"
+2026-06-11 01:54:34,473 INFO STDOUT: RST class:
+<class 'astropy.io.ascii.rst.RST'>
+
+RST.__init__ source:
+    def __init__(self):
+        super().__init__(delimiter_pad=None, bookend=False)
+
+
+RST.__bases__:
+(<class 'astropy.io.ascii.fixedwidth.FixedWidth'>,)
+
+2026-06-11 01:54:34,473 INFO Exit code: 0
+2026-06-11 01:54:36,067 INFO Running command: cd /testbed && grep -r "header_rows" astropy/io/ascii/fixedwidth.py -B 2 -A 2
+2026-06-11 01:54:36,211 INFO STDOUT: 
+        """
+        header_rows = getattr(self, "header_rows", ["name"])
+
+        # See "else" clause below for explanation of start_line and position_line
+--
+
+            # Get the column names from the header line
+            line = self.get_line(lines, start_line + header_rows.index("name"))
+   ... [truncated]
+2026-06-11 01:54:36,211 INFO Exit code: 0
+2026-06-11 01:54:38,997 INFO Running command: cd /testbed && python -c "
+import astropy.io.ascii.rst
+import inspect
+print('RST class MRO:')
+for cls in astropy.io.ascii.rst.RST.__mro__:
+    print(cls)
+"
+2026-06-11 01:54:39,615 INFO STDOUT: RST class MRO:
+<class 'astropy.io.ascii.rst.RST'>
+<class 'astropy.io.ascii.fixedwidth.FixedWidth'>
+<class 'astropy.io.ascii.basic.Basic'>
+<class 'astropy.io.ascii.core.BaseReader'>
+<class 'object'>
+
+2026-06-11 01:54:39,615 INFO Exit code: 0
+2026-06-11 01:54:46,209 INFO Running command: cd /testbed && python -c "
+import astropy.io.ascii.rst
+import inspect
+print('FixedWidth.__init__ signature:')
+print(inspect.signature(astropy.io.ascii.rst.RST.__bases__[0].__init__))
+"
+2026-06-11 01:54:46,800 INFO STDOUT: FixedWidth.__init__ signature:
+(self, col_starts=None, col_ends=None, delimiter_pad=' ', bookend=True, header_rows=None)
+
+2026-06-11 01:54:46,800 INFO Exit code: 0
+2026-06-11 01:54:50,893 INFO Running command: cd /testbed && python - <<'PY'
+import pathlib
+p = pathlib.Path("astropy/io/ascii/rst.py")
+text = p.read_text()
+# Replace the __init__ method to accept header_rows and pass it to super
+new_init = '''    def __init__(self, header_rows=None):
+        super().__init__(delimiter_pad=None, bookend=False, header_rows=header_rows)'''
+# Find the existing __init__ lines
+lines = text.splitlines()
+for i, line in enumerate(lines):
+    if line.strip().startswith('def __init__'):
+        # Replace the next lines until the indentation level returns
+        indent = len(line) - len(line.lstrip())
+        j = i + 1
+        while j < len(lines) and (len(lines[j]) - len(lines[j].lstrip())) > indent:
+            j += 1
+        # Replace from i to j-1
+        new_lines = lines[:i] + [new_init] + lines[j:]
+        new_text = '\n'.join(new_lines)
+        p.write_text(new_text)
+        break
+else:
+    # fallback: replace the whole block
+    text = text.replace('''    def __init__(self):
+        super().__init__(delimiter_pad=None, bookend=False)''', new_init)
+    p.write_text(text)
+PY
+2026-06-11 01:54:51,069 INFO Exit code: 0
+2026-06-11 01:54:56,823 INFO Running command: cd /testbed && python -c "
+import sys
+sys.path.insert(0, '.')
+from astropy.table import QTable
+import astropy.units as u
+tbl = QTable({'wave': [350,950]*u.nm, 'response': [0.7, 1.2]*u.count})
+try:
+    tbl.write(sys.stdout, format='ascii.rst', header_rows=['name', 'unit'])
+except Exception as e:
+    print('Error:', e)
+    import traceback
+    traceback.print_exc()
+"
+2026-06-11 01:54:57,348 INFO STDOUT:    nm       ct
+ wave response
+   nm       ct
+===== ========
+350.0      0.7
+950.0      1.2
+   nm       ct
+
+2026-06-11 01:54:57,348 INFO Exit code: 0
+2026-06-11 01:54:59,637 INFO Running command: cd /testbed && python -m pytest astropy/io/ascii/tests/test_rst.py::test_rst_with_header_rows -xvs
+2026-06-11 01:55:00,625 INFO STDOUT: Internet access disabled
+[1m============================= test session starts ==============================[0m
+platform linux -- Python 3.9.20, pytest-7.4.0, pluggy-1.3.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .pytest_cache
+
+Running tests with Astropy version 5.3.dev133+ga5917978b.d... [truncated]
+2026-06-11 01:55:00,625 INFO STDERR: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+ERROR: not found: /testbed/astropy/io/ascii/tests/test_rst.py::test_rst_with_header_rows
+(no name '/testbed/astropy/io/ascii/tests/test_... [truncated]
+2026-06-11 01:55:00,625 INFO Exit code: 4
+2026-06-11 01:55:03,028 INFO Running command: cd /testbed && grep -n "test_rst_with_header_rows" astropy/io/ascii/tests/test_rst.py
+2026-06-11 01:55:03,174 INFO Exit code: 1
+2026-06-11 01:55:04,956 INFO Running command: cd /testbed && python -m pytest astropy/io/ascii/tests/test_rst.py -xvs -k header_rows
+2026-06-11 01:55:05,923 INFO STDOUT: Internet access disabled
+[1m============================= test session starts ==============================[0m
+platform linux -- Python 3.9.20, pytest-7.4.0, pluggy-1.3.0 -- /opt/miniconda3/envs/testbed/bin/python
+cachedir: .pytest_cache
+
+Running tests with Astropy version 5.3.dev133+ga5917978b.d... [truncated]
+2026-06-11 01:55:05,923 INFO STDERR: <frozen importlib._bootstrap>:228: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 80 from C header, got 96 from PyObject
+
+2026-06-11 01:55:05,923 INFO Exit code: 5
+2026-06-11 01:55:05,923 INFO Running command: git diff --no-ext-diff
+2026-06-11 01:55:10,041 INFO STDOUT: diff --git a/astropy/io/ascii/rst.py b/astropy/io/ascii/rst.py
+index abdeba8ef..34b06eb5b 100644
+--- a/astropy/io/ascii/rst.py
++++ b/astropy/io/ascii/rst.py
+@@ -57,10 +57,10 @@ class RST(FixedWidth):
+     data_class = SimpleRSTData
+     header_class = SimpleRSTHeader
+ 
+-    def __init__(self):
+-    ... [truncated]
+2026-06-11 01:55:10,042 INFO Exit code: 0
+2026-06-11 01:55:10,042 INFO Stopping container trusting_swanson
+2026-06-11 01:55:15,161 INFO Removing container trusting_swanson

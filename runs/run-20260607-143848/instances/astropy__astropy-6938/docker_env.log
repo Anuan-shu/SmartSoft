@@ -1,0 +1,8 @@
+2026-06-07 14:41:20,210 INFO Preparing Docker environment for astropy__astropy-6938
+2026-06-07 14:41:20,233 INFO Image already exists locally, skipping pull: swebench/sweb.eval.x86_64.astropy_1776_astropy-6938
+2026-06-07 14:41:20,404 INFO Running command: pwd
+2026-06-07 14:41:20,576 INFO STDOUT: /testbed
+
+2026-06-07 14:41:20,576 INFO Exit code: 0
+2026-06-07 14:41:20,858 INFO Stopping container confident_kepler
+2026-06-07 14:41:25,969 INFO Removing container confident_kepler
