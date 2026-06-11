@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+import json
 import re
 import shlex
 
@@ -80,6 +81,7 @@ MAX_MODEL_PATCH_LINES = 350
 HISTORY_WINDOW = 10
 RECENT_FULL_ENTRIES = 4
 OLD_ENTRY_CHARS = 600
+MAX_GUARD_TESTS = 6
 MISSING_TEST_MARKERS = (
     "not found:",
     "no tests ran",
@@ -367,6 +369,39 @@ def _syntax_errors(env: DockerEnv) -> str:
     return _truncate(result.stderr or result.stdout, max_chars=800)
 
 
+def _parse_test_list(value: object) -> list[str]:
+    if isinstance(value, list):
+        return [str(item) for item in value if str(item).strip()]
+    if isinstance(value, str):
+        text = value.strip()
+        if not text:
+            return []
+        try:
+            parsed = json.loads(text)
+        except json.JSONDecodeError:
+            return [text]
+        if isinstance(parsed, list):
+            return [str(item) for item in parsed if str(item).strip()]
+        return [text]
+    return []
+
+
+def _pass_to_pass_regressions(env: DockerEnv, context: TaskContext) -> str:
+    """Run a bounded subset of PASS_TO_PASS tests to catch regressions before finalizing."""
+    tests = _parse_test_list(context.pass_to_pass)[:MAX_GUARD_TESTS]
+    if not tests:
+        return ""
+    joined = " ".join(shlex.quote(test) for test in tests)
+    result = env.run(
+        f"cd /testbed && python -m pytest {joined} -p no:cacheprovider -q",
+        timeout=300,
+    )
+    # 0 = all passed, 5 = nothing collected, 124 = timeout -> do not block.
+    if result.exit_code in (0, 5, 124):
+        return ""
+    return _truncate(f"{result.stdout}\n{result.stderr}", max_chars=1200)
+
+
 def _build_task_prompt(
     context: TaskContext,
     history: list[str],
@@ -455,6 +490,17 @@ def solve_task(context: TaskContext, env: DockerEnv, model: ModelClient) -> str:
                         f"py_compile error:\n{syntax_issue}\n"
                         "Fix the syntax/indentation in the source (keep all original arguments), then "
                         "verify with `python -m py_compile <file>` before finalizing again."
+                    )
+                    continue
+                regressions = _pass_to_pass_regressions(env, context)
+                if regressions:
+                    history.append(
+                        f"[step {step} invalid]\n"
+                        "Your change breaks existing PASS_TO_PASS tests, so the patch is rejected.\n"
+                        f"pytest failures:\n{regressions}\n"
+                        "Do NOT delete or rename existing attributes, methods, or arguments. Make the "
+                        "smallest additive change that fixes the issue without regressing these tests, "
+                        "then finalize again."
                     )
                     continue
                 return patch
