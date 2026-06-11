@@ -1,5 +1,49 @@
+# Cross-repo dev set for generalization testing.
+# One instance_id per line. Blank lines and lines starting with '#' are ignored.
+# NOTE: each repo/instance needs its Docker image. Pull first, e.g.:
+#   python -m scripts.pull_images --tasks swebench_tasks.txt
+# Images are large; trim this list if disk/time is limited.
+
+# --- astropy (already validated baseline) ---
+astropy__astropy-6938
 astropy__astropy-12907
 astropy__astropy-14182
 astropy__astropy-14365
 astropy__astropy-14995
-astropy__astropy-6938
+
+# --- django ---
+django__django-11099
+django__django-11999
+django__django-12915
+
+# --- matplotlib ---
+matplotlib__matplotlib-23314
+matplotlib__matplotlib-24970
+
+# --- seaborn ---
+mwaskom__seaborn-3010
+
+# --- flask ---
+pallets__flask-4045
+
+# --- requests ---
+psf__requests-2317
+
+# --- xarray ---
+pydata__xarray-4094
+
+# --- pylint ---
+pylint-dev__pylint-7080
+
+# --- pytest ---
+pytest-dev__pytest-5692
+
+# --- scikit-learn ---
+scikit-learn__scikit-learn-13241
+
+# --- sphinx ---
+sphinx-doc__sphinx-8595
+
+# --- sympy ---
+sympy__sympy-15346
+sympy__sympy-20590

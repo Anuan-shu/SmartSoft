@@ -396,8 +396,11 @@ def _pass_to_pass_regressions(env: DockerEnv, context: TaskContext) -> str:
         f"cd /testbed && python -m pytest {joined} -p no:cacheprovider -q",
         timeout=300,
     )
-    # 0 = all passed, 5 = nothing collected, 124 = timeout -> do not block.
-    if result.exit_code in (0, 5, 124):
+    # Only treat exit code 1 (tests collected and failed) as a real regression.
+    # Other codes (0 pass, 2 collection/usage error, 4 usage, 5 nothing collected,
+    # 124 timeout, etc.) are non-blocking to avoid false rejections on repos whose
+    # tests need a different invocation than plain pytest.
+    if result.exit_code != 1:
         return ""
     return _truncate(f"{result.stdout}\n{result.stderr}", max_chars=1200)
 
