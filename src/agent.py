@@ -25,9 +25,13 @@ UNIFIED DIFF PATCH
 </final_patch>
 
 Recommended workflow:
-- Step 1: reproduce the failure by running the FAIL_TO_PASS test(s), e.g.
-  `cd /testbed && python -m pytest <test_id> -x` so you see the real error.
-- Step 2: locate the relevant source with `grep -rn` / `sed -n 'A,Bp' file` and read the exact code.
+- Step 1: try to reproduce the failure once, e.g. `cd /testbed && python -m pytest <test_id> -x`.
+  IMPORTANT: the FAIL_TO_PASS tests are injected only at grading time, so they often DO NOT exist
+  in this container yet. If pytest reports "not found" / "no tests ran" / collection errors for them,
+  do NOT keep re-running the same test. Instead, read the problem statement carefully and, if useful,
+  write your OWN minimal repro script in `/tmp` (e.g. `python - <<'PY' ... PY`) to observe the behavior.
+- Step 2: locate the relevant source with `grep -rn` / `sed -n 'A,Bp' file` and read the exact code,
+  plus any base classes/helpers involved, so you understand the full code path.
 - Step 3: APPLY the fix DIRECTLY to the file in the container. You must actually modify files,
   not just read them. Edit using one self-contained command, for example a Python heredoc:
   ```
@@ -40,13 +44,17 @@ Recommended workflow:
   PY
   ```
   or a heredoc `git apply <<'EOF' ... EOF`. Prefer replacing exact, unique substrings.
-- Step 4: re-run the FAIL_TO_PASS and a few PASS_TO_PASS tests to confirm the fix works.
+- Step 4: validate. Run your own repro and a few PASS_TO_PASS tests to confirm the fix works and
+  nothing regresses.
 - Step 5: run `git diff --no-ext-diff` to confirm your edits, then return `<final_patch>` with that diff.
 
 Rules:
 - Use only non-interactive shell commands; one command per turn.
-- Make the SMALLEST correct change. Change production source files only; do not edit test files
-  unless the task explicitly requires it.
+- Implement the COMPLETE fix the issue requires, not just a cosmetic change. If the issue asks for new
+  behavior, add the real logic that produces it (not only a new parameter or signature); trace every
+  place that must change so the described behavior actually happens end to end.
+- Make the smallest change that fully fixes the issue. Change production source files only; do not edit
+  test files unless the task explicitly requires it.
 - The returned patch is graded by re-applying it to a clean checkout, so it MUST reflect edits you
   actually made in `/testbed`. The framework will re-derive the patch from `git diff` for you, so
   always make your edits land on disk rather than inventing a diff from memory.
@@ -68,6 +76,15 @@ Do not include repeated hunks, truncated lines, or whitespace-only changes.
 MAX_STEPS = 25
 MAX_OBS_CHARS = 4000
 MAX_MODEL_PATCH_LINES = 350
+HISTORY_WINDOW = 10
+RECENT_FULL_ENTRIES = 4
+OLD_ENTRY_CHARS = 600
+MISSING_TEST_MARKERS = (
+    "not found:",
+    "no tests ran",
+    "errors during collection",
+    "error: not found",
+)
 HUNK_HEADER_RE = re.compile(r"^@@ -(?P<old_start>\d+)(?:,\d+)? \+(?P<new_start>\d+)(?:,\d+)? @@(?P<suffix>.*)$")
 FORBIDDEN_COMMAND_PATTERNS = (
     "shutdown",
@@ -302,13 +319,34 @@ def _parse_model_action(content: str) -> tuple[str, str]:
     return "invalid", content.strip()
 
 
+def _render_history(history: list[str]) -> str:
+    """Keep recent turns verbatim and compress older ones to control prompt size."""
+    if not history:
+        return "(none)"
+    window = history[-HISTORY_WINDOW:]
+    if len(window) <= RECENT_FULL_ENTRIES:
+        return "\n\n".join(window).strip()
+    older = window[:-RECENT_FULL_ENTRIES]
+    recent = window[-RECENT_FULL_ENTRIES:]
+    parts = [_truncate(entry, max_chars=OLD_ENTRY_CHARS) for entry in older]
+    parts.extend(recent)
+    return "\n\n".join(parts).strip()
+
+
+def _looks_like_missing_test(command: str, observation: str) -> bool:
+    if "pytest" not in command.lower():
+        return False
+    lowered = observation.lower()
+    return any(marker in lowered for marker in MISSING_TEST_MARKERS)
+
+
 def _build_task_prompt(
     context: TaskContext,
     history: list[str],
     steps_remaining: int,
     final_only: bool = False,
 ) -> str:
-    history_block = "\n\n".join(history[-8:]).strip() if history else "(none)"
+    history_block = _render_history(history)
     instruction = (
         "Decide the next best single CLI command."
         if not final_only
@@ -366,6 +404,7 @@ def _finalize_model_patch(env: DockerEnv, payload: str) -> tuple[str, str]:
 def solve_task(context: TaskContext, env: DockerEnv, model: ModelClient) -> str:
     history: list[str] = []
     executed_commands: set[str] = set()
+    missing_test_hinted = False
 
     for step in range(1, MAX_STEPS + 1):
         steps_remaining = MAX_STEPS - step + 1
@@ -426,6 +465,15 @@ def solve_task(context: TaskContext, env: DockerEnv, model: ModelClient) -> str:
         history.append(
             f"[step {step} command]\n{command}\n[step {step} observation]\n{observation}{repeated_note}"
         )
+
+        if not missing_test_hinted and _looks_like_missing_test(command, observation):
+            missing_test_hinted = True
+            history.append(
+                f"[step {step} hint]\n"
+                "The FAIL_TO_PASS test is not present in this container; it is injected only at "
+                "grading time. Stop trying to run it. Read the problem statement, implement the "
+                "complete fix in the source, and validate behavior with your own minimal repro in /tmp."
+            )
 
     # Out of steps: prefer real edits already on disk.
     diff = _current_diff(env)
